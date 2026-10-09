@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "127040816700",
+    "project_id": "nesba-5a3fb",
+    "storage_bucket": "nesba-5a3fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127040816700:android:053ebc5c5c312cd0482539",
+        "android_client_info": {
+          "package_name": "com.example.nesba"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMDae6_fp8T4cZjD7AKN8vinfLmblHzdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

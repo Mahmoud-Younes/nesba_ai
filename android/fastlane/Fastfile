@@ -1,0 +1,29 @@
+
+default_platform(:android)
+
+# To run the lane, execute the following command:
+# bundle exec fastlane firebase_distribution
+# refrance for me: https://firebase.google.com/docs/app-distribution/android/distribute-fastlane?apptype=apk#step_2_authenticate_with_firebase
+platform :android do
+  desc "Lane for Android Firebase App Distribution"
+  lane :firebase_distribution do
+    sh "flutter clean"
+    sh "flutter build apk --release --flavor production --target lib/main_production.dart --no-tree-shake-icons"
+    firebase_app_distribution(
+        app: ENV["FIREBASE_APP_ID"],
+        firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
+        android_artifact_type: "APK",
+        android_artifact_path: "../build/app/outputs/flutter-apk/app-production-release.apk",
+        testers: "mahyounes73@gmail.com",
+        release_notes: "first distribution from fastlane gggg",
+        upload_timeout: 2400
+  )
+  end
+end
+# pubspec.yaml version: 1.0.0+1 modifiy
+# all commands are executed from the android // cd android
+# sh "flutter build apk --release --flavor production --target lib/main_production.dart --no-tree-shake-icons --split-per-abi"
+# to run   fastlane <lane>   // fastlane android firebase_distribution
+
+
+# sh "flutter build appbundle --release --flavor development --target lib/main_development.dart --no-tree-shake-icons"
