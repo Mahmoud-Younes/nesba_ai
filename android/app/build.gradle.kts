@@ -52,7 +52,9 @@ android {
         }
        
     }
-
+ buildFeatures {
+        resValues = true
+    }
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -61,6 +63,7 @@ android {
         }
     }
 }
+   
 
 kotlin {
     compilerOptions {
