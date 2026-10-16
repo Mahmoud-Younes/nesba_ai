@@ -12,7 +12,20 @@
           "package_name": "com.example.nesba"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "127040816700-uuapbq3dciaiu8qvg3s9obsmv3n5dqg5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nesba",
+            "certificate_hash": "9f9b4f80232271c39467561f047fffb32021fbaf"
+          }
+        },
+        {
+          "client_id": "127040816700-aj7e6av8kibcsvn8qk65t3414cj8alv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBMDae6_fp8T4cZjD7AKN8vinfLmblHzdo"
@@ -20,7 +33,63 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127040816700-aj7e6av8kibcsvn8qk65t3414cj8alv4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "127040816700-h84l1r1tdmj4s1g925pcr4qql919ugv2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nesba"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127040816700:android:305576a019b39dff482539",
+        "android_client_info": {
+          "package_name": "com.example.nesba.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "127040816700-39fpv7jrassfq15r6dl8k4eo9k8p814n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nesba.dev",
+            "certificate_hash": "9f9b4f80232271c39467561f047fffb32021fbaf"
+          }
+        },
+        {
+          "client_id": "127040816700-aj7e6av8kibcsvn8qk65t3414cj8alv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMDae6_fp8T4cZjD7AKN8vinfLmblHzdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127040816700-aj7e6av8kibcsvn8qk65t3414cj8alv4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "127040816700-h84l1r1tdmj4s1g925pcr4qql919ugv2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nesba"
+              }
+            }
+          ]
         }
       }
     }

@@ -65,6 +65,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '127040816700',
     projectId: 'nesba-5a3fb',
     storageBucket: 'nesba-5a3fb.firebasestorage.app',
+    androidClientId: '127040816700-uuapbq3dciaiu8qvg3s9obsmv3n5dqg5.apps.googleusercontent.com',
+    iosClientId: '127040816700-h84l1r1tdmj4s1g925pcr4qql919ugv2.apps.googleusercontent.com',
     iosBundleId: 'com.example.nesba',
   );
 
