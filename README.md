@@ -1,4 +1,4 @@
-# nesba
+# nesba_ai
 
 A new Flutter project.
 

@@ -1,6 +1,6 @@
 {
-    "name": "nesba",
-    "short_name": "nesba",
+    "name": "nesba_ai",
+    "short_name": "nesba_ai",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
