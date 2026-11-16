@@ -1,6 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase (Android: com.example.nesba_ai, project: nesba-5a3fb).
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
@@ -104,6 +111,18 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: .center,
           children: [
+            // Firebase status — proves initialization succeeded on this device.
+            Card(
+              margin: const EdgeInsets.only(bottom: 24),
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Text(
+                  '🔥 Firebase connected • ${Firebase.app().options.projectId}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ),
             const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
