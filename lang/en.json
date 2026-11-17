@@ -1,0 +1,19 @@
+{
+    "app_name": "Nesba",
+    "dark_mode": "Dark Mode",
+    "language": "العربية",
+    "page_one": "Page One",
+    "page_two": "Page Two",
+    "page_three": "Page Three",
+    "counter": "Cubit Counter",
+    "increment": "Increment",
+    "decrement": "Decrement",
+    "reset": "Reset",
+    "next": "Next Page",
+    "back_home": "Back To Page One",
+    "choose_color": "Choose Color (Cubit State)",
+    "toggle_content": "Toggle Content (Cubit State)",
+    "theme_test": "Theme Test (AppCubit)",
+    "lang_test": "Language Test (AppCubit)",
+    "cubit_hint": "Every tap here emits a new Cubit state"
+}
