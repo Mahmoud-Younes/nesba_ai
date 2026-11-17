@@ -1,0 +1,19 @@
+{
+    "app_name": "نسبة",
+    "dark_mode": "الوضع الليلي",
+    "language": "English",
+    "page_one": "الصفحة الأولى",
+    "page_two": "الصفحة الثانية",
+    "page_three": "الصفحة الثالثة",
+    "counter": "عدّاد الكيوبت",
+    "increment": "زيادة",
+    "decrement": "إنقاص",
+    "reset": "تصفير",
+    "next": "الصفحة التالية",
+    "back_home": "الرجوع للصفحة الأولى",
+    "choose_color": "اختر لون (حالة الكيوبت)",
+    "toggle_content": "إظهار / إخفاء المحتوى (حالة الكيوبت)",
+    "theme_test": "تجربة الثيم (AppCubit)",
+    "lang_test": "تجربة اللغة (AppCubit)",
+    "cubit_hint": "كل ضغطة هنا ترسل حالة جديدة للكيوبت"
+}
