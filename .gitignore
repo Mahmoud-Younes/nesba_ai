@@ -11,13 +11,24 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+/e2e/
+.agents/skills/e2e/
+.claude/skills/e2e/
+
+# Skill-generated local artifacts (impeccable / EGM) — local only, never pushed
+/PRODUCT.md
+/DESIGN.md
+/AGENTS.md
+EGM.md
+.egmignore
+.impeccable/
 
 # IntelliJ related
 *.iml
 *.ipr
 *.iws
 .idea/
-
+design/
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
@@ -43,3 +54,5 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
