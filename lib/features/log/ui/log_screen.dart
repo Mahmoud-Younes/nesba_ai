@@ -28,7 +28,10 @@ import 'package:nesba_ai/features/log/ui/widgets/result_card.dart';
 /// S01 «سجّل» frame (screen-specs §2.0 quad contract / §2.1 first-run)
 /// through the S02/S03/S05 integration: waiting area, result card, save morph.
 class LogScreen extends StatefulWidget {
-  const LogScreen({super.key});
+  const LogScreen({this.onGoToReview, super.key});
+
+  /// Shell-injected jump to the review gate (strip tap, S06).
+  final VoidCallback? onGoToReview;
 
   @override
   State<LogScreen> createState() => _LogScreenState();
