@@ -77,7 +77,7 @@ class ErrorCard extends StatelessWidget {
                     onPressed: onPressed,
                     style: TextButton.styleFrom(
                       foregroundColor: scheme.onErrorContainer,
-                      minimumSize: Size(48.w, 48.h),
+                      minimumSize: const Size(48, 48),
                       padding: EdgeInsets.symmetric(horizontal: 12.w),
                     ),
                     child: TextApp(

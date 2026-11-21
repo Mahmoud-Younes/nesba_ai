@@ -4,14 +4,16 @@ import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 
-/// Empty-state anatomy: illustration placeholder + title + body + single CTA
-/// (deck §2.6, neutral tone — no blame).
+/// Empty-state anatomy: illustration placeholder + title + body + CTA, with
+/// an optional secondary quiet action (deck §2.6 — the week empty needs two).
 class EmptyState extends StatelessWidget {
   const EmptyState({
     required this.title,
     required this.body,
     required this.ctaLabel,
     this.onCta,
+    this.secondaryCtaLabel,
+    this.onSecondaryCta,
     super.key,
   });
 
@@ -19,6 +21,10 @@ class EmptyState extends StatelessWidget {
   final String body;
   final String ctaLabel;
   final VoidCallback? onCta;
+
+  /// Optional second action («سجّل وجبة» on the week empty).
+  final String? secondaryCtaLabel;
+  final VoidCallback? onSecondaryCta;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +82,24 @@ class EmptyState extends StatelessWidget {
             ),
           ),
         ),
+        if (secondaryCtaLabel != null) ...<Widget>[
+          SizedBox(height: 8.h),
+          TextButton(
+            onPressed: onSecondaryCta,
+            style: TextButton.styleFrom(
+              foregroundColor: scheme.primary,
+              minimumSize: const Size(48, 48),
+            ),
+            child: TextApp(
+              text: secondaryCtaLabel!,
+              theme: context.textStyle.copyWith(
+                fontSize: 14.sp,
+                fontWeight: FontWeightHelper.semiBold,
+                color: scheme.primary,
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
