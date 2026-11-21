@@ -3,6 +3,7 @@ import 'package:nesba_ai/core/app/app_cubit/app_cubit.dart';
 import 'package:nesba_ai/features/log/data/repos/log_repo.dart';
 import 'package:nesba_ai/features/log/data/repos/mock_log_repo.dart';
 import 'package:nesba_ai/features/log/logic/log_cubit.dart';
+import 'package:nesba_ai/features/login/logic/login_cubit.dart';
 import 'package:nesba_ai/features/page_one/logic/page_one_cubit.dart';
 import 'package:nesba_ai/features/page_three/logic/page_three_cubit.dart';
 import 'package:nesba_ai/features/page_two/logic/page_two_cubit.dart';
@@ -22,6 +23,7 @@ Future<void> setupInjector() async {
   await _initLog();
   await _initReview();
   await _initSwaps();
+  await _initLogin();
 }
 
 Future<void> _initCore() async {
@@ -55,4 +57,8 @@ Future<void> _initSwaps() async {
   sl
     ..registerLazySingleton<SwapRepo>(MockSwapRepo.new)
     ..registerFactory<SwapCubit>(() => SwapCubit(sl<SwapRepo>()));
+}
+
+Future<void> _initLogin() async {
+  sl.registerFactory<LoginCubit>(LoginCubit.new);
 }
