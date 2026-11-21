@@ -12,6 +12,11 @@ class MyColors extends ThemeExtension<MyColors> {
     required this.textFormBorder,
     required this.containerLinear1,
     required this.containerLinear2,
+    required this.chartProtein,
+    required this.chartCarbohydrate,
+    required this.chartFat,
+    required this.chartUnderTarget,
+    required this.chartOverTarget,
   });
 
   final Color? mainColor;
@@ -22,6 +27,13 @@ class MyColors extends ThemeExtension<MyColors> {
   final Color? containerLinear1;
   final Color? containerLinear2;
 
+  // nes.chart semantic colors — Bustan §1.2.
+  final Color? chartProtein;
+  final Color? chartCarbohydrate;
+  final Color? chartFat;
+  final Color? chartUnderTarget;
+  final Color? chartOverTarget;
+
   @override
   ThemeExtension<MyColors> copyWith({
     Color? mainColor,
@@ -31,6 +43,11 @@ class MyColors extends ThemeExtension<MyColors> {
     Color? textFormBorder,
     Color? containerLinear1,
     Color? containerLinear2,
+    Color? chartProtein,
+    Color? chartCarbohydrate,
+    Color? chartFat,
+    Color? chartUnderTarget,
+    Color? chartOverTarget,
   }) {
     return MyColors(
       mainColor: mainColor,
@@ -40,6 +57,11 @@ class MyColors extends ThemeExtension<MyColors> {
       textFormBorder: textFormBorder,
       containerLinear1: containerLinear1,
       containerLinear2: containerLinear2,
+      chartProtein: chartProtein,
+      chartCarbohydrate: chartCarbohydrate,
+      chartFat: chartFat,
+      chartUnderTarget: chartUnderTarget,
+      chartOverTarget: chartOverTarget,
     );
   }
 
@@ -59,6 +81,11 @@ class MyColors extends ThemeExtension<MyColors> {
       textFormBorder: textFormBorder,
       containerLinear1: containerLinear1,
       containerLinear2: containerLinear2,
+      chartProtein: chartProtein,
+      chartCarbohydrate: chartCarbohydrate,
+      chartFat: chartFat,
+      chartUnderTarget: chartUnderTarget,
+      chartOverTarget: chartOverTarget,
     );
   }
 
@@ -70,6 +97,11 @@ class MyColors extends ThemeExtension<MyColors> {
     textFormBorder: ColorsDark.greenLight,
     containerLinear1: ColorsDark.black1,
     containerLinear2: ColorsDark.black2,
+    chartProtein: ColorsDark.chartProtein,
+    chartCarbohydrate: ColorsDark.chartCarbohydrate,
+    chartFat: ColorsDark.chartFat,
+    chartUnderTarget: ColorsDark.chartUnderTarget,
+    chartOverTarget: ColorsDark.chartOverTarget,
   );
 
   static const MyColors light = MyColors(
@@ -80,5 +112,10 @@ class MyColors extends ThemeExtension<MyColors> {
     textFormBorder: ColorsLight.greenLight,
     containerLinear1: ColorsLight.greenDark,
     containerLinear2: ColorsLight.greenLight,
+    chartProtein: ColorsLight.chartProtein,
+    chartCarbohydrate: ColorsLight.chartCarbohydrate,
+    chartFat: ColorsLight.chartFat,
+    chartUnderTarget: ColorsLight.chartUnderTarget,
+    chartOverTarget: ColorsLight.chartOverTarget,
   );
 }

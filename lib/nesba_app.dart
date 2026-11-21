@@ -33,7 +33,8 @@ class NesbaApp extends StatelessWidget {
         ),
       ],
       child: ScreenUtilInit(
-        designSize: const Size(375, 812),
+        // Design frame per design/screen-specs.md ("فريم 390×844dp").
+        designSize: const Size(390, 844),
         minTextAdapt: true,
         child: BlocBuilder<AppCubit, AppState>(
           builder: (context, state) {
