@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/service/shared_pref/pref_keys.dart';
 import 'package:nesba_ai/core/service/shared_pref/shared_pref.dart';
 import 'package:nesba_ai/features/splash/ui/widgets/splash_wordmark.dart';
@@ -20,16 +22,14 @@ class _SplashScreenState extends State<SplashScreen> {
     Future<void>.delayed(_hold, _goNext);
   }
 
-  // Routes next: onboarding on first run, review/log gate afterwards.
-  Future<void> _goNext() async {
+  // Routes next: onboarding on first run, the home shell afterwards.
+  void _goNext() {
     if (!mounted) return;
     final bool done = SharedPref().getBoolean(PrefKeys.onboardingDone) ?? false;
     if (done) {
-      // TODO(route): returning user → review/log gate, not registered yet.
-      // Intended: context.pushReplacementNamed(AppRoutes.review);
+      context.pushReplacementNamed(AppRoutes.home);
     } else {
-      // TODO(route): first run → onboarding, not registered yet.
-      // Intended: context.pushReplacementNamed(AppRoutes.onboarding);
+      context.pushReplacementNamed(AppRoutes.onboarding);
     }
   }
 
