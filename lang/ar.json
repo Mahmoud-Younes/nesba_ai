@@ -141,5 +141,7 @@
     "ledger_all_chip": "الكل ({count})",
     "meal_relog_cta": "سجّلها تاني",
     "settings": "الإعدادات",
-    "tab_semantics": "{tab}، التبويب {index} من 3"
+    "tab_semantics": "{tab}، التبويب {index} من 3",
+    "no_goal": "بدون هدف",
+    "stale_keep_action": "اعتمد هذه"
 }

@@ -141,5 +141,7 @@
     "ledger_all_chip": "All ({count})",
     "meal_relog_cta": "Log again",
     "settings": "Settings",
-    "tab_semantics": "{tab}, tab {index} of 3"
+    "tab_semantics": "{tab}, tab {index} of 3",
+    "no_goal": "No goal",
+    "stale_keep_action": "Keep this"
 }
