@@ -73,19 +73,20 @@ class MyColors extends ThemeExtension<MyColors> {
     if (other is! MyColors) {
       return this;
     }
+    Color? blend(Color? a, Color? b) => Color.lerp(a, b, t);
     return MyColors(
-      mainColor: mainColor,
-      greenDark: greenDark,
-      greenLight: greenLight,
-      textColor: textColor,
-      textFormBorder: textFormBorder,
-      containerLinear1: containerLinear1,
-      containerLinear2: containerLinear2,
-      chartProtein: chartProtein,
-      chartCarbohydrate: chartCarbohydrate,
-      chartFat: chartFat,
-      chartUnderTarget: chartUnderTarget,
-      chartOverTarget: chartOverTarget,
+      mainColor: blend(mainColor, other.mainColor),
+      greenDark: blend(greenDark, other.greenDark),
+      greenLight: blend(greenLight, other.greenLight),
+      textColor: blend(textColor, other.textColor),
+      textFormBorder: blend(textFormBorder, other.textFormBorder),
+      containerLinear1: blend(containerLinear1, other.containerLinear1),
+      containerLinear2: blend(containerLinear2, other.containerLinear2),
+      chartProtein: blend(chartProtein, other.chartProtein),
+      chartCarbohydrate: blend(chartCarbohydrate, other.chartCarbohydrate),
+      chartFat: blend(chartFat, other.chartFat),
+      chartUnderTarget: blend(chartUnderTarget, other.chartUnderTarget),
+      chartOverTarget: blend(chartOverTarget, other.chartOverTarget),
     );
   }
 

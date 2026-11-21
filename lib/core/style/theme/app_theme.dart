@@ -99,19 +99,27 @@ ThemeData _bustanTheme(
     scaffoldBackgroundColor: scheme.surface,
     extensions: extensions,
     textTheme: TextTheme(
-      // Base style — widgets use context.textStyle.copyWith(...) (asroo_store way).
-      displaySmall: TextStyle(
+      // Base style on bodyMedium — context.textStyle reads it, and widgets
+      // use context.textStyle.copyWith(...) (asroo_store way).
+      bodyMedium: TextStyle(
         fontSize: 14,
         color: scheme.onSurface,
         fontFamily: FontFamilyHelper.geLocalozedFontFamily(),
+        fontFamilyFallback: FontFamilyHelper.localizedFallback,
+        letterSpacing: 0,
       ),
     ),
     filledButtonTheme: FilledButtonThemeData(style: _bustanButtonStyle()),
     outlinedButtonTheme: OutlinedButtonThemeData(style: _bustanButtonStyle()),
     elevatedButtonTheme: ElevatedButtonThemeData(style: _bustanButtonStyle()),
     inputDecorationTheme: _bustanInputTheme(scheme),
-    cardTheme: _bustanCardTheme(),
-    bottomSheetTheme: _bustanBottomSheetTheme(),
+    cardTheme: _bustanCardTheme(scheme),
+    bottomSheetTheme: _bustanBottomSheetTheme(scheme),
+    dialogTheme: _bustanDialogTheme(),
+    navigationBarTheme: _bustanNavigationBarTheme(scheme),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      shape: StadiumBorder(),
+    ),
     snackBarTheme: _bustanSnackBarTheme(scheme),
   );
 }
@@ -140,25 +148,51 @@ InputDecorationThemeData _bustanInputTheme(ColorScheme scheme) {
       borderRadius: radius,
       borderSide: BorderSide(color: scheme.primary, width: 2),
     ),
+    fillColor: scheme.surfaceContainerLowest,
+    hintStyle: TextStyle(
+      fontSize: 12,
+      color: scheme.onSurfaceVariant,
+      fontFamily: FontFamilyHelper.geLocalozedFontFamily(),
+      letterSpacing: 0,
+    ),
   );
 }
 
-// Cards: corner 12, elevation 0 (tint-first — depth in surfaceContainer ramp).
-CardThemeData _bustanCardTheme() {
-  return const CardThemeData(
-    shape: RoundedRectangleBorder(
+// Cards: corner 12, elevation 0, surfaceContainer body (tint-first).
+CardThemeData _bustanCardTheme(ColorScheme scheme) {
+  return CardThemeData(
+    color: scheme.surfaceContainer,
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(AppRadius.medium)),
     ),
     elevation: 0,
   );
 }
 
-// Bottom sheets: top corners 16.
-BottomSheetThemeData _bustanBottomSheetTheme() {
-  return const BottomSheetThemeData(
-    shape: RoundedRectangleBorder(
+// Bottom sheets: top corners 16, surfaceContainerLow, elevation 2.
+BottomSheetThemeData _bustanBottomSheetTheme(ColorScheme scheme) {
+  return BottomSheetThemeData(
+    backgroundColor: scheme.surfaceContainerLow,
+    elevation: 2,
+    shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.large)),
     ),
+  );
+}
+
+// Dialogs: corner 16 per shape ladder (28 stays hero-only).
+DialogThemeData _bustanDialogTheme() {
+  return const DialogThemeData(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(AppRadius.large)),
+    ),
+  );
+}
+
+// Nav bar: active indicator rides primaryContainer (not M3's secondary).
+NavigationBarThemeData _bustanNavigationBarTheme(ColorScheme scheme) {
+  return NavigationBarThemeData(
+    indicatorColor: scheme.primaryContainer,
   );
 }
 

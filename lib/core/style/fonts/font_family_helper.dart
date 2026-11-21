@@ -7,6 +7,12 @@ class FontFamilyHelper {
   static const String ibmPlexSans = 'IBM Plex Sans';
   static const String ibmPlexSansArabic = 'IBM Plex Sans Arabic';
 
+  // Mixed-script runs (EN food names inside AR advice) resolve per glyph.
+  static const List<String> localizedFallback = <String>[
+    ibmPlexSansArabic,
+    ibmPlexSans,
+  ];
+
   static String geLocalozedFontFamily() {
     final currentLanguage = SharedPref().getString(PrefKeys.language);
     if (currentLanguage == 'ar') {
