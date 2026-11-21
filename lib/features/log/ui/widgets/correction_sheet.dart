@@ -12,8 +12,9 @@ import 'package:nesba_ai/features/log/data/models/meal_item.dart';
 import 'package:nesba_ai/features/log/ui/widgets/qty_stepper.dart';
 
 /// S04 correction sheet (screen-specs §2.4): live portion/grams/unit editing
-/// over a pinned totals footer; «تم» commits via [onApply], delete is instant
-/// (the undo snackbar is the screen's job). Open through [CorrectionSheet.show].
+/// over a pinned totals footer; every change applies live via [onLiveChange],
+/// «تم» just closes, delete is instant (the undo snackbar is the screen's
+/// job). Open through [CorrectionSheet.show].
 class CorrectionSheet extends StatefulWidget {
   const CorrectionSheet({
     required this.item,
@@ -25,10 +26,9 @@ class CorrectionSheet extends StatefulWidget {
     required this.kcalUnitText,
     required this.mealTotalLabel,
     required this.macroUnitText,
-    required this.onApply,
     required this.onDelete,
     this.onAddItem,
-    this.onLiveChange,
+    required this.onLiveChange,
     super.key,
   });
 
@@ -41,25 +41,18 @@ class CorrectionSheet extends StatefulWidget {
   final double mealCarbsGrams;
   final double mealFatGrams;
 
-  // TODO(copy): «تم» has no LangKeys key yet — passed in as a parameter
-  // until the deck owner adds one (SummaryStrip.noGoalText pattern).
-  /// Confirm button label («تم»).
+  /// Confirm button label («تم» — deck `done` key).
   final String doneLabel;
 
-  // TODO(copy): standalone «سعرة» unit key is missing (result_kcal bakes the
-  // number) — passed in as a parameter until the deck owner adds one.
-  /// kcal unit word appended after live numbers.
+  /// kcal unit word appended after live numbers («سعرة» — deck key).
   final String kcalUnitText;
 
-  // TODO(copy): «إجمالي الوجبة» totals label key is missing — passed in.
-  /// Label before the live meal-kcal total.
+  /// Label before the live meal-kcal total («إجمالي الوجبة» — deck key).
   final String mealTotalLabel;
 
-  // TODO(copy): compact «جم» unit key is missing (deck §3.6) — passed in.
-  /// Compact gram unit appended to live macro values.
+  /// Compact gram unit appended to live macro values («جم» — deck key).
   final String macroUnitText;
 
-  final ValueChanged<MealItem> onApply;
   final VoidCallback onDelete;
 
   /// «+ أضف عنصرًا» — screen-owned flow; button disables when null.
@@ -82,10 +75,9 @@ class CorrectionSheet extends StatefulWidget {
     required String kcalUnitText,
     required String mealTotalLabel,
     required String macroUnitText,
-    required ValueChanged<MealItem> onApply,
+    required ValueChanged<MealItem> onLiveChange,
     required VoidCallback onDelete,
     VoidCallback? onAddItem,
-    ValueChanged<MealItem>? onLiveChange,
   }) {
     return showModalBottomSheet<void>(
       context: context,
@@ -109,7 +101,6 @@ class CorrectionSheet extends StatefulWidget {
         kcalUnitText: kcalUnitText,
         mealTotalLabel: mealTotalLabel,
         macroUnitText: macroUnitText,
-        onApply: onApply,
         onDelete: onDelete,
         onAddItem: onAddItem,
         onLiveChange: onLiveChange,
@@ -133,7 +124,9 @@ class _CorrectionSheetState extends State<CorrectionSheet> {
   @override
   void initState() {
     super.initState();
-    _multiplier = widget.item.quantityMultiplier;
+    // 1x = the item exactly as analyzed (its stored kcal) — the stepper
+    // scales FROM the current amount, it does not re-apply the quantity.
+    _multiplier = 1.0;
     _selectedUnit = widget.item.unit;
     _gramsController =
         TextEditingController(text: widget.item.grams?.toString() ?? '');
@@ -166,7 +159,8 @@ class _CorrectionSheetState extends State<CorrectionSheet> {
   }
 
   MealItem _liveItem() => widget.item.copyWith(
-        quantityMultiplier: _multiplier,
+        // The multiplier adjusts the analyzed amount, not replaces it.
+        quantityMultiplier: widget.item.quantityMultiplier * _multiplier,
         grams: _typedGrams() ?? widget.item.grams,
         unit: _selectedUnit,
         kcal: _liveKcal(),
@@ -212,8 +206,8 @@ class _CorrectionSheetState extends State<CorrectionSheet> {
     return _steps.length - 1;
   }
 
+  // Changes already applied live — closing commits nothing extra.
   void _handleDone() {
-    widget.onApply(_liveItem());
     Navigator.of(context).pop();
   }
 

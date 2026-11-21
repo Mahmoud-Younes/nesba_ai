@@ -44,6 +44,12 @@ class LangKeys {
   static const String logLedgerItemHint = 'log_ledger_item_hint';
   static const String logClear = 'log_clear';
 
+  // --- Shared units & labels (owner-approved gap: literals were hardcoded) ---
+  static const String done = 'done';
+  static const String unitKcal = 'unit_kcal';
+  static const String macroUnitGram = 'macro_unit_gram';
+  static const String mealTotalLabel = 'meal_total_label';
+
   // --- Analysis & result (copy-deck §2.2) ---
   static const String analysisProgress1 = 'analysis_progress_1';
   static const String analysisProgress2 = 'analysis_progress_2';
