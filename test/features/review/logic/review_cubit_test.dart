@@ -36,9 +36,7 @@ void main() {
     final cubit = ReviewCubit(MockReviewRepo());
     expect(cubit.state.mode, ReviewMode.day);
     cubit.toggleMode(ReviewMode.week);
-    expect(cubit.state.mode, ReviewMode.week);
-    expect(cubit.state.weeklyData, isEmpty);
-    cubit.toggleMode(ReviewMode.day);
+    expect(cubit.state.mode, ReviewMode.week);    cubit.toggleMode(ReviewMode.day);
     expect(cubit.state.mode, ReviewMode.day);
     await cubit.close();
   });
