@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nesba_ai/features/home/data/mock_today_data_source.dart';
 import 'package:nesba_ai/features/log/data/models/analysis_result.dart';
 import 'package:nesba_ai/features/log/data/models/meal_item.dart';
 import 'package:nesba_ai/features/log/data/repos/log_repo.dart';
@@ -103,14 +104,14 @@ const AnalysisResult _result = AnalysisResult(
   verdictWhy: 'البروتين جيد',
 );
 
-// Runs the full analyze path against MockLogRepo (2.5s latency).
+// Runs the full analyze path against MockLogRepo (5s latency — crosses the 3s footnote).
 // fakeAsync fakes the mock's Future.delayed and microtasks; the cubit's
 // Stopwatch stays real, so the step/timeout ticks live in real-time tests.
 LogCubit _analyzedCubit(FakeAsync async) {
   final cubit = LogCubit(MockLogRepo());
   cubit.descriptionChanged('بيض وتوست وعصير برتقال');
   unawaited(cubit.startAnalysis());
-  async.elapse(const Duration(milliseconds: 2500));
+  async.elapse(const Duration(milliseconds: 5000));
   return cubit;
 }
 
@@ -181,7 +182,7 @@ void main() {
       final cubit = _analyzedCubit(async);
       expect(cubit.state.showDisclaimer, true);
       unawaited(cubit.reAnalyze());
-      async.elapse(const Duration(milliseconds: 2500));
+      async.elapse(const Duration(milliseconds: 5000));
       expect(cubit.state.showDisclaimer, false);
       unawaited(cubit.close());
     });
@@ -249,32 +250,35 @@ void main() {
 
   test('loadTodayMeals seeds the ledger rows and consumed kcal', () {
     fakeAsync((async) {
+      MockTodayDataSource.instance.reset();
       final cubit = LogCubit(MockLogRepo());
       expect(cubit.state.consumedKcal, 0);
       unawaited(cubit.loadTodayMeals());
       async.flushMicrotasks();
-      expect(cubit.state.todayMeals.length, 2);
+      expect(cubit.state.todayMeals.length, 4);
       expect(cubit.state.todayMeals[0]['id'], 'mock_meal_101');
-      expect(cubit.state.consumedKcal, 470);
+      expect(cubit.state.consumedKcal, 1240);
+      expect(cubit.state.goalKcal, 0); // CD-06 — nothing fabricated
       unawaited(cubit.close());
     });
   });
 
   test('saveMeal appends the meal row and resets the composer', () {
     fakeAsync((async) {
+      MockTodayDataSource.instance.reset();
       final cubit = LogCubit(MockLogRepo());
       unawaited(cubit.loadTodayMeals());
       async.flushMicrotasks();
-      expect(cubit.state.consumedKcal, 470);
+      expect(cubit.state.consumedKcal, 1240);
       cubit.descriptionChanged('بيض وتوست وعصير برتقال');
       unawaited(cubit.startAnalysis());
-      async.elapse(const Duration(milliseconds: 2500));
+      async.elapse(const Duration(milliseconds: 5000));
       unawaited(cubit.saveMeal());
       expect(cubit.state.isSaving, true); // button disabled while writing
       async.elapse(const Duration(milliseconds: 400));
       expect(cubit.state.status, LogStatus.saved);
       expect(cubit.state.savedMealId, 'mock_meal_001');
-      expect(cubit.state.todayMeals.length, 3);
+      expect(cubit.state.todayMeals.length, 5);
       expect(cubit.state.todayMeals.first['id'], 'mock_meal_001');
       expect(cubit.state.todayMeals.first['name'], 'بيض وتوست وعصير برتقال');
       expect(cubit.state.todayMeals.first['kcal'], 430);
@@ -292,7 +296,7 @@ void main() {
       final cubit = LogCubit(MockLogRepo());
       cubit.descriptionChanged('بيض وتوست وعصير برتقال');
       unawaited(cubit.startAnalysis());
-      async.elapse(const Duration(milliseconds: 2500));
+      async.elapse(const Duration(milliseconds: 5000));
       unawaited(cubit.saveMeal());
       async.elapse(const Duration(milliseconds: 400));
       expect(cubit.state.status, LogStatus.saved);
@@ -314,10 +318,10 @@ void main() {
       async.flushMicrotasks();
       cubit.descriptionChanged('بيض وتوست وعصير برتقال');
       unawaited(cubit.startAnalysis());
-      async.elapse(const Duration(milliseconds: 2500));
+      async.elapse(const Duration(milliseconds: 5000));
       unawaited(cubit.saveMeal());
       async.elapse(const Duration(milliseconds: 400));
-      expect(cubit.state.todayMeals.length, 3);
+      expect(cubit.state.todayMeals.length, 5);
       unawaited(cubit.undoSave());
       async.flushMicrotasks();
       expect(cubit.state.status, LogStatus.result);

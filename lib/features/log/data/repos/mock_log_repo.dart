@@ -1,3 +1,4 @@
+import 'package:nesba_ai/features/home/data/mock_today_data_source.dart';
 import 'package:nesba_ai/features/log/data/models/analysis_result.dart';
 import 'package:nesba_ai/features/log/data/models/meal_item.dart';
 import 'package:nesba_ai/features/log/data/repos/log_repo.dart';
@@ -43,17 +44,31 @@ class MockLogRepo implements LogRepo {
   @override
   Future<String> saveMeal(AnalysisResult result) async {
     await Future.delayed(const Duration(milliseconds: 400));
+    // The saved row joins the shared today truth (sync pending until the
+    // backend acks) — both gates see it.
+    final DateTime now = DateTime.now();
+    MockTodayDataSource.instance.addMeal(<String, dynamic>{
+      'id': 'mock_meal_001',
+      'name': result.descriptionEcho,
+      'type': 'breakfast',
+      'kcal': result.kcal,
+      'time':
+          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+      'sync': 'pending',
+      'groupKey': 'today',
+    });
     return 'mock_meal_001';
   }
 
   @override
-  Future<void> undoSave(String mealId) async {}
+  Future<void> undoSave(String mealId) async {
+    MockTodayDataSource.instance.removeMeal(mealId);
+  }
 
   @override
-  Future<List<Map<String, dynamic>>> todayMeals() async {
-    return [
-      {'id': 'mock_meal_101', 'name': 'شوفان بالحليب والموز', 'kcal': 380, 'time': '07:40'},
-      {'id': 'mock_meal_102', 'name': 'قهوة بالحليب', 'kcal': 90, 'time': '10:15'},
-    ];
-  }
+  Future<List<Map<String, dynamic>>> todayMeals() async =>
+      MockTodayDataSource.instance.todayMeals();
+
+  @override
+  Future<int> todayGoal() async => MockTodayDataSource.instance.goalKcal;
 }

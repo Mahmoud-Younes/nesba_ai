@@ -4,7 +4,6 @@ class LangKeys {
   static const String darkMode = 'dark_mode';
   static const String language = 'language';
   // Fallback copy of the under-build screen.
-  static const String cubitHint = 'cubit_hint';
 
   // --- Tabs (copy-deck §2.0 / screen-specs §1.4) ---
   static const String tabLog = 'tab_log';

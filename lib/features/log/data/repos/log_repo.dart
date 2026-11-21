@@ -5,4 +5,7 @@ abstract class LogRepo {
   Future<String> saveMeal(AnalysisResult result);
   Future<void> undoSave(String mealId);
   Future<List<Map<String, dynamic>>> todayMeals();
+
+  /// The user's daily goal (0 until set — CD-06).
+  Future<int> todayGoal();
 }
