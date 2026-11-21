@@ -8,7 +8,7 @@ import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 /// Meal type of a logged meal — drives the 4 demo food icons (spec §1.5).
 enum MealType { breakfast, lunch, dinner, snack }
 
-/// Food icon per meal type — 24dp from Icons.* (brand §1.5 demo set).
+/// Food icon per meal type — Icons.* stand-in until the duotone set lands.
 IconData mealTypeIcon(MealType type) {
   return switch (type) {
     MealType.breakfast => Icons.free_breakfast_outlined,
@@ -41,6 +41,8 @@ class LedgerRow extends StatelessWidget {
     required this.mealType,
     required this.timeText,
     required this.kcalText,
+    this.badge,
+    this.semanticsLabel,
     super.key,
   });
 
@@ -51,60 +53,75 @@ class LedgerRow extends StatelessWidget {
   /// Pre-formatted kcal value — western digits, rendered tabular.
   final String kcalText;
 
+  /// Optional trailing badge (e.g. pending sync) — passed ready-built.
+  final Widget? badge;
+
+  /// Whole-row a11y summary; null keeps the default text traversal.
+  final String? semanticsLabel;
+
   @override
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
+    final Widget row = ConstrainedBox(
+      constraints: BoxConstraints(minHeight: 64.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Icon(
+            mealTypeIcon(mealType),
+            size: 24.r,
+            color: scheme.onSurfaceVariant,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextApp(
+                  text: name,
+                  theme: context.textStyle.copyWith(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeightHelper.semiBold,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                TextApp(
+                  text: mealSubLine(context, mealType, timeText),
+                  theme: context.textStyle.copyWith(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeightHelper.regular,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 12.w),
+          TextApp(
+            text: kcalText,
+            theme: context.textStyle.copyWith(
+              fontSize: 14.sp,
+              fontWeight: FontWeightHelper.regular,
+              fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+              color: scheme.onSurface,
+            ),
+          ),
+          if (badge != null) ...<Widget>[
+            SizedBox(width: 8.w),
+            badge!,
+          ],
+        ],
+      ),
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        ConstrainedBox(
-          constraints: BoxConstraints(minHeight: 64.h),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                mealTypeIcon(mealType),
-                size: 24.r,
-                color: scheme.onSurfaceVariant,
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    TextApp(
-                      text: name,
-                      theme: context.textStyle.copyWith(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeightHelper.semiBold,
-                        color: scheme.onSurface,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    TextApp(
-                      text: mealSubLine(context, mealType, timeText),
-                      theme: context.textStyle.copyWith(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeightHelper.regular,
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 12.w),
-              TextApp(
-                text: kcalText,
-                theme: context.textStyle.copyWith(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeightHelper.regular,
-                  fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
-                  color: scheme.onSurface,
-                ),
-              ),
-            ],
-          ),
+        Semantics(
+          label: semanticsLabel,
+          excludeSemantics: true,
+          child: row,
         ),
         SizedBox(height: 12.h),
         Divider(height: 1, thickness: 1, color: scheme.outlineVariant),

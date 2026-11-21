@@ -14,6 +14,7 @@ class MealRow extends StatelessWidget {
     required this.timeText,
     required this.kcalText,
     this.badge,
+    this.semanticsLabel,
     this.onTap,
     super.key,
   });
@@ -27,6 +28,9 @@ class MealRow extends StatelessWidget {
 
   /// Optional trailing badge (e.g. sync badge) — passed ready-built by the caller.
   final Widget? badge;
+
+  /// Whole-row a11y summary; null keeps the default text traversal.
+  final String? semanticsLabel;
 
   final VoidCallback? onTap;
 
@@ -89,18 +93,23 @@ class MealRow extends StatelessWidget {
             SizedBox(width: 8.w),
             badge!,
           ],
-          SizedBox(width: 8.w),
-          Icon(_chevron(context), size: 24.r, color: scheme.onSurfaceVariant),
+          // Navigation affordance only on tappable rows.
+          if (onTap != null) ...<Widget>[
+            SizedBox(width: 8.w),
+            Icon(_chevron(context), size: 24.r, color: scheme.onSurfaceVariant),
+          ],
         ],
       ),
     );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        if (onTap != null)
-          InkWell(onTap: onTap, child: row)
-        else
-          row,
+        Semantics(
+          label: semanticsLabel,
+          button: onTap != null,
+          excludeSemantics: true,
+          child: onTap != null ? InkWell(onTap: onTap, child: row) : row,
+        ),
         SizedBox(height: 12.h),
         Divider(height: 1, thickness: 1, color: scheme.outlineVariant),
       ],

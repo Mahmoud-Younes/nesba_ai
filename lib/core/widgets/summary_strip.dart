@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/widgets/calorie_ring.dart';
 
 /// Daily summary strip — 48dp with 16 horizontal margins (spec §2.0-A):
 /// mini CalorieRing + tabular count line; optional tap opens review/day.
-/// State derives from the numbers: goal present → «1,240 / 2,000 · status»,
-/// no goal → [noGoalText].
+/// Goal present → «1,240 / 2,000 · status»; otherwise the deck noGoal copy.
 class SummaryStrip extends StatelessWidget {
   const SummaryStrip({
     required this.consumed,
     required this.goal,
-    required this.noGoalText,
     required this.semanticsLabel,
     this.statusText,
     this.onTap,
@@ -29,11 +28,6 @@ class SummaryStrip extends StatelessWidget {
   /// renders alone when null.
   final String? statusText;
 
-  // TODO: no_goal key still missing from LangKeys/copy-deck — passed in
-  // as a parameter until the deck owner approves it (spec §2.1 CD-06).
-  /// noGoal copy («بدون هدف»).
-  final String noGoalText;
-
   /// Whole-strip a11y summary («السعرات: 1,240 من 2,000» + الحالة).
   final String semanticsLabel;
 
@@ -42,9 +36,9 @@ class SummaryStrip extends StatelessWidget {
   bool get _hasGoal => goal != null && goal! > 0;
 
   // «1,240 / 2,000 · status» — numeric path LRI…PDI isolated (states §3.3).
-  String _line() {
+  String _line(BuildContext context) {
     if (!_hasGoal) {
-      return noGoalText;
+      return context.translate(LangKeys.noGoal);
     }
     final String numbers =
         '\u2066${formatCalories(consumed)} / ${formatCalories(goal!)}\u2069';
@@ -70,7 +64,7 @@ class SummaryStrip extends StatelessWidget {
           SizedBox(width: 12.w),
           Expanded(
             child: TextApp(
-              text: _line(),
+              text: _line(context),
               theme: context.textStyle.copyWith(
                 fontSize: 14.sp,
                 fontWeight: FontWeightHelper.regular,

@@ -36,7 +36,7 @@ class OfflineBanner extends StatelessWidget {
                   text: message,
                   textAlign: TextAlign.start,
                   theme: context.textStyle.copyWith(
-                    fontSize: 13.sp,
+                    fontSize: 12.sp,
                     fontWeight: FontWeightHelper.regular,
                     color: scheme.onSecondaryContainer,
                   ),

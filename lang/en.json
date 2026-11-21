@@ -136,7 +136,7 @@
     "offline_saved_data_banner": "You're offline — showing your saved data",
     "edited_chip": "Edited",
     "result_details_toggle": "Details",
-    "item_removed_snackbar": "{Item} removed — Undo",
+    "item_removed_snackbar": "{item} removed — Undo",
     "swaps_meal_context_banner": "Swaps for: {meal} · Back to meal",
     "ledger_all_chip": "All ({count})",
     "meal_relog_cta": "Log again",

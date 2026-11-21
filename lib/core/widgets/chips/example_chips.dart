@@ -14,8 +14,9 @@ class ExampleChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final borderRadius = BorderRadius.circular(8.r);
-    return SizedBox(
-      height: 48,
+    // Floor only — grows with 200% text scale instead of clipping (states §5.2).
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 4.w),

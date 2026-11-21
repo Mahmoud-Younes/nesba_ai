@@ -4,10 +4,10 @@ import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
-import 'package:nesba_ai/core/style/theme/app_radius.dart';
+import 'package:nesba_ai/core/widgets/chips/edited_chip.dart';
 
 /// Breakdown item row: name + quantity + tabular kcal + end chevron;
-/// variants lowConfidence (note line + icon) and edited (inline mini chip)
+/// variants lowConfidence (note line + icon) and edited (EditedChip)
 /// (spec §1.5 ItemRow).
 class ItemRow extends StatelessWidget {
   const ItemRow({
@@ -42,26 +42,6 @@ class ItemRow extends StatelessWidget {
     return isRtl ? Icons.chevron_left : Icons.chevron_right;
   }
 
-  // Inline mini chip — primaryContainer/extraSmall, mirrors deck EditedChip (G-07).
-  Widget _editedChip(BuildContext context) {
-    final ColorScheme scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-      decoration: BoxDecoration(
-        color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(AppRadius.extraSmall.r),
-      ),
-      child: TextApp(
-        text: context.translate(LangKeys.editedChip),
-        theme: context.textStyle.copyWith(
-          fontSize: 11.sp,
-          fontWeight: FontWeightHelper.semiBold,
-          color: scheme.onPrimaryContainer,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
@@ -90,7 +70,7 @@ class ItemRow extends StatelessWidget {
                     ),
                     if (edited) ...<Widget>[
                       SizedBox(width: 8.w),
-                      _editedChip(context),
+                      const EditedChip(),
                     ],
                   ],
                 ),

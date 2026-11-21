@@ -4,25 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/helpers/format_helpers.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
+
+// Shared numeric helper lives in core/helpers — re-exported here so the
+// existing import sites keep working.
+export 'package:nesba_ai/core/helpers/format_helpers.dart' show formatCalories;
 
 /// Ring size — hero 140dp stroke 12 (review) or mini 40dp stroke 5
 /// (summary strip), spec §1.5.
 enum CalorieRingVariant { hero, mini }
-
-/// Western digits with thousands groups («1,240») — no intl dependency.
-String formatCalories(int value) {
-  final String digits = value.abs().toString();
-  final StringBuffer grouped = StringBuffer();
-  for (int i = 0; i < digits.length; i++) {
-    grouped.write(digits[i]);
-    final int remaining = digits.length - i;
-    if (remaining > 1 && remaining % 3 == 1) {
-      grouped.write(',');
-    }
-  }
-  return value < 0 ? '-$grouped' : grouped.toString();
-}
 
 /// Calorie progress ring — hero 140dp stroke 12 / mini 40dp stroke 5
 /// (spec §1.5). Always clockwise in both locales (no TextDirection involved);

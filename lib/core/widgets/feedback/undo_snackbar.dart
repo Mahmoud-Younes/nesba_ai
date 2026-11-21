@@ -42,7 +42,7 @@ class UndoSnackbar {
             },
             style: TextButton.styleFrom(
               foregroundColor: scheme.inversePrimary,
-              minimumSize: Size(48.w, 48.h),
+              minimumSize: const Size(48, 48),
               padding: EdgeInsets.symmetric(horizontal: 8.w),
             ),
             child: TextApp(
