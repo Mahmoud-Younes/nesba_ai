@@ -139,7 +139,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
       // Login link — the flow is linear, so login replaces signup.
-      onLogin: () => context.pushReplacementNamed(AppRoutes.login),
+      // Back to the login already on the stack — no duplicate route.
+      onLogin: () => Navigator.of(context).pop(),
     );
   }
 }
