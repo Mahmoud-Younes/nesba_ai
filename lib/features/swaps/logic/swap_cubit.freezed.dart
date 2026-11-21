@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SwapState {
 
- bool get isLoading; List<Map<String, dynamic>> get swaps; Set<int> get bookmarked;/// Non-null marker for any load failure — the screen renders the
+ bool get isLoading; List<Map<String, dynamic>> get swaps; Set<String> get bookmarked;/// Non-null marker for any load failure — the screen renders the
 /// err_server_* card while previous swaps stay visible (§2.8).
  String? get errorMsg;
 /// Create a copy of SwapState
@@ -53,7 +53,7 @@ abstract mixin class $SwapStateCopyWith<$Res>  {
   factory $SwapStateCopyWith(SwapState value, $Res Function(SwapState) _then) = _$SwapStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, List<Map<String, dynamic>> swaps, Set<int> bookmarked, String? errorMsg
+ bool isLoading, List<Map<String, dynamic>> swaps, Set<String> bookmarked, String? errorMsg
 });
 
 
@@ -75,7 +75,7 @@ class _$SwapStateCopyWithImpl<$Res>
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,swaps: null == swaps ? _self.swaps : swaps // ignore: cast_nullable_to_non_nullable
 as List<Map<String, dynamic>>,bookmarked: null == bookmarked ? _self.bookmarked : bookmarked // ignore: cast_nullable_to_non_nullable
-as Set<int>,errorMsg: freezed == errorMsg ? _self.errorMsg : errorMsg // ignore: cast_nullable_to_non_nullable
+as Set<String>,errorMsg: freezed == errorMsg ? _self.errorMsg : errorMsg // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -161,7 +161,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  List<Map<String, dynamic>> swaps,  Set<int> bookmarked,  String? errorMsg)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  List<Map<String, dynamic>> swaps,  Set<String> bookmarked,  String? errorMsg)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SwapState() when $default != null:
 return $default(_that.isLoading,_that.swaps,_that.bookmarked,_that.errorMsg);case _:
@@ -182,7 +182,7 @@ return $default(_that.isLoading,_that.swaps,_that.bookmarked,_that.errorMsg);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  List<Map<String, dynamic>> swaps,  Set<int> bookmarked,  String? errorMsg)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  List<Map<String, dynamic>> swaps,  Set<String> bookmarked,  String? errorMsg)  $default,) {final _that = this;
 switch (_that) {
 case _SwapState():
 return $default(_that.isLoading,_that.swaps,_that.bookmarked,_that.errorMsg);case _:
@@ -202,7 +202,7 @@ return $default(_that.isLoading,_that.swaps,_that.bookmarked,_that.errorMsg);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  List<Map<String, dynamic>> swaps,  Set<int> bookmarked,  String? errorMsg)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  List<Map<String, dynamic>> swaps,  Set<String> bookmarked,  String? errorMsg)?  $default,) {final _that = this;
 switch (_that) {
 case _SwapState() when $default != null:
 return $default(_that.isLoading,_that.swaps,_that.bookmarked,_that.errorMsg);case _:
@@ -217,7 +217,7 @@ return $default(_that.isLoading,_that.swaps,_that.bookmarked,_that.errorMsg);cas
 
 
 class _SwapState implements SwapState {
-  const _SwapState({this.isLoading = false,  List<Map<String, dynamic>> swaps = const <Map<String, dynamic>>[],  Set<int> bookmarked = const <int>{}, this.errorMsg}): _swaps = swaps,_bookmarked = bookmarked;
+  const _SwapState({this.isLoading = false,  List<Map<String, dynamic>> swaps = const <Map<String, dynamic>>[],  Set<String> bookmarked = const <String>{}, this.errorMsg}): _swaps = swaps,_bookmarked = bookmarked;
   
 
 @override@JsonKey() final  bool isLoading;
@@ -228,8 +228,8 @@ class _SwapState implements SwapState {
   return EqualUnmodifiableListView(_swaps);
 }
 
- final  Set<int> _bookmarked;
-@override@JsonKey() Set<int> get bookmarked {
+ final  Set<String> _bookmarked;
+@override@JsonKey() Set<String> get bookmarked {
   if (_bookmarked is EqualUnmodifiableSetView) return _bookmarked;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableSetView(_bookmarked);
@@ -271,7 +271,7 @@ abstract mixin class _$SwapStateCopyWith<$Res> implements $SwapStateCopyWith<$Re
   factory _$SwapStateCopyWith(_SwapState value, $Res Function(_SwapState) _then) = __$SwapStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, List<Map<String, dynamic>> swaps, Set<int> bookmarked, String? errorMsg
+ bool isLoading, List<Map<String, dynamic>> swaps, Set<String> bookmarked, String? errorMsg
 });
 
 
@@ -293,7 +293,7 @@ class __$SwapStateCopyWithImpl<$Res>
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,swaps: null == swaps ? _self._swaps : swaps // ignore: cast_nullable_to_non_nullable
 as List<Map<String, dynamic>>,bookmarked: null == bookmarked ? _self._bookmarked : bookmarked // ignore: cast_nullable_to_non_nullable
-as Set<int>,errorMsg: freezed == errorMsg ? _self.errorMsg : errorMsg // ignore: cast_nullable_to_non_nullable
+as Set<String>,errorMsg: freezed == errorMsg ? _self.errorMsg : errorMsg // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

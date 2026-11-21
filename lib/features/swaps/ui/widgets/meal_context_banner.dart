@@ -8,44 +8,25 @@ import 'package:nesba_ai/core/style/theme/app_radius.dart';
 
 /// S09 meal-context banner (screen-specs §2.9, G-10): meal row plus a
 /// back-to-meal text button — no push, the meal stays live in the log.
+/// Copy rides two dedicated keys ({meal} placeholder + back label), not
+/// string-splitting of one combined template.
 class MealContextBanner extends StatelessWidget {
   const MealContextBanner({
     required this.mealDescription,
     required this.onBackToMeal,
-    this.backLabel,
     super.key,
   });
 
   final String mealDescription;
   final VoidCallback onBackToMeal;
 
-  /// TODO(copy): no standalone back-label key (G-10 embeds it after «·»); when null the banner-key tail is reused.
-  final String? backLabel;
-
-  static const String _separator = '·';
-
-  String _head(String template) {
-    final int index = template.indexOf(_separator);
-    return index < 0 ? template : template.substring(0, index);
-  }
-
-  String _tail(String template) {
-    final int index = template.indexOf(_separator);
-    return index < 0 ? '' : template.substring(index + _separator.length);
-  }
-
-  String _withMeal(String template, String meal) {
-    return template
-        .replaceAll('{وصف}', meal)
-        .replaceAll('{meal}', meal);
-  }
-
   @override
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
-    final String template = context.translate(LangKeys.swapsMealContextBanner);
-    final String bannerText = _withMeal(_head(template).trim(), mealDescription);
-    final String label = backLabel ?? _tail(template).trim();
+    final String bannerText = context
+        .translate(LangKeys.swapsMealContextTitle)
+        .replaceAll('{meal}', mealDescription);
+    final String label = context.translate(LangKeys.swapsMealContextBack);
     final bool isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return Container(

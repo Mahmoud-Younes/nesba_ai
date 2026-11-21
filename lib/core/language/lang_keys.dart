@@ -122,7 +122,6 @@ class LangKeys {
   static const String tryLine = 'try_line';
   static const String swapCta = 'swap_cta';
   static const String bookmarkCta = 'bookmark_cta';
-  static const String swapsEstimateChip = 'swaps_estimate_chip';
 
   // --- Empty states (copy-deck §2.6) ---
   static const String emptyFirstRunTitle = 'empty_first_run_title';
@@ -177,7 +176,9 @@ class LangKeys {
   // G-09 undo snackbar after item removal — placeholder: {item} / {العنصر}
   static const String itemRemovedSnackbar = 'item_removed_snackbar';
   // G-10 meal-context banner (S09) — placeholder: {meal} / {وصف}
-  static const String swapsMealContextBanner = 'swaps_meal_context_banner';
+  static const String swapsMealContextTitle = 'swaps_meal_context_title';
+  static const String swapsMealContextBack = 'swaps_meal_context_back';
+  static const String swapsSavings = 'swaps_savings';
   // G-11 "view all" chip on mini ledger — placeholder: {count}
   static const String ledgerAllChip = 'ledger_all_chip';
   // G-12 quick re-log action (no Gemini call)
