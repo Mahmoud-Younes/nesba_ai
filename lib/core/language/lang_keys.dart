@@ -187,6 +187,8 @@ class LangKeys {
   static const String onboardBody3 = 'onboard_body_3';
   static const String onboardCta = 'onboard_cta';
   static const String onboardSkip = 'onboard_skip';
+  static const String onboardPageSemantics = 'onboard_page_semantics';
+  static const String settingsLanguageLabel = 'settings_language_label';
 
   // --- Auth ---
   static const String loginTitle = 'login_title';

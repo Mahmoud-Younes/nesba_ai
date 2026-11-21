@@ -77,35 +77,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       context.pushReplacementNamed(AppRoutes.home);
       return;
     }
-    if (state.status == SignUpStatus.error) {
-      _showFirstFieldErrorSnackBar(context, state);
-    }
-  }
-
-  // No generic signup error key — toast the first field error when present.
-  void _showFirstFieldErrorSnackBar(BuildContext context, SignUpState state) {
-    final String? errorText =
-        state.nameError ??
-        state.emailError ??
-        state.passwordError ??
-        state.confirmPasswordError;
-    if (errorText == null) return;
-    final ColorScheme scheme = Theme.of(context).colorScheme;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          backgroundColor: scheme.errorContainer,
-          duration: const Duration(seconds: 4),
-          content: TextApp(
-            text: errorText,
-            theme: context.textStyle.copyWith(
-              fontSize: 14.sp,
-              color: scheme.onErrorContainer,
-            ),
-          ),
-        ),
-      );
   }
 
   Widget _fields(BuildContext context, SignUpState state) {

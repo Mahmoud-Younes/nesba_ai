@@ -28,31 +28,53 @@ class OnboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Centered copy is accepted for onboarding (Arabic included).
+    // 200% accommodation (states §5.2): the page scrolls and the
+    // illustration steps aside once text scale crosses 1.6.
+    final bool largeText =
+        MediaQuery.textScalerOf(context).scale(14) >= 1.6 * 14;
+    final Widget page = _pageColumn(context, scheme, showIllustration: !largeText);
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(child: page),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _pageColumn(
+    BuildContext context,
+    ColorScheme scheme, {
+    required bool showIllustration,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showIllustration) ...<Widget>[
           _fadeIn(context, 400, OnboardIllustration(icon: icon)),
           SizedBox(height: 32.h),
-          _fadeIn(
-            context,
-            500,
-            TextApp(
-              text: title,
-              textAlign: TextAlign.center,
-              theme: context.textStyle.copyWith(
-                fontSize: 24.sp,
-                fontWeight: FontWeightHelper.semiBold,
-                color: scheme.onSurface,
-              ),
+        ],
+        _fadeIn(
+          context,
+          500,
+          TextApp(
+            text: title,
+            textAlign: TextAlign.center,
+            theme: context.textStyle.copyWith(
+              fontSize: 24.sp,
+              fontWeight: FontWeightHelper.semiBold,
+              color: scheme.onSurface,
             ),
           ),
-          SizedBox(height: 12.h),
-          _fadeIn(
-            context,
-            600,
+        ),
+        SizedBox(height: 12.h),
+        _fadeIn(
+          context,
+          600,
             TextApp(
               text: body,
               textAlign: TextAlign.center,
@@ -64,7 +86,6 @@ class OnboardPage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 }

@@ -142,6 +142,8 @@
     "onboard_body_3": "Your calorie ring, meals and weekly pattern in one place",
     "onboard_cta": "Get started",
     "onboard_skip": "Skip",
+    "onboard_page_semantics": "Page {index} of {count}",
+    "settings_language_label": "Language",
     "login_title": "Sign in",
     "email_label": "Email",
     "password_label": "Password",

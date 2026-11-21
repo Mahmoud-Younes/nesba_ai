@@ -117,7 +117,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final Duration duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : const Duration(milliseconds: 250);
-    return Row(
+    return Semantics(
+      label: context
+          .translate(LangKeys.onboardPageSemantics)
+          .replaceAll('{index}', '${_current + 1}')
+          .replaceAll('{count}', '$_pageCount'),
+      child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         for (int i = 0; i < _pageCount; i++)
@@ -132,6 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
       ],
+      ),
     );
   }
 
@@ -150,7 +156,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               : TextButton(
                   key: const ValueKey<String>('onboard-skip'),
                   onPressed: _finishOnboarding,
-                  style: TextButton.styleFrom(minimumSize: Size(64.w, 48.h)),
+                  style: TextButton.styleFrom(minimumSize: const Size(64, 48)),
                   child: TextApp(
                     text: context.translate(LangKeys.onboardSkip),
                     theme: context.textStyle.copyWith(
@@ -163,18 +169,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         SizedBox(width: 12.w),
         Expanded(
-          child: SizedBox(
-            height: 48.h,
-            child: FilledButton(
-              onPressed: _finishOnboarding,
-              style: FilledButton.styleFrom(shape: const StadiumBorder()),
-              child: TextApp(
-                text: context.translate(LangKeys.onboardCta),
-                theme: context.textStyle.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeightHelper.medium,
-                  color: scheme.onPrimary,
-                ),
+          // Intrinsic height with the theme's 48dp floor — no tight box
+          // clipping at 200% text scale (states §5.2).
+          child: FilledButton(
+            onPressed: _finishOnboarding,
+            style: FilledButton.styleFrom(shape: const StadiumBorder()),
+            child: TextApp(
+              text: context.translate(LangKeys.onboardCta),
+              theme: context.textStyle.copyWith(
+                fontSize: 14.sp,
+                fontWeight: FontWeightHelper.medium,
+                color: scheme.onPrimary,
               ),
             ),
           ),
