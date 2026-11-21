@@ -14,10 +14,8 @@ class Composer extends StatelessWidget {
     required this.isExpanded,
     this.onChanged,
     this.onExpand,
-    this.onCollapse,
     this.onClear,
     this.showFirstRunHint = false,
-    this.clearSemanticsLabel,
     super.key,
   });
 
@@ -30,15 +28,10 @@ class Composer extends StatelessWidget {
   /// Expands the collapsed row (spec §2.3).
   final VoidCallback? onExpand;
 
-  /// Collapse trigger owned by the screen (e.g. after a result lands).
-  final VoidCallback? onCollapse;
   final VoidCallback? onClear;
 
   /// First-run helper line (spec §2.1) — the screen hides it post first analysis.
   final bool showFirstRunHint;
-
-  /// Clear button semantics label; defaults to the `log_clear` key.
-  final String? clearSemanticsLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +92,7 @@ class Composer extends StatelessWidget {
 
   // 48dp touch target, visible only when the trimmed draft is not empty.
   Widget _clearButton(BuildContext context, ColorScheme scheme) {
-    final String label =
-        clearSemanticsLabel ?? context.translate(LangKeys.logClear);
+    final String label = context.translate(LangKeys.logClear);
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {

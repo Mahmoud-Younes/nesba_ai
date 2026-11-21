@@ -34,7 +34,6 @@ class ResultCard extends StatelessWidget {
     this.showDisclaimer = false,
     this.onReanalyze,
     this.onKeep,
-    this.keepLabel,
     this.kcalUnitText,
     this.macroUnitText,
     super.key,
@@ -52,16 +51,12 @@ class ResultCard extends StatelessWidget {
   final VoidCallback onToggleExpand;
   final VoidCallback onSaveMeal;
   final VoidCallback onEditDescription;
-  final void Function(MealItem item) onItemTap;
+  final void Function(int index, MealItem item) onItemTap;
   final VoidCallback onAddItem;
   final VoidCallback onTeaserTap;
 
   final VoidCallback? onReanalyze;
   final VoidCallback? onKeep;
-
-  /// TODO(copy): no deck key for the stale keep action — passed in until the
-  /// deck adds one (SummaryStrip.noGoalText precedent).
-  final String? keepLabel;
 
   /// TODO(copy): result_kcal is a static deck example («~430 سعرة») with no
   /// {kcal} placeholder and no standalone unit key — passed in until the
@@ -304,14 +299,14 @@ class ResultCard extends StatelessWidget {
           ),
         ),
         verticalSpace(AppSpacing.s4),
-        for (final MealItem item in result.items) ...<Widget>[
+        for (final (int index, MealItem item) in result.items.indexed) ...<Widget>[
           ItemRow(
             name: item.name,
             amountText: _amountText(context, item),
             kcalText: formatCalories(item.kcal),
             lowConfidence: item.isLowConfidence,
             edited: item.isEdited,
-            onTap: () => onItemTap(item),
+            onTap: () => onItemTap(index, item),
           ),
           verticalSpace(AppSpacing.s4),
         ],
@@ -401,7 +396,6 @@ class ResultCard extends StatelessWidget {
           StaleGuardNotice(
             onReanalyze: onReanalyze,
             onKeep: onKeep,
-            keepLabel: keepLabel,
           ),
           verticalSpace(AppSpacing.s12),
         ],

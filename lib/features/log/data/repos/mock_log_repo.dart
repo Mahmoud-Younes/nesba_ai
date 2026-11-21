@@ -5,7 +5,7 @@ import 'package:nesba_ai/features/log/data/repos/log_repo.dart';
 class MockLogRepo implements LogRepo {
   @override
   Future<AnalysisResult> analyzeMeal(String description) async {
-    await Future.delayed(const Duration(milliseconds: 2500));
+    await Future.delayed(const Duration(milliseconds: 5000));
     return const AnalysisResult(
       descriptionEcho: 'بيض وتوست وعصير برتقال',
       kcal: 430,

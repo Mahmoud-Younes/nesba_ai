@@ -28,6 +28,7 @@ class LogCubit extends Cubit<LogState> {
   // Snapshot for the item-delete undo window (§2.4 — G-09 snackbar).
   MealItem? _removedItem;
   int? _removedIndex;
+  AnalysisResult? _removedFromResult;
 
   // Deck §2.8: the inline disclaimer rides the first result only.
   bool _disclaimerShown = false;
@@ -41,7 +42,8 @@ class LogCubit extends Cubit<LogState> {
 
   Future<void> startAnalysis() async {
     final text = state.description.trim();
-    if (text.isEmpty || _inFlight) return;
+    // Also held off while a save writes — no orphan meal without a ledger row.
+    if (text.isEmpty || _inFlight || state.isSaving) return;
     _inFlight = true;
     _analyzedText = text;
     final requestId = ++_requestId;
@@ -101,9 +103,11 @@ class LogCubit extends Cubit<LogState> {
   /// S05 (§2.5): the button disables via [LogState.isSaving] while writing;
   /// on success the composer resets empty-expanded but the result stays
   /// stashed in state so the undo window can restore the card as it was.
+  /// A timed-out result stays saveable (states §1.3) — only a missing
+  /// result blocks.
   Future<void> saveMeal() async {
     final result = state.result;
-    if (result == null || state.isTimeout || state.isSaving) return;
+    if (result == null || state.isSaving) return;
     emit(state.copyWith(isSaving: true));
     final mealId = await _repo.saveMeal(result);
     if (state.status != LogStatus.result || state.savedMealId != null) {
@@ -131,6 +135,8 @@ class LogCubit extends Cubit<LogState> {
   }
 
   /// Deletes the same mealId and brings the card back as it was (§2.5).
+  /// A draft the user typed during the undo window is never overwritten
+  /// (deck rule 8) — the restored card just comes back marked stale.
   Future<void> undoSave() async {
     final mealId = state.savedMealId;
     final result = state.result;
@@ -139,14 +145,18 @@ class LogCubit extends Cubit<LogState> {
     if (state.savedMealId != mealId) return;
     final rows =
         state.todayMeals.where((row) => row['id'] != mealId).toList();
+    final String draft = state.description;
+    final bool keepDraft =
+        draft.trim().isNotEmpty && draft.trim() != result.descriptionEcho;
+    final String restored = keepDraft ? draft : result.descriptionEcho;
     _analyzedText = result.descriptionEcho;
     emit(state.copyWith(
       status: LogStatus.result,
       savedMealId: null,
       todayMeals: rows,
       consumedKcal: _sumKcal(rows),
-      description: result.descriptionEcho,
-      isStale: false,
+      description: restored,
+      isStale: restored.trim() != result.descriptionEcho,
       isTimeout: false,
     ));
   }
@@ -158,32 +168,32 @@ class LogCubit extends Cubit<LogState> {
   /// «اعتمد هذه» — the user accepts the analyzed result despite edits.
   void keepResult() => emit(state.copyWith(isStale: false));
 
-  /// S04 apply (§2.4): swaps [updated] into the analyzed items (matched by
-  /// name — mock items are unique) and recomputes the meal totals.
-  void applyItemCorrection(MealItem updated) {
+  /// S04 apply (§2.4): swaps [updated] into the analyzed items at [index]
+  /// and recomputes the meal totals.
+  void applyItemCorrection(int index, MealItem updated) {
     final AnalysisResult? result = state.result;
     if (result == null || state.savedMealId != null) return;
     final List<MealItem> items = [...result.items];
-    final int index = items.indexWhere((item) => item.name == updated.name);
-    if (index < 0) return;
+    if (index < 0 || index >= items.length) return;
     items[index] = updated;
     emit(state.copyWith(result: _recalculated(result, items)));
   }
 
   /// §2.4 instant delete — no confirm; the undo snackbar is the screen's job.
-  void removeItem(MealItem item) {
+  void removeItem(int index) {
     final AnalysisResult? result = state.result;
     if (result == null || state.savedMealId != null) return;
     final List<MealItem> items = [...result.items];
-    final int index = items.indexWhere((it) => it.name == item.name);
-    if (index < 0) return;
+    if (index < 0 || index >= items.length) return;
     _removedItem = items[index];
     _removedIndex = index;
+    _removedFromResult = result;
     items.removeAt(index);
     emit(state.copyWith(result: _recalculated(result, items)));
   }
 
-  /// Undo of [removeItem] — the item returns to its old slot.
+  /// Undo of [removeItem] — the item returns to its old slot, but only on
+  /// the same result it was removed from (a fresh analysis voids the window).
   void undoRemoveItem() {
     final MealItem? item = _removedItem;
     final int? index = _removedIndex;
@@ -191,24 +201,16 @@ class LogCubit extends Cubit<LogState> {
     _removedItem = null;
     _removedIndex = null;
     final AnalysisResult? result = state.result;
-    if (result == null || state.savedMealId != null) return;
+    if (result == null ||
+        state.savedMealId != null ||
+        !identical(result, _removedFromResult)) {
+      _removedFromResult = null;
+      return;
+    }
+    _removedFromResult = null;
     final List<MealItem> items = [...result.items];
     items.insert(index.clamp(0, items.length), item);
     emit(state.copyWith(result: _recalculated(result, items)));
-  }
-
-  void clearComposer() {
-    _analyzedText = '';
-    emit(state.copyWith(
-      status: LogStatus.draft,
-      description: '',
-      result: null,
-      progressStep: 1,
-      elapsedSeconds: 0,
-      isStale: false,
-      isTimeout: false,
-      savedMealId: null,
-    ));
   }
 
   void _startTicker() {
