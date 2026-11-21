@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LogState {
 
- LogStatus get status; String get description; AnalysisResult? get result; int get progressStep; int get elapsedSeconds; bool get isStale; bool get isTimeout; String? get savedMealId; List<Map<String, dynamic>> get todayMeals; int get goalKcal; int get consumedKcal;
+ LogStatus get status; String get description; AnalysisResult? get result; int get progressStep; int get elapsedSeconds; bool get isStale; bool get isTimeout; bool get isSaving; bool get isDetailsExpanded; bool get showDisclaimer; String? get savedMealId; List<Map<String, dynamic>> get todayMeals; int get goalKcal; int get consumedKcal;
 /// Create a copy of LogState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $LogStateCopyWith<LogState> get copyWith => _$LogStateCopyWithImpl<LogState>(thi
 @override
 bool operator ==(Object other) {
   final _this = this as LogState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LogState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.result, _this.result) || other.result == _this.result)&&(identical(other.progressStep, _this.progressStep) || other.progressStep == _this.progressStep)&&(identical(other.elapsedSeconds, _this.elapsedSeconds) || other.elapsedSeconds == _this.elapsedSeconds)&&(identical(other.isStale, _this.isStale) || other.isStale == _this.isStale)&&(identical(other.isTimeout, _this.isTimeout) || other.isTimeout == _this.isTimeout)&&(identical(other.savedMealId, _this.savedMealId) || other.savedMealId == _this.savedMealId)&&const DeepCollectionEquality().equals(other.todayMeals, _this.todayMeals)&&(identical(other.goalKcal, _this.goalKcal) || other.goalKcal == _this.goalKcal)&&(identical(other.consumedKcal, _this.consumedKcal) || other.consumedKcal == _this.consumedKcal));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LogState&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.result, _this.result) || other.result == _this.result)&&(identical(other.progressStep, _this.progressStep) || other.progressStep == _this.progressStep)&&(identical(other.elapsedSeconds, _this.elapsedSeconds) || other.elapsedSeconds == _this.elapsedSeconds)&&(identical(other.isStale, _this.isStale) || other.isStale == _this.isStale)&&(identical(other.isTimeout, _this.isTimeout) || other.isTimeout == _this.isTimeout)&&(identical(other.isSaving, _this.isSaving) || other.isSaving == _this.isSaving)&&(identical(other.isDetailsExpanded, _this.isDetailsExpanded) || other.isDetailsExpanded == _this.isDetailsExpanded)&&(identical(other.showDisclaimer, _this.showDisclaimer) || other.showDisclaimer == _this.showDisclaimer)&&(identical(other.savedMealId, _this.savedMealId) || other.savedMealId == _this.savedMealId)&&const DeepCollectionEquality().equals(other.todayMeals, _this.todayMeals)&&(identical(other.goalKcal, _this.goalKcal) || other.goalKcal == _this.goalKcal)&&(identical(other.consumedKcal, _this.consumedKcal) || other.consumedKcal == _this.consumedKcal));
 }
 
 
 @override
 int get hashCode {
   final _this = this as LogState;
-  return Object.hash(runtimeType,_this.status,_this.description,_this.result,_this.progressStep,_this.elapsedSeconds,_this.isStale,_this.isTimeout,_this.savedMealId,const DeepCollectionEquality().hash(_this.todayMeals),_this.goalKcal,_this.consumedKcal);
+  return Object.hash(runtimeType,_this.status,_this.description,_this.result,_this.progressStep,_this.elapsedSeconds,_this.isStale,_this.isTimeout,_this.isSaving,_this.isDetailsExpanded,_this.showDisclaimer,_this.savedMealId,const DeepCollectionEquality().hash(_this.todayMeals),_this.goalKcal,_this.consumedKcal);
 }
 
 @override
 String toString() {
   final _this = this as LogState;
-  return 'LogState(status: ${_this.status}, description: ${_this.description}, result: ${_this.result}, progressStep: ${_this.progressStep}, elapsedSeconds: ${_this.elapsedSeconds}, isStale: ${_this.isStale}, isTimeout: ${_this.isTimeout}, savedMealId: ${_this.savedMealId}, todayMeals: ${_this.todayMeals}, goalKcal: ${_this.goalKcal}, consumedKcal: ${_this.consumedKcal})';
+  return 'LogState(status: ${_this.status}, description: ${_this.description}, result: ${_this.result}, progressStep: ${_this.progressStep}, elapsedSeconds: ${_this.elapsedSeconds}, isStale: ${_this.isStale}, isTimeout: ${_this.isTimeout}, isSaving: ${_this.isSaving}, isDetailsExpanded: ${_this.isDetailsExpanded}, showDisclaimer: ${_this.showDisclaimer}, savedMealId: ${_this.savedMealId}, todayMeals: ${_this.todayMeals}, goalKcal: ${_this.goalKcal}, consumedKcal: ${_this.consumedKcal})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $LogStateCopyWith<$Res>  {
   factory $LogStateCopyWith(LogState value, $Res Function(LogState) _then) = _$LogStateCopyWithImpl;
 @useResult
 $Res call({
- LogStatus status, String description, AnalysisResult? result, int progressStep, int elapsedSeconds, bool isStale, bool isTimeout, String? savedMealId, List<Map<String, dynamic>> todayMeals, int goalKcal, int consumedKcal
+ LogStatus status, String description, AnalysisResult? result, int progressStep, int elapsedSeconds, bool isStale, bool isTimeout, bool isSaving, bool isDetailsExpanded, bool showDisclaimer, String? savedMealId, List<Map<String, dynamic>> todayMeals, int goalKcal, int consumedKcal
 });
 
 
@@ -68,7 +68,7 @@ class _$LogStateCopyWithImpl<$Res>
 
 /// Create a copy of LogState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? description = null,Object? result = freezed,Object? progressStep = null,Object? elapsedSeconds = null,Object? isStale = null,Object? isTimeout = null,Object? savedMealId = freezed,Object? todayMeals = null,Object? goalKcal = null,Object? consumedKcal = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? description = null,Object? result = freezed,Object? progressStep = null,Object? elapsedSeconds = null,Object? isStale = null,Object? isTimeout = null,Object? isSaving = null,Object? isDetailsExpanded = null,Object? showDisclaimer = null,Object? savedMealId = freezed,Object? todayMeals = null,Object? goalKcal = null,Object? consumedKcal = null,}) {
   return _then(LogState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as LogStatus,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -77,6 +77,9 @@ as AnalysisResult?,progressStep: null == progressStep ? _self.progressStep : pro
 as int,elapsedSeconds: null == elapsedSeconds ? _self.elapsedSeconds : elapsedSeconds // ignore: cast_nullable_to_non_nullable
 as int,isStale: null == isStale ? _self.isStale : isStale // ignore: cast_nullable_to_non_nullable
 as bool,isTimeout: null == isTimeout ? _self.isTimeout : isTimeout // ignore: cast_nullable_to_non_nullable
+as bool,isSaving: null == isSaving ? _self.isSaving : isSaving // ignore: cast_nullable_to_non_nullable
+as bool,isDetailsExpanded: null == isDetailsExpanded ? _self.isDetailsExpanded : isDetailsExpanded // ignore: cast_nullable_to_non_nullable
+as bool,showDisclaimer: null == showDisclaimer ? _self.showDisclaimer : showDisclaimer // ignore: cast_nullable_to_non_nullable
 as bool,savedMealId: freezed == savedMealId ? _self.savedMealId : savedMealId // ignore: cast_nullable_to_non_nullable
 as String?,todayMeals: null == todayMeals ? _self.todayMeals : todayMeals // ignore: cast_nullable_to_non_nullable
 as List<Map<String, dynamic>>,goalKcal: null == goalKcal ? _self.goalKcal : goalKcal // ignore: cast_nullable_to_non_nullable
@@ -166,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LogStatus status,  String description,  AnalysisResult? result,  int progressStep,  int elapsedSeconds,  bool isStale,  bool isTimeout,  String? savedMealId,  List<Map<String, dynamic>> todayMeals,  int goalKcal,  int consumedKcal)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LogStatus status,  String description,  AnalysisResult? result,  int progressStep,  int elapsedSeconds,  bool isStale,  bool isTimeout,  bool isSaving,  bool isDetailsExpanded,  bool showDisclaimer,  String? savedMealId,  List<Map<String, dynamic>> todayMeals,  int goalKcal,  int consumedKcal)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LogState() when $default != null:
-return $default(_that.status,_that.description,_that.result,_that.progressStep,_that.elapsedSeconds,_that.isStale,_that.isTimeout,_that.savedMealId,_that.todayMeals,_that.goalKcal,_that.consumedKcal);case _:
+return $default(_that.status,_that.description,_that.result,_that.progressStep,_that.elapsedSeconds,_that.isStale,_that.isTimeout,_that.isSaving,_that.isDetailsExpanded,_that.showDisclaimer,_that.savedMealId,_that.todayMeals,_that.goalKcal,_that.consumedKcal);case _:
   return orElse();
 
 }
@@ -187,10 +190,10 @@ return $default(_that.status,_that.description,_that.result,_that.progressStep,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LogStatus status,  String description,  AnalysisResult? result,  int progressStep,  int elapsedSeconds,  bool isStale,  bool isTimeout,  String? savedMealId,  List<Map<String, dynamic>> todayMeals,  int goalKcal,  int consumedKcal)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LogStatus status,  String description,  AnalysisResult? result,  int progressStep,  int elapsedSeconds,  bool isStale,  bool isTimeout,  bool isSaving,  bool isDetailsExpanded,  bool showDisclaimer,  String? savedMealId,  List<Map<String, dynamic>> todayMeals,  int goalKcal,  int consumedKcal)  $default,) {final _that = this;
 switch (_that) {
 case _LogState():
-return $default(_that.status,_that.description,_that.result,_that.progressStep,_that.elapsedSeconds,_that.isStale,_that.isTimeout,_that.savedMealId,_that.todayMeals,_that.goalKcal,_that.consumedKcal);case _:
+return $default(_that.status,_that.description,_that.result,_that.progressStep,_that.elapsedSeconds,_that.isStale,_that.isTimeout,_that.isSaving,_that.isDetailsExpanded,_that.showDisclaimer,_that.savedMealId,_that.todayMeals,_that.goalKcal,_that.consumedKcal);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +210,10 @@ return $default(_that.status,_that.description,_that.result,_that.progressStep,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LogStatus status,  String description,  AnalysisResult? result,  int progressStep,  int elapsedSeconds,  bool isStale,  bool isTimeout,  String? savedMealId,  List<Map<String, dynamic>> todayMeals,  int goalKcal,  int consumedKcal)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LogStatus status,  String description,  AnalysisResult? result,  int progressStep,  int elapsedSeconds,  bool isStale,  bool isTimeout,  bool isSaving,  bool isDetailsExpanded,  bool showDisclaimer,  String? savedMealId,  List<Map<String, dynamic>> todayMeals,  int goalKcal,  int consumedKcal)?  $default,) {final _that = this;
 switch (_that) {
 case _LogState() when $default != null:
-return $default(_that.status,_that.description,_that.result,_that.progressStep,_that.elapsedSeconds,_that.isStale,_that.isTimeout,_that.savedMealId,_that.todayMeals,_that.goalKcal,_that.consumedKcal);case _:
+return $default(_that.status,_that.description,_that.result,_that.progressStep,_that.elapsedSeconds,_that.isStale,_that.isTimeout,_that.isSaving,_that.isDetailsExpanded,_that.showDisclaimer,_that.savedMealId,_that.todayMeals,_that.goalKcal,_that.consumedKcal);case _:
   return null;
 
 }
@@ -222,7 +225,7 @@ return $default(_that.status,_that.description,_that.result,_that.progressStep,_
 
 
 class _LogState implements LogState {
-  const _LogState({this.status = LogStatus.draft, this.description = '', this.result, this.progressStep = 1, this.elapsedSeconds = 0, this.isStale = false, this.isTimeout = false, this.savedMealId,  List<Map<String, dynamic>> todayMeals = const <Map<String, dynamic>>[], this.goalKcal = 2000, this.consumedKcal = 0}): _todayMeals = todayMeals;
+  const _LogState({this.status = LogStatus.draft, this.description = '', this.result, this.progressStep = 1, this.elapsedSeconds = 0, this.isStale = false, this.isTimeout = false, this.isSaving = false, this.isDetailsExpanded = false, this.showDisclaimer = false, this.savedMealId,  List<Map<String, dynamic>> todayMeals = const <Map<String, dynamic>>[], this.goalKcal = 2000, this.consumedKcal = 0}): _todayMeals = todayMeals;
   
 
 @override@JsonKey() final  LogStatus status;
@@ -232,6 +235,9 @@ class _LogState implements LogState {
 @override@JsonKey() final  int elapsedSeconds;
 @override@JsonKey() final  bool isStale;
 @override@JsonKey() final  bool isTimeout;
+@override@JsonKey() final  bool isSaving;
+@override@JsonKey() final  bool isDetailsExpanded;
+@override@JsonKey() final  bool showDisclaimer;
 @override final  String? savedMealId;
  final  List<Map<String, dynamic>> _todayMeals;
 @override@JsonKey() List<Map<String, dynamic>> get todayMeals {
@@ -253,18 +259,18 @@ _$LogStateCopyWith<_LogState> get copyWith => __$LogStateCopyWithImpl<_LogState>
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LogState&&(identical(other.status, status) || other.status == status)&&(identical(other.description, description) || other.description == description)&&(identical(other.result, result) || other.result == result)&&(identical(other.progressStep, progressStep) || other.progressStep == progressStep)&&(identical(other.elapsedSeconds, elapsedSeconds) || other.elapsedSeconds == elapsedSeconds)&&(identical(other.isStale, isStale) || other.isStale == isStale)&&(identical(other.isTimeout, isTimeout) || other.isTimeout == isTimeout)&&(identical(other.savedMealId, savedMealId) || other.savedMealId == savedMealId)&&const DeepCollectionEquality().equals(other.todayMeals, _todayMeals)&&(identical(other.goalKcal, goalKcal) || other.goalKcal == goalKcal)&&(identical(other.consumedKcal, consumedKcal) || other.consumedKcal == consumedKcal));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LogState&&(identical(other.status, status) || other.status == status)&&(identical(other.description, description) || other.description == description)&&(identical(other.result, result) || other.result == result)&&(identical(other.progressStep, progressStep) || other.progressStep == progressStep)&&(identical(other.elapsedSeconds, elapsedSeconds) || other.elapsedSeconds == elapsedSeconds)&&(identical(other.isStale, isStale) || other.isStale == isStale)&&(identical(other.isTimeout, isTimeout) || other.isTimeout == isTimeout)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.isDetailsExpanded, isDetailsExpanded) || other.isDetailsExpanded == isDetailsExpanded)&&(identical(other.showDisclaimer, showDisclaimer) || other.showDisclaimer == showDisclaimer)&&(identical(other.savedMealId, savedMealId) || other.savedMealId == savedMealId)&&const DeepCollectionEquality().equals(other.todayMeals, _todayMeals)&&(identical(other.goalKcal, goalKcal) || other.goalKcal == goalKcal)&&(identical(other.consumedKcal, consumedKcal) || other.consumedKcal == consumedKcal));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,description,result,progressStep,elapsedSeconds,isStale,isTimeout,savedMealId,const DeepCollectionEquality().hash(_todayMeals),goalKcal,consumedKcal);
+    return Object.hash(runtimeType,status,description,result,progressStep,elapsedSeconds,isStale,isTimeout,isSaving,isDetailsExpanded,showDisclaimer,savedMealId,const DeepCollectionEquality().hash(_todayMeals),goalKcal,consumedKcal);
 }
 
 @override
 String toString() {
-    return 'LogState(status: $status, description: $description, result: $result, progressStep: $progressStep, elapsedSeconds: $elapsedSeconds, isStale: $isStale, isTimeout: $isTimeout, savedMealId: $savedMealId, todayMeals: $todayMeals, goalKcal: $goalKcal, consumedKcal: $consumedKcal)';
+    return 'LogState(status: $status, description: $description, result: $result, progressStep: $progressStep, elapsedSeconds: $elapsedSeconds, isStale: $isStale, isTimeout: $isTimeout, isSaving: $isSaving, isDetailsExpanded: $isDetailsExpanded, showDisclaimer: $showDisclaimer, savedMealId: $savedMealId, todayMeals: $todayMeals, goalKcal: $goalKcal, consumedKcal: $consumedKcal)';
 }
 
 
@@ -275,7 +281,7 @@ abstract mixin class _$LogStateCopyWith<$Res> implements $LogStateCopyWith<$Res>
   factory _$LogStateCopyWith(_LogState value, $Res Function(_LogState) _then) = __$LogStateCopyWithImpl;
 @override @useResult
 $Res call({
- LogStatus status, String description, AnalysisResult? result, int progressStep, int elapsedSeconds, bool isStale, bool isTimeout, String? savedMealId, List<Map<String, dynamic>> todayMeals, int goalKcal, int consumedKcal
+ LogStatus status, String description, AnalysisResult? result, int progressStep, int elapsedSeconds, bool isStale, bool isTimeout, bool isSaving, bool isDetailsExpanded, bool showDisclaimer, String? savedMealId, List<Map<String, dynamic>> todayMeals, int goalKcal, int consumedKcal
 });
 
 
@@ -292,7 +298,7 @@ class __$LogStateCopyWithImpl<$Res>
 
 /// Create a copy of LogState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? description = null,Object? result = freezed,Object? progressStep = null,Object? elapsedSeconds = null,Object? isStale = null,Object? isTimeout = null,Object? savedMealId = freezed,Object? todayMeals = null,Object? goalKcal = null,Object? consumedKcal = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? description = null,Object? result = freezed,Object? progressStep = null,Object? elapsedSeconds = null,Object? isStale = null,Object? isTimeout = null,Object? isSaving = null,Object? isDetailsExpanded = null,Object? showDisclaimer = null,Object? savedMealId = freezed,Object? todayMeals = null,Object? goalKcal = null,Object? consumedKcal = null,}) {
   return _then(_LogState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as LogStatus,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -301,6 +307,9 @@ as AnalysisResult?,progressStep: null == progressStep ? _self.progressStep : pro
 as int,elapsedSeconds: null == elapsedSeconds ? _self.elapsedSeconds : elapsedSeconds // ignore: cast_nullable_to_non_nullable
 as int,isStale: null == isStale ? _self.isStale : isStale // ignore: cast_nullable_to_non_nullable
 as bool,isTimeout: null == isTimeout ? _self.isTimeout : isTimeout // ignore: cast_nullable_to_non_nullable
+as bool,isSaving: null == isSaving ? _self.isSaving : isSaving // ignore: cast_nullable_to_non_nullable
+as bool,isDetailsExpanded: null == isDetailsExpanded ? _self.isDetailsExpanded : isDetailsExpanded // ignore: cast_nullable_to_non_nullable
+as bool,showDisclaimer: null == showDisclaimer ? _self.showDisclaimer : showDisclaimer // ignore: cast_nullable_to_non_nullable
 as bool,savedMealId: freezed == savedMealId ? _self.savedMealId : savedMealId // ignore: cast_nullable_to_non_nullable
 as String?,todayMeals: null == todayMeals ? _self._todayMeals : todayMeals // ignore: cast_nullable_to_non_nullable
 as List<Map<String, dynamic>>,goalKcal: null == goalKcal ? _self.goalKcal : goalKcal // ignore: cast_nullable_to_non_nullable
