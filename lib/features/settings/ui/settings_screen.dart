@@ -109,13 +109,29 @@ class SettingsScreen extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: TextApp(
-                      text: context.translate(LangKeys.language),
-                      theme: context.textStyle.copyWith(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeightHelper.medium,
-                        color: scheme.onSurface,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        TextApp(
+                          text: context
+                              .translate(LangKeys.settingsLanguageLabel),
+                          theme: context.textStyle.copyWith(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeightHelper.regular,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        TextApp(
+                          text: context.translate(LangKeys.language),
+                          theme: context.textStyle.copyWith(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeightHelper.medium,
+                            color: scheme.onSurface,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Icon(
