@@ -182,4 +182,55 @@ class LangKeys {
   static const String ledgerAllChip = 'ledger_all_chip';
   // G-12 quick re-log action (no Gemini call)
   static const String mealRelogCta = 'meal_relog_cta';
+
+  // --- Onboarding ---
+  static const String onboardTitle1 = 'onboard_title_1';
+  static const String onboardBody1 = 'onboard_body_1';
+  static const String onboardTitle2 = 'onboard_title_2';
+  static const String onboardBody2 = 'onboard_body_2';
+  static const String onboardTitle3 = 'onboard_title_3';
+  static const String onboardBody3 = 'onboard_body_3';
+  static const String onboardCta = 'onboard_cta';
+  static const String onboardSkip = 'onboard_skip';
+
+  // --- Auth ---
+  static const String loginTitle = 'login_title';
+  static const String emailLabel = 'email_label';
+  static const String passwordLabel = 'password_label';
+  static const String loginCta = 'login_cta';
+  static const String loginNoAccount = 'login_no_account';
+  static const String loginCreateAccount = 'login_create_account';
+  static const String loginErrorInvalid = 'login_error_invalid';
+  static const String nameLabel = 'name_label';
+  static const String confirmPasswordLabel = 'confirm_password_label';
+  static const String signupTitle = 'signup_title';
+  static const String signupCta = 'signup_cta';
+  static const String signupHaveAccount = 'signup_have_account';
+  static const String signupLoginLink = 'signup_login_link';
+  static const String validationEmail = 'validation_email';
+  static const String validationPasswordShort = 'validation_password_short';
+  static const String validationPasswordMatch = 'validation_password_match';
+  static const String validationNameEmpty = 'validation_name_empty';
+  static const String authLoading = 'auth_loading';
+
+  // --- Settings ---
+  static const String settingsDailyGoal = 'settings_daily_goal';
+  static const String settingsGoalSaved = 'settings_goal_saved';
+  static const String settingsAbout = 'settings_about';
+  static const String settingsAboutBody = 'settings_about_body';
+
+  // --- Review week (S07) ---
+  static const String weekChartTitle = 'week_chart_title';
+  static const String weekAvgLabel = 'week_avg_label';
+  static const String weekTopDay = 'week_top_day';
+  static const String weekBottomDay = 'week_bottom_day';
+  static const String weekMacrosTitle = 'week_macros_title';
+  static const String emptyWeekCtaToday = 'empty_week_cta_today';
+  static const String emptyWeekCtaLog = 'empty_week_cta_log';
+
+  // --- Splash & examples (provisional [P]) ---
+  static const String splashTagline = 'splash_tagline';
+  static const String exampleMeal1 = 'example_meal_1';
+  static const String exampleMeal2 = 'example_meal_2';
+  static const String exampleMeal3 = 'example_meal_3';
 }
