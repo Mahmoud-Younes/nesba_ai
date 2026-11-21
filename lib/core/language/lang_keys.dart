@@ -102,6 +102,7 @@ class LangKeys {
   static const String chartA11ySummary = 'chart_a11y_summary';
   static const String mealsHeader = 'meals_header';
   static const String groupYesterday = 'group_yesterday';
+  static const String groupToday = 'group_today';
   static const String groupDate = 'group_date';
   static const String syncOk = 'sync_ok';
   static const String syncPending = 'sync_pending';

@@ -15,9 +15,9 @@ class MockReviewRepo implements ReviewRepo {
         'kcal': 380,
         'time': '07:40',
         'sync': 'ok',
-        // Pre-baked group copy — the real list resolves day labels via
-        // Intl (§2.6); the mock carries the string ready-made, no intl.
-        'groupLabel': 'اليوم',
+        // Group key resolved to localized copy in MealsList (deck §2.4 — the
+        // date-format groups land with the real repo — no baked Arabic strings).
+        'groupKey': 'today',
       },
       <String, dynamic>{
         'id': 'mock_review_102',
@@ -26,7 +26,7 @@ class MockReviewRepo implements ReviewRepo {
         'kcal': 90,
         'time': '10:15',
         'sync': 'pending',
-        'groupLabel': 'اليوم',
+        'groupKey': 'today',
       },
       <String, dynamic>{
         'id': 'mock_review_103',
@@ -35,7 +35,7 @@ class MockReviewRepo implements ReviewRepo {
         'kcal': 620,
         'time': '13:30',
         'sync': 'ok',
-        'groupLabel': 'اليوم',
+        'groupKey': 'today',
       },
       <String, dynamic>{
         'id': 'mock_review_104',
@@ -44,7 +44,7 @@ class MockReviewRepo implements ReviewRepo {
         'kcal': 150,
         'time': '20:10',
         'sync': 'failed',
-        'groupLabel': 'أمس',
+        'groupKey': 'yesterday',
       },
     ];
   }

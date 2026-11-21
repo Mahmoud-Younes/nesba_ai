@@ -16,6 +16,9 @@ abstract class ReviewState with _$ReviewState {
 
     /// Grams per macro for the day grid — null until the summary lands.
     ({int protein, int carbs, int fat})? macros,
-    @Default(<Map<String, dynamic>>[]) List<Map<String, dynamic>> weeklyData,
+
+    /// Set on load failure (states §1.5) — the screen shows the error card
+    /// with retry above whatever cache survived.
+    String? errorMessage,
   }) = _ReviewState;
 }
