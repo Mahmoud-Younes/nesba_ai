@@ -16,7 +16,9 @@ T _$identity<T>(T value) => value;
 mixin _$ReviewState {
 
  ReviewMode get mode; bool get isLoading; bool get isFirstRun; List<Map<String, dynamic>> get meals; Map<String, dynamic>? get summary;/// Grams per macro for the day grid — null until the summary lands.
- ({int carbs, int fat, int protein,})? get macros; List<Map<String, dynamic>> get weeklyData;
+ ({int carbs, int fat, int protein,})? get macros;/// Set on load failure (states §1.5) — the screen shows the error card
+/// with retry above whatever cache survived.
+ String? get errorMessage;
 /// Create a copy of ReviewState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +30,20 @@ $ReviewStateCopyWith<ReviewState> get copyWith => _$ReviewStateCopyWithImpl<Revi
 @override
 bool operator ==(Object other) {
   final _this = this as ReviewState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReviewState&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.isLoading, _this.isLoading) || other.isLoading == _this.isLoading)&&(identical(other.isFirstRun, _this.isFirstRun) || other.isFirstRun == _this.isFirstRun)&&const DeepCollectionEquality().equals(other.meals, _this.meals)&&const DeepCollectionEquality().equals(other.summary, _this.summary)&&(identical(other.macros, _this.macros) || other.macros == _this.macros)&&const DeepCollectionEquality().equals(other.weeklyData, _this.weeklyData));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReviewState&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.isLoading, _this.isLoading) || other.isLoading == _this.isLoading)&&(identical(other.isFirstRun, _this.isFirstRun) || other.isFirstRun == _this.isFirstRun)&&const DeepCollectionEquality().equals(other.meals, _this.meals)&&const DeepCollectionEquality().equals(other.summary, _this.summary)&&(identical(other.macros, _this.macros) || other.macros == _this.macros)&&(identical(other.errorMessage, _this.errorMessage) || other.errorMessage == _this.errorMessage));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ReviewState;
-  return Object.hash(runtimeType,_this.mode,_this.isLoading,_this.isFirstRun,const DeepCollectionEquality().hash(_this.meals),const DeepCollectionEquality().hash(_this.summary),_this.macros,const DeepCollectionEquality().hash(_this.weeklyData));
+  return Object.hash(runtimeType,_this.mode,_this.isLoading,_this.isFirstRun,const DeepCollectionEquality().hash(_this.meals),const DeepCollectionEquality().hash(_this.summary),_this.macros,_this.errorMessage);
 }
 
 @override
 String toString() {
   final _this = this as ReviewState;
-  return 'ReviewState(mode: ${_this.mode}, isLoading: ${_this.isLoading}, isFirstRun: ${_this.isFirstRun}, meals: ${_this.meals}, summary: ${_this.summary}, macros: ${_this.macros}, weeklyData: ${_this.weeklyData})';
+  return 'ReviewState(mode: ${_this.mode}, isLoading: ${_this.isLoading}, isFirstRun: ${_this.isFirstRun}, meals: ${_this.meals}, summary: ${_this.summary}, macros: ${_this.macros}, errorMessage: ${_this.errorMessage})';
 }
 
 
@@ -52,7 +54,7 @@ abstract mixin class $ReviewStateCopyWith<$Res>  {
   factory $ReviewStateCopyWith(ReviewState value, $Res Function(ReviewState) _then) = _$ReviewStateCopyWithImpl;
 @useResult
 $Res call({
- ReviewMode mode, bool isLoading, bool isFirstRun, List<Map<String, dynamic>> meals, Map<String, dynamic>? summary, ({int carbs, int fat, int protein,})? macros, List<Map<String, dynamic>> weeklyData
+ ReviewMode mode, bool isLoading, bool isFirstRun, List<Map<String, dynamic>> meals, Map<String, dynamic>? summary, ({int carbs, int fat, int protein,})? macros, String? errorMessage
 });
 
 
@@ -69,7 +71,7 @@ class _$ReviewStateCopyWithImpl<$Res>
 
 /// Create a copy of ReviewState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? mode = null,Object? isLoading = null,Object? isFirstRun = null,Object? meals = null,Object? summary = freezed,Object? macros = freezed,Object? weeklyData = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? mode = null,Object? isLoading = null,Object? isFirstRun = null,Object? meals = null,Object? summary = freezed,Object? macros = freezed,Object? errorMessage = freezed,}) {
   return _then(ReviewState(
 mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as ReviewMode,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
@@ -77,8 +79,8 @@ as bool,isFirstRun: null == isFirstRun ? _self.isFirstRun : isFirstRun // ignore
 as bool,meals: null == meals ? _self.meals : meals // ignore: cast_nullable_to_non_nullable
 as List<Map<String, dynamic>>,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,macros: freezed == macros ? _self.macros : macros // ignore: cast_nullable_to_non_nullable
-as ({int carbs, int fat, int protein,})?,weeklyData: null == weeklyData ? _self.weeklyData : weeklyData // ignore: cast_nullable_to_non_nullable
-as List<Map<String, dynamic>>,
+as ({int carbs, int fat, int protein,})?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -163,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ReviewMode mode,  bool isLoading,  bool isFirstRun,  List<Map<String, dynamic>> meals,  Map<String, dynamic>? summary,  ({int carbs, int fat, int protein,})? macros,  List<Map<String, dynamic>> weeklyData)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ReviewMode mode,  bool isLoading,  bool isFirstRun,  List<Map<String, dynamic>> meals,  Map<String, dynamic>? summary,  ({int carbs, int fat, int protein,})? macros,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReviewState() when $default != null:
-return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.summary,_that.macros,_that.weeklyData);case _:
+return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.summary,_that.macros,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -184,10 +186,10 @@ return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.su
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ReviewMode mode,  bool isLoading,  bool isFirstRun,  List<Map<String, dynamic>> meals,  Map<String, dynamic>? summary,  ({int carbs, int fat, int protein,})? macros,  List<Map<String, dynamic>> weeklyData)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ReviewMode mode,  bool isLoading,  bool isFirstRun,  List<Map<String, dynamic>> meals,  Map<String, dynamic>? summary,  ({int carbs, int fat, int protein,})? macros,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _ReviewState():
-return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.summary,_that.macros,_that.weeklyData);case _:
+return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.summary,_that.macros,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +206,10 @@ return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.su
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ReviewMode mode,  bool isLoading,  bool isFirstRun,  List<Map<String, dynamic>> meals,  Map<String, dynamic>? summary,  ({int carbs, int fat, int protein,})? macros,  List<Map<String, dynamic>> weeklyData)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ReviewMode mode,  bool isLoading,  bool isFirstRun,  List<Map<String, dynamic>> meals,  Map<String, dynamic>? summary,  ({int carbs, int fat, int protein,})? macros,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _ReviewState() when $default != null:
-return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.summary,_that.macros,_that.weeklyData);case _:
+return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.summary,_that.macros,_that.errorMessage);case _:
   return null;
 
 }
@@ -219,7 +221,7 @@ return $default(_that.mode,_that.isLoading,_that.isFirstRun,_that.meals,_that.su
 
 
 class _ReviewState implements ReviewState {
-  const _ReviewState({this.mode = ReviewMode.day, this.isLoading = false, this.isFirstRun = false,  List<Map<String, dynamic>> meals = const <Map<String, dynamic>>[],  Map<String, dynamic>? summary, this.macros,  List<Map<String, dynamic>> weeklyData = const <Map<String, dynamic>>[]}): _meals = meals,_summary = summary,_weeklyData = weeklyData;
+  const _ReviewState({this.mode = ReviewMode.day, this.isLoading = false, this.isFirstRun = false,  List<Map<String, dynamic>> meals = const <Map<String, dynamic>>[],  Map<String, dynamic>? summary, this.macros, this.errorMessage}): _meals = meals,_summary = summary;
   
 
 @override@JsonKey() final  ReviewMode mode;
@@ -243,13 +245,9 @@ class _ReviewState implements ReviewState {
 
 /// Grams per macro for the day grid — null until the summary lands.
 @override final  ({int carbs, int fat, int protein,})? macros;
- final  List<Map<String, dynamic>> _weeklyData;
-@override@JsonKey() List<Map<String, dynamic>> get weeklyData {
-  if (_weeklyData is EqualUnmodifiableListView) return _weeklyData;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_weeklyData);
-}
-
+/// Set on load failure (states §1.5) — the screen shows the error card
+/// with retry above whatever cache survived.
+@override final  String? errorMessage;
 
 /// Create a copy of ReviewState
 /// with the given fields replaced by the non-null parameter values.
@@ -261,18 +259,18 @@ _$ReviewStateCopyWith<_ReviewState> get copyWith => __$ReviewStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReviewState&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFirstRun, isFirstRun) || other.isFirstRun == isFirstRun)&&const DeepCollectionEquality().equals(other.meals, _meals)&&const DeepCollectionEquality().equals(other.summary, _summary)&&(identical(other.macros, macros) || other.macros == macros)&&const DeepCollectionEquality().equals(other.weeklyData, _weeklyData));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReviewState&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFirstRun, isFirstRun) || other.isFirstRun == isFirstRun)&&const DeepCollectionEquality().equals(other.meals, _meals)&&const DeepCollectionEquality().equals(other.summary, _summary)&&(identical(other.macros, macros) || other.macros == macros)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,mode,isLoading,isFirstRun,const DeepCollectionEquality().hash(_meals),const DeepCollectionEquality().hash(_summary),macros,const DeepCollectionEquality().hash(_weeklyData));
+    return Object.hash(runtimeType,mode,isLoading,isFirstRun,const DeepCollectionEquality().hash(_meals),const DeepCollectionEquality().hash(_summary),macros,errorMessage);
 }
 
 @override
 String toString() {
-    return 'ReviewState(mode: $mode, isLoading: $isLoading, isFirstRun: $isFirstRun, meals: $meals, summary: $summary, macros: $macros, weeklyData: $weeklyData)';
+    return 'ReviewState(mode: $mode, isLoading: $isLoading, isFirstRun: $isFirstRun, meals: $meals, summary: $summary, macros: $macros, errorMessage: $errorMessage)';
 }
 
 
@@ -283,7 +281,7 @@ abstract mixin class _$ReviewStateCopyWith<$Res> implements $ReviewStateCopyWith
   factory _$ReviewStateCopyWith(_ReviewState value, $Res Function(_ReviewState) _then) = __$ReviewStateCopyWithImpl;
 @override @useResult
 $Res call({
- ReviewMode mode, bool isLoading, bool isFirstRun, List<Map<String, dynamic>> meals, Map<String, dynamic>? summary, ({int carbs, int fat, int protein,})? macros, List<Map<String, dynamic>> weeklyData
+ ReviewMode mode, bool isLoading, bool isFirstRun, List<Map<String, dynamic>> meals, Map<String, dynamic>? summary, ({int carbs, int fat, int protein,})? macros, String? errorMessage
 });
 
 
@@ -300,7 +298,7 @@ class __$ReviewStateCopyWithImpl<$Res>
 
 /// Create a copy of ReviewState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? mode = null,Object? isLoading = null,Object? isFirstRun = null,Object? meals = null,Object? summary = freezed,Object? macros = freezed,Object? weeklyData = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? mode = null,Object? isLoading = null,Object? isFirstRun = null,Object? meals = null,Object? summary = freezed,Object? macros = freezed,Object? errorMessage = freezed,}) {
   return _then(_ReviewState(
 mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as ReviewMode,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
@@ -308,8 +306,8 @@ as bool,isFirstRun: null == isFirstRun ? _self.isFirstRun : isFirstRun // ignore
 as bool,meals: null == meals ? _self._meals : meals // ignore: cast_nullable_to_non_nullable
 as List<Map<String, dynamic>>,summary: freezed == summary ? _self._summary : summary // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,macros: freezed == macros ? _self.macros : macros // ignore: cast_nullable_to_non_nullable
-as ({int carbs, int fat, int protein,})?,weeklyData: null == weeklyData ? _self._weeklyData : weeklyData // ignore: cast_nullable_to_non_nullable
-as List<Map<String, dynamic>>,
+as ({int carbs, int fat, int protein,})?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

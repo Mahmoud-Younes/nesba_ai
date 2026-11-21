@@ -10,6 +10,7 @@ import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/widgets/calorie_ring.dart';
 import 'package:nesba_ai/core/widgets/feedback/empty_state.dart';
+import 'package:nesba_ai/core/widgets/feedback/error_card.dart';
 import 'package:nesba_ai/core/widgets/feedback/skeleton_card.dart';
 import 'package:nesba_ai/core/widgets/feedback/undo_snackbar.dart';
 import 'package:nesba_ai/core/widgets/nes_app_bar.dart';
@@ -73,10 +74,40 @@ class ReviewScreen extends StatelessWidget {
     if (state.mode == ReviewMode.week) {
       return _weekPlaceholder(context);
     }
+    if (state.errorMessage != null) {
+      return _errorState(context, state);
+    }
     if (state.meals.isEmpty) {
       return _dayEmpty(context, state);
     }
     return _dayContent(context, state);
+  }
+
+  // states §1.5 review-day: error card + retry, previous cache stays below.
+  Widget _errorState(BuildContext context, ReviewState state) {
+    return Padding(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ErrorCard(
+            icon: Icons.error_outline,
+            title: context.translate(LangKeys.errServerTitle),
+            body: context.translate(LangKeys.errServerBody),
+            actions: <(String, VoidCallback)>[
+              (
+                context.translate(LangKeys.errOfflineAction),
+                () => context.read<ReviewCubit>().load(),
+              ),
+            ],
+          ),
+          if (state.meals.isNotEmpty) ...<Widget>[
+            SizedBox(height: 12.h),
+            _mealsSection(context, state),
+          ],
+        ],
+      ),
+    );
   }
 
   // Skips the entrance animation when the OS asks for reduced motion.
@@ -110,7 +141,8 @@ class ReviewScreen extends StatelessWidget {
   }
 
   // TODO(week-view): ticket #28 — the weekly chart/summary land there; the
-  // declared week empty state keeps the switch honest meanwhile (§2.7).
+  // declared week empty state keeps the switch honest meanwhile (§2.7,
+  // two actions: switch to day + log a meal).
   Widget _weekPlaceholder(BuildContext context) {
     return _fadeIn(
       context,
@@ -122,6 +154,8 @@ class ReviewScreen extends StatelessWidget {
           body: context.translate(LangKeys.emptyWeekHint),
           ctaLabel: context.translate(LangKeys.emptyWeekCtaToday),
           onCta: () => context.read<ReviewCubit>().toggleMode(ReviewMode.day),
+          secondaryCtaLabel: context.translate(LangKeys.emptyWeekCtaLog),
+          onSecondaryCta: onGoToLog,
         ),
       ),
     );
@@ -177,8 +211,8 @@ class ReviewScreen extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final Map<String, dynamic> summary =
         state.summary ?? const <String, dynamic>{};
-    final int consumed = summary['consumed'] as int? ?? 0;
-    final int goal = summary['goal'] as int? ?? 0;
+    final int consumed = (summary['consumed'] as num? ?? 0).toInt();
+    final int goal = (summary['goal'] as num? ?? 0).toInt();
     final bool hasGoal = goal > 0;
     final bool isOver = hasGoal && consumed > goal;
     return Column(
@@ -188,15 +222,16 @@ class ReviewScreen extends StatelessWidget {
             consumed: consumed,
             goal: hasGoal ? goal : null,
             variant: CalorieRingVariant.hero,
-            subtitleText: context.translate(
-              hasGoal ? LangKeys.ringGoalSuffix : LangKeys.noGoal,
-            ),
-            semanticsLabel: _ringA11y(context, consumed, goal, hasGoal, isOver),
+            subtitleText: hasGoal
+                ? context
+                    .translate(LangKeys.ringGoalSuffix)
+                    .replaceAll('{value}', formatCalories(goal))
+                : context.translate(LangKeys.noGoal),
+            semanticsLabel:
+                _ringA11y(context, consumed, goal, hasGoal, isOver),
           ),
         ),
         SizedBox(height: 8.h),
-        // TODO(copy-gap): under/over labels bake deck numbers («300») — a
-        // {value} placeholder key is needed before real data feeds them.
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -209,9 +244,7 @@ class ReviewScreen extends StatelessWidget {
             ),
             SizedBox(width: 6.w),
             TextApp(
-              text: context.translate(
-                isOver ? LangKeys.overGoalLabel : LangKeys.underGoalLabel,
-              ),
+              text: _statusLine(context, consumed, goal, isOver),
               theme: context.textStyle.copyWith(
                 fontSize: 14.sp,
                 fontWeight: FontWeightHelper.medium,
@@ -225,6 +258,21 @@ class ReviewScreen extends StatelessWidget {
     );
   }
 
+  // «باقي اليوم: {value} سعرة» / «تجاوزت الهدف بـ {value} سعرة» — real
+  // numbers replace the deck's {value} placeholder (no baked claims).
+  String _statusLine(
+    BuildContext context,
+    int consumed,
+    int goal,
+    bool isOver,
+  ) {
+    final String template = context.translate(
+      isOver ? LangKeys.overGoalLabel : LangKeys.underGoalLabel,
+    );
+    final int diff = isOver ? consumed - goal : goal - consumed;
+    return template.replaceAll('{value}', formatCalories(diff));
+  }
+
   // «السعرات: 1,240 من 2,000» + الحالة — numeric path bidi-isolated (§3.3).
   String _ringA11y(
     BuildContext context,
@@ -236,9 +284,7 @@ class ReviewScreen extends StatelessWidget {
     final String numbers = hasGoal
         ? '\u2066${formatCalories(consumed)} / ${formatCalories(goal)}\u2069'
         : formatCalories(consumed);
-    final String status = context.translate(
-      isOver ? LangKeys.overGoalLabel : LangKeys.underGoalLabel,
-    );
+    final String status = _statusLine(context, consumed, goal, isOver);
     return '${context.translate(LangKeys.ringLabel)}: $numbers $status';
   }
 
@@ -252,57 +298,43 @@ class ReviewScreen extends StatelessWidget {
     return MacroGrid(
       protein: (
         current: formatCalories(macros.protein),
-        target: formatCalories(summary['proteinGoal'] as int? ?? 0),
+        target: formatCalories((summary['proteinGoal'] as num? ?? 0).toInt()),
       ),
       carbs: (
         current: formatCalories(macros.carbs),
-        target: formatCalories(summary['carbsGoal'] as int? ?? 0),
+        target: formatCalories((summary['carbsGoal'] as num? ?? 0).toInt()),
       ),
       fat: (
         current: formatCalories(macros.fat),
-        target: formatCalories(summary['fatGoal'] as int? ?? 0),
+        target: formatCalories((summary['fatGoal'] as num? ?? 0).toInt()),
       ),
     );
   }
 
-  // «وجبات اليوم» + the full list (§2.6): grouped rows, sync badges,
-  // start-aware swipe-to-delete with undo, tap → meal detail (ticket 18).
+  // The full list (§2.6): MealsList owns the «وجبات اليوم» header, group
+  // headers, sync badges, retry/delete swipes and undo (screen-side snackbar).
   Widget _mealsSection(BuildContext context, ReviewState state) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextApp(
-          text: context.translate(LangKeys.mealsHeader),
-          theme: context.textStyle.copyWith(
-            fontSize: 16.sp,
-            fontWeight: FontWeightHelper.semiBold,
-            color: Theme.of(context).colorScheme.onSurface,
+    return MealsList(
+      meals: state.meals,
+      onMealTap: (_) {
+        // TODO(meal-detail): view/edit route — needs its own ticket.
+      },
+      onRetrySync: (Map<String, dynamic> row) =>
+          context.read<ReviewCubit>().retrySync(row),
+      onDeleteMeal: (Map<String, dynamic> row) {
+        context.read<ReviewCubit>().removeMeal(row);
+        final String name = row['name'] as String? ?? '';
+        final String message = context
+            .translate(LangKeys.itemRemovedSnackbar)
+            .replaceAll('{item}', name);
+        ScaffoldMessenger.of(context).showSnackBar(
+          UndoSnackbar.build(
+            context,
+            message: message,
+            onUndo: () => context.read<ReviewCubit>().undoRemoveMeal(),
           ),
-        ),
-        SizedBox(height: 8.h),
-        MealsList(
-          meals: state.meals,
-          onMealTap: (_) {
-            // TODO(meal-detail): view/edit route (ticket 18).
-          },
-          onDeleteMeal: (Map<String, dynamic> row) {
-            context.read<ReviewCubit>().removeMeal(row);
-            final String name = row['name'] as String? ?? '';
-            final String base = context.translate(LangKeys.itemRemovedSnackbar);
-            final String message = base
-                .replaceAll('{العنصر}', name)
-                .replaceAll('{Item}', name)
-                .replaceAll('{item}', name);
-            ScaffoldMessenger.of(context).showSnackBar(
-              UndoSnackbar.build(
-                context,
-                message: message,
-                onUndo: () => context.read<ReviewCubit>().undoRemoveMeal(),
-              ),
-            );
-          },
-        ),
-      ],
+        );
+      },
     );
   }
 }
