@@ -30,14 +30,17 @@ class SwapCubit extends Cubit<SwapState> {
     }
   }
 
-  // TODO(log): «تبديل» adds the alternative as a meal through the save
-  // path (undoable) — lands with ticket 21, out of scope here.
+  // TODO(save-path): «تبديل» adds the alternative as a meal through the
+  // log gate's save flow (undoable) — follow-up to ticket 19, out of scope
+  // in this UI branch.
   void applySwap(int index) {}
 
-  void toggleBookmark(int index) {
-    final Set<int> bookmarked = Set<int>.of(state.bookmarked);
-    if (!bookmarked.remove(index)) {
-      bookmarked.add(index);
+  // Bookmarks key on the pair id (stable across refetch/reorder), not the
+  // list index.
+  void toggleBookmark(String pairId) {
+    final Set<String> bookmarked = Set<String>.of(state.bookmarked);
+    if (!bookmarked.remove(pairId)) {
+      bookmarked.add(pairId);
     }
     emit(state.copyWith(bookmarked: bookmarked));
   }

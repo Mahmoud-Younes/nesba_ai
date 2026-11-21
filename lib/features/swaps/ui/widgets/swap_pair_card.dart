@@ -34,7 +34,7 @@ class SwapPairCard extends StatelessWidget {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        border: Border.all(color: scheme.outlineVariant),
+        color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
@@ -58,7 +58,16 @@ class SwapPairCard extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
                     TextApp(
-                      text: context.translate(LangKeys.savingsLine),
+                      // Per-pair delta through the {value} key — no shared
+                      // static claim that contradicts the card's own numbers.
+                      text: context
+                          .translate(LangKeys.swapsSavings)
+                          .replaceAll(
+                            '{value}',
+                            formatCalories(
+                              (pair['savings'] as num? ?? 0).toInt(),
+                            ),
+                          ),
                       theme: context.textStyle.copyWith(
                         fontSize: 14.sp,
                         fontWeight: FontWeightHelper.semiBold,
@@ -87,8 +96,7 @@ class SwapPairCard extends StatelessWidget {
     );
   }
 
-  // Side-by-side halves — roughly equal thirds with the 1px divider
-  // between (§2.8).
+  // Side-by-side halves at 50/50 with the 1px divider between (§2.8).
   Widget _half(BuildContext context, {required bool isOriginal}) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final Color background = isOriginal
@@ -131,7 +139,8 @@ class SwapPairCard extends StatelessWidget {
             // Bare number like the meals ledger — the unit copy lives in
             // the section line (savings_line), not per-half.
             text: formatCalories(
-              pair[isOriginal ? 'original_kcal' : 'alt_kcal'] as int? ?? 0,
+              (pair[isOriginal ? 'original_kcal' : 'alt_kcal'] as num? ?? 0)
+                  .toInt(),
             ),
             theme: context.textStyle.copyWith(
               fontSize: 16.sp,
@@ -170,6 +179,7 @@ class SwapPairCard extends StatelessWidget {
         Semantics(
           label: context.translate(LangKeys.bookmarkCta),
           button: true,
+          toggled: isBookmarked,
           child: IconButton(
             onPressed: onBookmark,
             padding: EdgeInsets.zero,

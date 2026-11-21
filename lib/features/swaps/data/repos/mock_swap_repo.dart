@@ -14,7 +14,7 @@ class MockSwapRepo implements SwapRepo {
         'original_kcal': 480,
         'alt_name': 'شوفان بحليب خالي الدسم والقرفة',
         'alt_kcal': 290,
-        'savings': 320,
+        'savings': 190,
         'hasFit': true,
       },
       <String, dynamic>{
@@ -23,7 +23,7 @@ class MockSwapRepo implements SwapRepo {
         'original_kcal': 760,
         'alt_name': 'صدر دجاج مشوي مع بطاطس بالفرن',
         'alt_kcal': 470,
-        'savings': 320,
+        'savings': 290,
         'hasFit': false,
       },
       <String, dynamic>{
@@ -32,7 +32,7 @@ class MockSwapRepo implements SwapRepo {
         'original_kcal': 210,
         'alt_name': 'برتقالة كاملة',
         'alt_kcal': 90,
-        'savings': 320,
+        'savings': 120,
         'hasFit': true,
       },
     ];

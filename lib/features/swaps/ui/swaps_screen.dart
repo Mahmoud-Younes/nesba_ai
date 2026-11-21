@@ -20,6 +20,10 @@ import 'package:nesba_ai/features/swaps/ui/widgets/swaps_empties.dart';
 /// header + side-by-side pair cards, failure keeps the previous cache.
 /// [mealContextDescription] turns it into the S09 meal-context variant
 /// (banner + hidden general section, verdict-triggered deep-link).
+/// TODO(s09-contract): spec §2.9 loads a mealId via deep-link with
+/// meal-specific pairs — the description-string simplification and the
+/// deleted-meal fallback (silent return + neutral snackbar) land with the
+/// verdict wiring (ticket 20 follow-up).
 class SwapsScreen extends StatelessWidget {
   const SwapsScreen({this.mealContextDescription, this.onGoToLog, super.key});
 
@@ -176,9 +180,12 @@ class SwapsScreen extends StatelessWidget {
               padding: EdgeInsets.only(bottom: 12.h),
               child: SwapPairCard(
                 pair: state.swaps[i],
-                isBookmarked: state.bookmarked.contains(i),
+                isBookmarked: state.bookmarked
+                    .contains(state.swaps[i]['id'] as String? ?? 'pair-$i'),
                 onSwap: () => context.read<SwapCubit>().applySwap(i),
-                onBookmark: () => context.read<SwapCubit>().toggleBookmark(i),
+                onBookmark: () => context.read<SwapCubit>().toggleBookmark(
+                      state.swaps[i]['id'] as String? ?? 'pair-$i',
+                    ),
               ),
             ),
           ),
