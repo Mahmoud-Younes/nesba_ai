@@ -138,17 +138,15 @@ class _LogScreenState extends State<LogScreen> {
       : CustomFadeInUp(duration: duration, child: child);
 
   // (A) Daily strip — count-up rides consumedKcal changes (§2.5 step 5);
-  // instant swap on reduced-motion.
+  // instant swap on reduced-motion. No goal set → the deck noGoal copy.
   Widget _summaryStrip(BuildContext context, LogState state) {
     Widget strip(double consumed) => SummaryStrip(
       consumed: consumed.round(),
       goal: state.goalKcal,
-      noGoalText: context.translate(LangKeys.noGoal),
       // TODO(copy-gap): strip status copy («فاضل 760») has no format key in
       // the deck — gap logged with the summary-strip report (§2.1 CD-06).
       statusText: null,
-      semanticsLabel:
-          '${context.translate(LangKeys.ringLabel)}: \u2066${formatCalories(state.consumedKcal)} / ${formatCalories(state.goalKcal)}\u2069',
+      semanticsLabel: _stripSemantics(context, state),
       // Strip tap jumps to the review gate (S06).
       onTap: widget.onGoToReview,
     );
@@ -165,6 +163,14 @@ class _LogScreenState extends State<LogScreen> {
         builder: (_, double value, _) => strip(value),
       ),
     );
+  }
+
+  // Strip a11y narrates the goal pair only when a goal actually exists.
+  String _stripSemantics(BuildContext context, LogState state) {
+    if (state.goalKcal <= 0) {
+      return context.translate(LangKeys.noGoal);
+    }
+    return '${context.translate(LangKeys.ringLabel)}: ⁦${formatCalories(state.consumedKcal)} / ${formatCalories(state.goalKcal)}⁩';
   }
 
   // (B) Composer first (§2.0): expanded in draft, stays expanded and editable
