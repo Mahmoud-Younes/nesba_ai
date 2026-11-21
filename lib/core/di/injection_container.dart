@@ -35,13 +35,15 @@ Future<void> _initCore() async {
 Future<void> _initLog() async {
   sl
     ..registerLazySingleton<LogRepo>(MockLogRepo.new)
-    ..registerFactory<LogCubit>(() => LogCubit(sl<LogRepo>()));
+    // Singletons so the shell can refresh today's data on every gate
+    // arrival while the IndexedStack keeps one instance alive.
+    ..registerLazySingleton<LogCubit>(() => LogCubit(sl<LogRepo>()));
 }
 
 Future<void> _initReview() async {
   sl
     ..registerLazySingleton<ReviewRepo>(MockReviewRepo.new)
-    ..registerFactory<ReviewCubit>(() => ReviewCubit(sl<ReviewRepo>()));
+    ..registerLazySingleton<ReviewCubit>(() => ReviewCubit(sl<ReviewRepo>()));
 }
 
 Future<void> _initSwaps() async {

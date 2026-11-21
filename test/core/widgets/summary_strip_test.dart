@@ -21,7 +21,6 @@ void main() {
       const SummaryStrip(
         consumed: 1200,
         goal: null,
-        noGoalText: 'بدون هدف',
         semanticsLabel: 'السعرات: بدون هدف',
       ),
     );
@@ -40,7 +39,6 @@ void main() {
       const SummaryStrip(
         consumed: 1240,
         goal: 2000,
-        noGoalText: 'بدون هدف',
         semanticsLabel: 'السعرات: 1,240 من 2,000',
       ),
     );
@@ -64,7 +62,6 @@ void main() {
         consumed: 1240,
         goal: 2000,
         statusText: 'فاضل 760',
-        noGoalText: 'بدون هدف',
         semanticsLabel: 'السعرات: 1,240 من 2,000',
       ),
     );
@@ -80,7 +77,6 @@ void main() {
       SummaryStrip(
         consumed: 1240,
         goal: 2000,
-        noGoalText: 'بدون هدف',
         semanticsLabel: 'السعرات: 1,240 من 2,000',
         onTap: () => taps++,
       ),
@@ -107,7 +103,6 @@ void main() {
       const SummaryStrip(
         consumed: 1240,
         goal: 2000,
-        noGoalText: 'بدون هدف',
         semanticsLabel: 'السعرات: 1,240 من 2,000',
       ),
     );
@@ -123,7 +118,6 @@ void main() {
       const SummaryStrip(
         consumed: 1240,
         goal: 2000,
-        noGoalText: 'بدون هدف',
         semanticsLabel: 'السعرات: 1,240 من 2,000',
         onTap: doNothing,
       ),

@@ -97,7 +97,12 @@ class LogCubit extends Cubit<LogState> {
 
   Future<void> loadTodayMeals() async {
     final rows = await _repo.todayMeals();
-    emit(state.copyWith(todayMeals: rows, consumedKcal: _sumKcal(rows)));
+    final goal = await _repo.todayGoal();
+    emit(state.copyWith(
+      todayMeals: rows,
+      consumedKcal: _sumKcal(rows),
+      goalKcal: goal,
+    ));
   }
 
   /// S05 (§2.5): the button disables via [LogState.isSaving] while writing;
