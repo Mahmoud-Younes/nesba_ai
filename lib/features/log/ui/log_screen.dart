@@ -5,6 +5,7 @@ import 'package:nesba_ai/core/common/animations/animate_do.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/language/app_localizations.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
@@ -21,6 +22,7 @@ import 'package:nesba_ai/features/log/data/models/analysis_result.dart';
 import 'package:nesba_ai/features/log/data/models/meal_item.dart';
 import 'package:nesba_ai/features/log/logic/log_cubit.dart';
 import 'package:nesba_ai/features/log/ui/widgets/analysis_footnote_line.dart';
+import 'package:nesba_ai/features/log/ui/widgets/analysis_progress_line.dart';
 import 'package:nesba_ai/features/log/ui/widgets/analyze_cta.dart';
 import 'package:nesba_ai/features/log/ui/widgets/composer.dart';
 import 'package:nesba_ai/features/log/ui/widgets/correction_sheet.dart';
@@ -145,7 +147,6 @@ class _LogScreenState extends State<LogScreen> {
       // the deck — gap logged with the summary-strip report (§2.1 CD-06).
       statusText: null,
       semanticsLabel: _stripSemantics(context, state),
-          '${context.translate(LangKeys.ringLabel)}: \u2066${formatCalories(state.consumedKcal)} / ${formatCalories(state.goalKcal)}\u2069',
       // Strip tap jumps to the review gate (S06).
       onTap: widget.onGoToReview,
     );
@@ -169,7 +170,7 @@ class _LogScreenState extends State<LogScreen> {
     if (state.goalKcal <= 0) {
       return context.translate(LangKeys.noGoal);
     }
-    return '${context.translate(LangKeys.ringLabel)}: \u2066${formatCalories(state.consumedKcal)} / ${formatCalories(state.goalKcal)}\u2069';
+    return '${context.translate(LangKeys.ringLabel)}: ⁦${formatCalories(state.consumedKcal)} / ${formatCalories(state.goalKcal)}⁩';
   }
 
   // (B) Composer first (§2.0): expanded in draft, stays expanded and editable
@@ -267,26 +268,12 @@ class _LogScreenState extends State<LogScreen> {
     _ => context.translate(LangKeys.analysisProgress1),
   };
 
-  // (C) Result slot (§2.2/§2.3/§2.5): skeleton on the first analysis, the
-  // old card dimmed in place on a re-analysis (states §1.3 — no flash, no
-  // blank), timeout card alone when nothing survived, wired ResultCard with
-  // the save morph.
+  // (C) Result slot (§2.2/§2.3/§2.5): skeleton while analyzing, timeout card
+  // alone when nothing survived, wired ResultCard with the save morph — the
+  // saved card slides-fades out while its slot closes (~300ms, instant on
+  // reduced-motion).
   Widget _resultArea(BuildContext context, LogState state) {
     if (state.status == LogStatus.analyzing) {
-      final AnalysisResult? existing = state.result;
-      if (existing != null) {
-        return _fadeIn(
-          context,
-          600,
-          AnimatedOpacity(
-            duration: MediaQuery.disableAnimationsOf(context)
-                ? Duration.zero
-                : const Duration(milliseconds: 300),
-            opacity: 0.4,
-            child: _resultCard(context, state, existing),
-          ),
-        );
-      }
       return _fadeIn(context, 600, _analysisWaitColumn(state));
     }
     if (state.isTimeout && state.result == null) {
@@ -320,14 +307,16 @@ class _LogScreenState extends State<LogScreen> {
   }
 
   // While analyzing (§2.2): skeleton holds the card's footprint so the layout
-  // never jumps; the rotating line rides the CTA zone, the timing footnote
-  // sits under the skeleton. The composer stays expanded and editable.
+  // never jumps; the rotating line + timing footnote ride under it. The
+  // composer above stays expanded and editable the whole time.
   Widget _analysisWaitColumn(LogState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SkeletonCard(),
         SizedBox(height: 8.h),
+        AnalysisProgressLine(progressStep: state.progressStep),
+        SizedBox(height: 4.h),
         AnalysisFootnoteLine(elapsedSeconds: state.elapsedSeconds),
       ],
     );
@@ -380,19 +369,18 @@ class _LogScreenState extends State<LogScreen> {
       isExpanded: state.isDetailsExpanded,
       isStale: state.isStale,
       isTimeout: state.isTimeout,
-      isSaving: state.isSaving,
       showDisclaimer: state.showDisclaimer,
       onToggleExpand: cubit.toggleDetailsExpanded,
       onSaveMeal: cubit.saveMeal,
       onEditDescription: () => _editDescription(result),
-      onItemTap: (int index, MealItem item) =>
-          _openCorrectionSheet(context, index, item),
+      onItemTap: (MealItem item) => _openCorrectionSheet(context, item),
       // TODO(swaps): add-item flow lands with its own task — no-op for now.
       onAddItem: () {},
       // TODO(swaps): teaser deep-links to S09 meal-context swaps — no-op.
       onTeaserTap: () {},
       onReanalyze: cubit.reAnalyze,
       onKeep: cubit.keepResult,
+      keepLabel: context.translate(LangKeys.staleKeepAction),
       kcalUnitText: _kcalUnitText(context),
       macroUnitText: _macroUnitText(context),
     );
@@ -410,7 +398,7 @@ class _LogScreenState extends State<LogScreen> {
 
   // S04 (§2.4): the sheet owns the live math; the cubit mirrors every change
   // into the state so the card behind it updates without waiting for «تم».
-  void _openCorrectionSheet(BuildContext context, int index, MealItem item) {
+  void _openCorrectionSheet(BuildContext context, MealItem item) {
     final LogCubit cubit = context.read<LogCubit>();
     final AnalysisResult result = cubit.state.result!;
     CorrectionSheet.show(
@@ -424,12 +412,12 @@ class _LogScreenState extends State<LogScreen> {
       kcalUnitText: _kcalUnitText(context),
       mealTotalLabel: _mealTotalLabel(context),
       macroUnitText: _macroUnitText(context),
-      onLiveChange: (MealItem updated) =>
-          cubit.applyItemCorrection(index, updated),
+      onApply: cubit.applyItemCorrection,
+      onLiveChange: cubit.applyItemCorrection,
       // TODO(swaps): add-item flow lands with its own task — button disabled.
       onAddItem: null,
       onDelete: () {
-        cubit.removeItem(index);
+        cubit.removeItem(item);
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
@@ -443,21 +431,28 @@ class _LogScreenState extends State<LogScreen> {
     );
   }
 
+  // TODO(copy): standalone «تم»/«سعرة»/«جم»/«إجمالي الوجبة» keys are missing
+  // from the deck — locale literals passed in until the deck owner adds them
+  // (SummaryStrip.noGoalText precedent).
+  bool _isEn(BuildContext context) => AppLocalizations.of(context)!.isEnLocale;
+
   String _kcalUnitText(BuildContext context) =>
-      context.translate(LangKeys.unitKcal);
+      _isEn(context) ? 'kcal' : 'سعرة';
 
-  String _macroUnitText(BuildContext context) =>
-      context.translate(LangKeys.macroUnitGram);
+  String _macroUnitText(BuildContext context) => _isEn(context) ? 'g' : 'جم';
 
-  String _doneLabel(BuildContext context) => context.translate(LangKeys.done);
+  String _doneLabel(BuildContext context) => _isEn(context) ? 'Done' : 'تم';
 
   String _mealTotalLabel(BuildContext context) =>
-      context.translate(LangKeys.mealTotalLabel);
+      _isEn(context) ? 'Meal total' : 'إجمالي الوجبة';
 
-  // G-09: the {item} placeholder is identical in both locales.
+  // G-09: the deck bakes the placeholder into the copy («أُزيل {العنصر} —
+  // تراجع» / "{Item} removed — Undo") — replaced manually here.
   String _itemRemovedMessage(BuildContext context, String itemName) {
-    return context
-        .translate(LangKeys.itemRemovedSnackbar)
+    final String template = context.translate(LangKeys.itemRemovedSnackbar);
+    return template
+        .replaceAll('{العنصر}', itemName)
+        .replaceAll('{Item}', itemName)
         .replaceAll('{item}', itemName);
   }
 
@@ -491,9 +486,7 @@ class _LogScreenState extends State<LogScreen> {
             children: [
               Expanded(
                 child: TextApp(
-                  text: context
-                      .translate(LangKeys.logLedgerTotal)
-                      .replaceAll('{count}', formatCalories(state.consumedKcal)),
+                  text: context.translate(LangKeys.logLedgerTotal),
                   theme: context.textStyle.copyWith(
                     fontSize: 14.sp,
                     fontWeight: FontWeightHelper.medium,

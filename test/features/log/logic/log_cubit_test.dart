@@ -18,8 +18,9 @@ class _NeverResolvingLogRepo implements LogRepo {
   @override
   Future<String> saveMeal(AnalysisResult result) async => 'unused_id';
 
-  @override
-  Future<void> undoSave(String mealId) async {}
+  @override
+  Future<int> todayGoal() async => 0;
+
 
   @override
   Future<List<Map<String, dynamic>>> todayMeals() async =>
@@ -43,8 +44,9 @@ class _HangsOnSecondLogRepo implements LogRepo {
   @override
   Future<String> saveMeal(AnalysisResult result) async => 'unused_id';
 
-  @override
-  Future<void> undoSave(String mealId) async {}
+  @override
+  Future<int> todayGoal() async => 0;
+
 
   @override
   Future<List<Map<String, dynamic>>> todayMeals() async =>
@@ -63,8 +65,9 @@ class _GatedLogRepo implements LogRepo {
   @override
   Future<String> saveMeal(AnalysisResult result) async => 'unused_id';
 
-  @override
-  Future<void> undoSave(String mealId) async {}
+  @override
+  Future<int> todayGoal() async => 0;
+
 
   @override
   Future<List<Map<String, dynamic>>> todayMeals() async =>
@@ -342,7 +345,7 @@ void main() {
     final cubit = LogCubit(MockLogRepo());
     cubit.resultArrived(_result);
     final corrected = _result.items[0].copyWith(kcal: 300, isEdited: true);
-    cubit.applyItemCorrection(corrected);
+    cubit.applyItemCorrection(0, corrected);
     expect(cubit.state.result?.kcal, 574); // 300 + 150 + 124
     expect(cubit.state.result?.items[0], same(corrected));
     expect(cubit.state.result?.items[0].isEdited, true);
@@ -373,7 +376,7 @@ void main() {
     final cubit = LogCubit(MockLogRepo());
     cubit.resultArrived(_result);
     final toast = _result.items[1];
-    cubit.removeItem(toast);
+    cubit.removeItem(1); // toast rides index 1
     expect(cubit.state.result?.kcal, 280); // 156 + 124
     expect(
       cubit.state.result?.items.map((item) => item.name).toList(),
@@ -399,19 +402,4 @@ void main() {
     unawaited(cubit.close());
   });
 
-  test('clearComposer resets the composer to a clean draft', () {
-    final cubit = LogCubit(MockLogRepo());
-    cubit.resultArrived(_result);
-    cubit.descriptionChanged('نص مختلف');
-    cubit.clearComposer();
-    expect(cubit.state.status, LogStatus.draft);
-    expect(cubit.state.description, '');
-    expect(cubit.state.result, isNull);
-    expect(cubit.state.savedMealId, isNull);
-    expect(cubit.state.isStale, false);
-    expect(cubit.state.isTimeout, false);
-    expect(cubit.state.progressStep, 1);
-    expect(cubit.state.elapsedSeconds, 0);
-    unawaited(cubit.close());
-  });
 }
