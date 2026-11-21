@@ -1,21 +1,9 @@
 class LangKeys {
-  // --- Existing keys (temporary test pages still use them — do not remove) ---
+  // --- Core keys ---
   static const String appName = 'app_name';
   static const String darkMode = 'dark_mode';
   static const String language = 'language';
-  static const String pageOne = 'page_one';
-  static const String pageTwo = 'page_two';
-  static const String pageThree = 'page_three';
-  static const String counter = 'counter';
-  static const String increment = 'increment';
-  static const String decrement = 'decrement';
-  static const String reset = 'reset';
-  static const String next = 'next';
-  static const String backHome = 'back_home';
-  static const String chooseColor = 'choose_color';
-  static const String toggleContent = 'toggle_content';
-  static const String themeTest = 'theme_test';
-  static const String langTest = 'lang_test';
+  // Fallback copy of the under-build screen.
   static const String cubitHint = 'cubit_hint';
 
   // --- Tabs (copy-deck §2.0 / screen-specs §1.4) ---

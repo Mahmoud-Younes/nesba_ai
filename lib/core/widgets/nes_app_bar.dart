@@ -7,12 +7,20 @@ import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 
 /// Surface app bar with the localized wordmark and a 48dp settings action.
 class NesAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const NesAppBar({this.title, this.onSettingsTap, super.key});
+  const NesAppBar({
+    this.title,
+    this.onSettingsTap,
+    this.showBack = false,
+    super.key,
+  });
 
   // Dynamic screen title (review follows the day/week switch); falls back
   // to the wordmark.
   final String? title;
   final VoidCallback? onSettingsTap;
+
+  /// Implies the platform back button on pushed routes (settings).
+  final bool showBack;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -21,7 +29,7 @@ class NesAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return AppBar(
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: showBack,
       backgroundColor: scheme.surface,
       elevation: 0,
       scrolledUnderElevation: 0,

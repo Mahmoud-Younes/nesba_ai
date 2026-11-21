@@ -6,6 +6,7 @@ import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/widgets/calorie_ring.dart';
 import 'package:nesba_ai/core/widgets/feedback/empty_state.dart';
@@ -21,7 +22,10 @@ import 'package:nesba_ai/features/review/ui/widgets/segmented_day_week.dart';
 /// status row + macros + the full day meals list under the pinned
 /// day/week switch.
 class ReviewScreen extends StatelessWidget {
-  const ReviewScreen({super.key});
+  const ReviewScreen({this.onGoToLog, super.key});
+
+  /// Shell-injected jump to the log gate (both empty-state CTAs).
+  final VoidCallback? onGoToLog;
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +36,10 @@ class ReviewScreen extends StatelessWidget {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.surface,
             appBar: NesAppBar(
+              onSettingsTap: () => context.pushName(AppRoutes.settings),
               // The title follows the switch: «يومك» ↔ «أسبوعك» (§2.6).
               title: switch (state.mode) {
-                ReviewMode.week =>
-                  context.translate(LangKeys.reviewTitleWeek),
+                ReviewMode.week => context.translate(LangKeys.reviewTitleWeek),
                 ReviewMode.day => context.translate(LangKeys.reviewTitleDay),
               },
             ),
@@ -78,8 +82,8 @@ class ReviewScreen extends StatelessWidget {
   // Skips the entrance animation when the OS asks for reduced motion.
   Widget _fadeIn(BuildContext context, int duration, Widget child) =>
       MediaQuery.disableAnimationsOf(context)
-          ? child
-          : CustomFadeInUp(duration: duration, child: child);
+      ? child
+      : CustomFadeInUp(duration: duration, child: child);
 
   // First read only (states §1.5 loading): card footprint for the ring +
   // one line for the macros row.
@@ -142,8 +146,8 @@ class ReviewScreen extends StatelessWidget {
           ctaLabel: context.translate(
             firstRun ? LangKeys.emptyFirstRunCta : LangKeys.emptyNoMealsCta,
           ),
-          // TODO(log): routes to the log gate when shell wiring lands (21).
-          onCta: () {},
+          // The empty-day CTA jumps to the log gate.
+          onCta: onGoToLog,
         ),
       ),
     );
@@ -187,8 +191,7 @@ class ReviewScreen extends StatelessWidget {
             subtitleText: context.translate(
               hasGoal ? LangKeys.ringGoalSuffix : LangKeys.noGoal,
             ),
-            semanticsLabel:
-                _ringA11y(context, consumed, goal, hasGoal, isOver),
+            semanticsLabel: _ringA11y(context, consumed, goal, hasGoal, isOver),
           ),
         ),
         SizedBox(height: 8.h),
@@ -285,8 +288,7 @@ class ReviewScreen extends StatelessWidget {
           onDeleteMeal: (Map<String, dynamic> row) {
             context.read<ReviewCubit>().removeMeal(row);
             final String name = row['name'] as String? ?? '';
-            final String base =
-                context.translate(LangKeys.itemRemovedSnackbar);
+            final String base = context.translate(LangKeys.itemRemovedSnackbar);
             final String message = base
                 .replaceAll('{العنصر}', name)
                 .replaceAll('{Item}', name)

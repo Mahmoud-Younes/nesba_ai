@@ -26,8 +26,7 @@ class NesbaApp extends StatelessWidget {
           create: (context) => sl<AppCubit>()
             ..changeAppThemeMode(
               // First run: null => default to dark mode.
-              sharedMode:
-                  SharedPref().getBoolean(PrefKeys.themeMode) ?? true,
+              sharedMode: SharedPref().getBoolean(PrefKeys.themeMode) ?? true,
             )
             ..getSavedLanguage(),
         ),
@@ -60,7 +59,7 @@ class NesbaApp extends StatelessWidget {
               },
               navigatorKey: sl<GlobalKey<NavigatorState>>(),
               onGenerateRoute: AppRoutes.onGenerateRoute,
-              initialRoute: AppRoutes.testHome,
+              initialRoute: AppRoutes.splash,
             );
           },
         ),

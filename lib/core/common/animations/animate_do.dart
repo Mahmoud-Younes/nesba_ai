@@ -14,6 +14,8 @@ class CustomFadeInUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Reduced motion → no entrance at all.
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     return FadeInUp(
       delay: const Duration(milliseconds: 300),
       duration: Duration(milliseconds: duration),
@@ -35,6 +37,8 @@ class CustomFadeInDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Reduced motion → no entrance at all.
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     return FadeInDown(
       delay: const Duration(milliseconds: 300),
       duration: Duration(milliseconds: duration),

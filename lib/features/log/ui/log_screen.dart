@@ -7,6 +7,7 @@ import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/app_localizations.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/style/theme/app_radius.dart';
 import 'package:nesba_ai/core/widgets/calorie_ring.dart';
@@ -30,7 +31,10 @@ import 'package:nesba_ai/features/log/ui/widgets/result_card.dart';
 /// S01 «سجّل» frame (screen-specs §2.0 quad contract / §2.1 first-run)
 /// through the S02/S03/S05 integration: waiting area, result card, save morph.
 class LogScreen extends StatefulWidget {
-  const LogScreen({super.key});
+  const LogScreen({this.onGoToReview, super.key});
+
+  /// Shell-injected jump to the review gate (strip tap + «الكل» chip).
+  final VoidCallback? onGoToReview;
 
   @override
   State<LogScreen> createState() => _LogScreenState();
@@ -69,8 +73,7 @@ class _LogScreenState extends State<LogScreen> {
             child: Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: NesAppBar(
-                // TODO(settings): wire the settings route when it ships.
-                onSettingsTap: () {},
+                onSettingsTap: () => context.pushName(AppRoutes.settings),
               ),
               body: SafeArea(child: _body(context, state)),
             ),
@@ -131,27 +134,26 @@ class _LogScreenState extends State<LogScreen> {
   // Skips the entrance animation when the OS asks for reduced motion.
   Widget _fadeIn(BuildContext context, int duration, Widget child) =>
       MediaQuery.disableAnimationsOf(context)
-          ? child
-          : CustomFadeInUp(duration: duration, child: child);
+      ? child
+      : CustomFadeInUp(duration: duration, child: child);
 
   // (A) Daily strip — count-up rides consumedKcal changes (§2.5 step 5);
   // instant swap on reduced-motion.
   Widget _summaryStrip(BuildContext context, LogState state) {
     Widget strip(double consumed) => SummaryStrip(
-          consumed: consumed.round(),
-          goal: state.goalKcal,
-          noGoalText: context.translate(LangKeys.noGoal),
-          // TODO(copy-gap): strip status copy («فاضل 760») has no format key in
-          // the deck — gap logged with the summary-strip report (§2.1 CD-06).
-          statusText: null,
-          semanticsLabel:
-              '${context.translate(LangKeys.ringLabel)}: \u2066${formatCalories(state.consumedKcal)} / ${formatCalories(state.goalKcal)}\u2069',
-          // TODO(review): strip tap opens review/day (S06) — not wired yet.
-          onTap: () {},
-        );
+      consumed: consumed.round(),
+      goal: state.goalKcal,
+      noGoalText: context.translate(LangKeys.noGoal),
+      // TODO(copy-gap): strip status copy («فاضل 760») has no format key in
+      // the deck — gap logged with the summary-strip report (§2.1 CD-06).
+      statusText: null,
+      semanticsLabel:
+          '${context.translate(LangKeys.ringLabel)}: \u2066${formatCalories(state.consumedKcal)} / ${formatCalories(state.goalKcal)}\u2069',
+      // Strip tap jumps to the review gate (S06).
+      onTap: widget.onGoToReview,
+    );
     if (MediaQuery.disableAnimationsOf(context)) {
-      return _fadeIn(
-          context, 400, strip(state.consumedKcal.toDouble()));
+      return _fadeIn(context, 400, strip(state.consumedKcal.toDouble()));
     }
     return _fadeIn(
       context,
@@ -172,14 +174,13 @@ class _LogScreenState extends State<LogScreen> {
     final LogCubit cubit = context.read<LogCubit>();
     final bool isExpanded =
         state.status == LogStatus.analyzing ||
-            state.status == LogStatus.saved ||
-            (state.status == LogStatus.draft && state.result == null) ||
-            // First-run timeout has no result to collapse onto — the field
-            // stays live for «إعادة المحاولة» (§2.7 timeout path).
-            (state.isTimeout && state.result == null) ||
-            _chevronOpen(state.result);
-    final bool showChips =
-        state.result == null || state.savedMealId != null;
+        state.status == LogStatus.saved ||
+        (state.status == LogStatus.draft && state.result == null) ||
+        // First-run timeout has no result to collapse onto — the field
+        // stays live for «إعادة المحاولة» (§2.7 timeout path).
+        (state.isTimeout && state.result == null) ||
+        _chevronOpen(state.result);
+    final bool showChips = state.result == null || state.savedMealId != null;
     return _fadeIn(
       context,
       500,
@@ -220,8 +221,9 @@ class _LogScreenState extends State<LogScreen> {
           ],
           SizedBox(height: 12.h),
           Padding(
-            padding:
-                EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.viewInsetsOf(context).bottom,
+            ),
             child: AnalyzeCTA(
               status: _ctaStatus(state),
               progressText: _progressText(context, state.progressStep),
@@ -255,10 +257,10 @@ class _LogScreenState extends State<LogScreen> {
 
   // Rotating line per ticker step (deck analysis_progress_1..3, ≈2.5s each).
   String _progressText(BuildContext context, int step) => switch (step) {
-        2 => context.translate(LangKeys.analysisProgress2),
-        3 => context.translate(LangKeys.analysisProgress3),
-        _ => context.translate(LangKeys.analysisProgress1),
-      };
+    2 => context.translate(LangKeys.analysisProgress2),
+    3 => context.translate(LangKeys.analysisProgress3),
+    _ => context.translate(LangKeys.analysisProgress1),
+  };
 
   // (C) Result slot (§2.2/§2.3/§2.5): skeleton while analyzing, timeout card
   // alone when nothing survived, wired ResultCard with the save morph — the
@@ -274,8 +276,9 @@ class _LogScreenState extends State<LogScreen> {
     final AnalysisResult? result = state.result;
     if (result == null) return const SizedBox.shrink();
     final bool reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final Duration morphDuration =
-        reduceMotion ? Duration.zero : const Duration(milliseconds: 300);
+    final Duration morphDuration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 300);
     return _fadeIn(
       context,
       600,
@@ -338,12 +341,10 @@ class _LogScreenState extends State<LogScreen> {
     return FadeTransition(
       opacity: animation,
       child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 0.35),
-          end: Offset.zero,
-        ).animate(
-          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-        ),
+        position: Tween<Offset>(begin: const Offset(0, 0.35), end: Offset.zero)
+            .animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            ),
         child: child,
       ),
     );
@@ -383,8 +384,9 @@ class _LogScreenState extends State<LogScreen> {
   // focus, cursor at the end; the CTA flips to re_analyze from here.
   void _editDescription(AnalysisResult result) {
     setState(() => _expandedForResult = result);
-    _controller.selection =
-        TextSelection.collapsed(offset: _controller.text.length);
+    _controller.selection = TextSelection.collapsed(
+      offset: _controller.text.length,
+    );
     _focusNode.requestFocus();
   }
 
@@ -454,8 +456,9 @@ class _LogScreenState extends State<LogScreen> {
   Widget _miniLedger(BuildContext context, LogState state) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final List<Map<String, dynamic>> rows = state.todayMeals;
-    final List<Map<String, dynamic>> topRows =
-        rows.length <= 2 ? rows : rows.sublist(0, 2);
+    final List<Map<String, dynamic>> topRows = rows.length <= 2
+        ? rows
+        : rows.sublist(0, 2);
     return _fadeIn(
       context,
       700,
@@ -486,9 +489,9 @@ class _LogScreenState extends State<LogScreen> {
                   ),
                 ),
               ),
-              // TODO(review): «الكل» opens the full day ledger (S06) — not wired.
+              // «الكل» jumps to the review gate (S06).
               ActionChip(
-                onPressed: () {},
+                onPressed: widget.onGoToReview,
                 side: BorderSide(color: scheme.outline),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.small.r),
@@ -534,19 +537,16 @@ class _LogScreenState extends State<LogScreen> {
           : const Duration(milliseconds: 300),
       transitionBuilder: (Widget child, Animation<double> animation) =>
           _morphTransition(context, child, animation),
-      child: KeyedSubtree(
-        key: ValueKey<String>(savedMealId),
-        child: rowWidget,
-      ),
+      child: KeyedSubtree(key: ValueKey<String>(savedMealId), child: rowWidget),
     );
   }
 
   // Mock rows carry no meal type yet — contract field `type` falls back to
   // breakfast until the repo ships it.
   MealType _mealTypeFor(Map<String, dynamic> row) => switch (row['type']) {
-        'lunch' => MealType.lunch,
-        'dinner' => MealType.dinner,
-        'snack' => MealType.snack,
-        _ => MealType.breakfast,
-      };
+    'lunch' => MealType.lunch,
+    'dinner' => MealType.dinner,
+    'snack' => MealType.snack,
+    _ => MealType.breakfast,
+  };
 }

@@ -4,6 +4,9 @@ import 'package:nesba_ai/core/common/animations/animate_do.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/routes/app_routes.dart';
+import 'package:nesba_ai/core/service/shared_pref/pref_keys.dart';
+import 'package:nesba_ai/core/service/shared_pref/shared_pref.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/features/onboarding/widgets/onboard_page.dart';
 
@@ -30,11 +33,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   bool get _isLast => _current == _pageCount - 1;
 
+  // Marks first-run done, then lands on login (the flow is linear).
+  Future<void> _finishOnboarding() async {
+    await SharedPref().setBoolean(PrefKeys.onboardingDone, true);
+    if (!mounted) return;
+    context.pushReplacementNamed(AppRoutes.login);
+  }
+
   // Skips the entrance when the OS asks for reduced motion.
   Widget _fadeIn(BuildContext context, int duration, Widget child) =>
       MediaQuery.disableAnimationsOf(context)
-          ? child
-          : CustomFadeInUp(duration: duration, child: child);
+      ? child
+      : CustomFadeInUp(duration: duration, child: child);
 
   @override
   Widget build(BuildContext context) {
@@ -68,24 +78,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   ({IconData icon, String title, String body}) _pageContent(
     BuildContext context,
     int index,
-  ) =>
-      switch (index) {
-        0 => (
-          icon: Icons.restaurant_menu,
-          title: context.translate(LangKeys.onboardTitle1),
-          body: context.translate(LangKeys.onboardBody1),
-        ),
-        1 => (
-          icon: Icons.edit_note,
-          title: context.translate(LangKeys.onboardTitle2),
-          body: context.translate(LangKeys.onboardBody2),
-        ),
-        _ => (
-          icon: Icons.donut_large,
-          title: context.translate(LangKeys.onboardTitle3),
-          body: context.translate(LangKeys.onboardBody3),
-        ),
-      };
+  ) => switch (index) {
+    0 => (
+      icon: Icons.restaurant_menu,
+      title: context.translate(LangKeys.onboardTitle1),
+      body: context.translate(LangKeys.onboardBody1),
+    ),
+    1 => (
+      icon: Icons.edit_note,
+      title: context.translate(LangKeys.onboardTitle2),
+      body: context.translate(LangKeys.onboardBody2),
+    ),
+    _ => (
+      icon: Icons.donut_large,
+      title: context.translate(LangKeys.onboardTitle3),
+      body: context.translate(LangKeys.onboardBody3),
+    ),
+  };
 
   // Dots + actions under the pages.
   Widget _bottom(BuildContext context) {
@@ -126,7 +135,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // Skip shows only off the last page; both actions land on auth later.
+  // Skip shows only off the last page; both actions land on login.
   Widget _actions(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final Duration duration = MediaQuery.disableAnimationsOf(context)
@@ -140,9 +149,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ? const SizedBox.shrink(key: ValueKey<String>('onboard-no-skip'))
               : TextButton(
                   key: const ValueKey<String>('onboard-skip'),
-                  onPressed: () {
-                    // TODO(auth): skip jumps to auth when it ships.
-                  },
+                  onPressed: _finishOnboarding,
                   style: TextButton.styleFrom(minimumSize: Size(64.w, 48.h)),
                   child: TextApp(
                     text: context.translate(LangKeys.onboardSkip),
@@ -159,9 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: SizedBox(
             height: 48.h,
             child: FilledButton(
-              onPressed: () {
-                // TODO(auth): «ابدأ» lands on auth when it ships.
-              },
+              onPressed: _finishOnboarding,
               style: FilledButton.styleFrom(shape: const StadiumBorder()),
               child: TextApp(
                 text: context.translate(LangKeys.onboardCta),

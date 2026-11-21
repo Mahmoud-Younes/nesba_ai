@@ -10,6 +10,7 @@ import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/service/shared_pref/pref_keys.dart';
 import 'package:nesba_ai/core/service/shared_pref/shared_pref.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
+import 'package:nesba_ai/core/widgets/nes_app_bar.dart';
 
 /// «الإعدادات» — theme + language + daily goal + about (ticket 27);
 /// opened from the app bar settings icon (shell wiring, ticket 21).
@@ -21,6 +22,8 @@ class SettingsScreen extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: scheme.surface,
+      // Pushed from any gate bar — the back button is implied.
+      appBar: NesAppBar(showBack: true),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.all(16.w),

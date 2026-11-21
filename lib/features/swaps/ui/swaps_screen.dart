@@ -6,6 +6,7 @@ import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/widgets/feedback/error_card.dart';
 import 'package:nesba_ai/core/widgets/feedback/skeleton_card.dart';
@@ -20,9 +21,12 @@ import 'package:nesba_ai/features/swaps/ui/widgets/swaps_empties.dart';
 /// [mealContextDescription] turns it into the S09 meal-context variant
 /// (banner + hidden general section, verdict-triggered deep-link).
 class SwapsScreen extends StatelessWidget {
-  const SwapsScreen({this.mealContextDescription, super.key});
+  const SwapsScreen({this.mealContextDescription, this.onGoToLog, super.key});
 
   final String? mealContextDescription;
+
+  /// Shell-injected jump to the log gate (banner + empties CTA).
+  final VoidCallback? onGoToLog;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +36,10 @@ class SwapsScreen extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.surface,
-            appBar: NesAppBar(title: context.translate(LangKeys.swapsTitle)),
+            appBar: NesAppBar(
+              onSettingsTap: () => context.pushName(AppRoutes.settings),
+              title: context.translate(LangKeys.swapsTitle),
+            ),
             body: SafeArea(child: _body(context, state)),
           );
         },
@@ -58,10 +65,9 @@ class SwapsScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: MealContextBanner(
                   mealDescription: mealContextDescription!,
-                  onBackToMeal: () {
-                    // TODO(log): back to the log gate with the live
-                    // result card (G-10) — lands with shell wiring (21).
-                  },
+                  // Back to the log gate — the meal stays live in the
+                  // IndexedStack (G-10).
+                  onBackToMeal: () => onGoToLog?.call(),
                 ),
               ),
             ),
@@ -71,8 +77,8 @@ class SwapsScreen extends StatelessWidget {
           ],
           if (state.swaps.isEmpty)
             SwapsEmpties(
-              // TODO(log): CTA routes to the log gate (ticket 21).
-              onCta: () {},
+              // The empties CTA jumps to the log gate.
+              onCta: onGoToLog,
             )
           else if (mealContextDescription == null)
             ..._cardsSection(context, state)
@@ -182,9 +188,6 @@ class SwapsScreen extends StatelessWidget {
 
   // S09 pairs — no «من وجباتك الأخيرة» header while the banner shows.
   List<Widget> _mealContextPairs(BuildContext context, SwapState state) {
-    return <Widget>[
-      SizedBox(height: 16.h),
-      ..._pairCards(context, state),
-    ];
+    return <Widget>[SizedBox(height: 16.h), ..._pairCards(context, state)];
   }
 }

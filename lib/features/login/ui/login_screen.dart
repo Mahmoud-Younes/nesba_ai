@@ -5,6 +5,7 @@ import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/features/login/logic/login_cubit.dart';
 import 'package:nesba_ai/features/login/ui/widgets/login_actions.dart';
@@ -41,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
             body: SafeArea(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(16.w),
-                // TODO(onboarding): first-run routing lands with the app shell.
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onStateChanged(BuildContext context, LoginState state) {
     if (state.status == LoginStatus.success) {
-      // TODO(route): navigate home when routing ships — no temp snackbar.
+      context.pushReplacementNamed(AppRoutes.home);
       return;
     }
     if (state.status == LoginStatus.error) {
@@ -117,8 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
         invalidEmailText: context.translate(LangKeys.validationEmail),
         shortPasswordText: context.translate(LangKeys.validationPasswordShort),
       ),
-      // TODO(signup): wire the signup route when it ships.
-      onCreateAccount: () {},
+      // Signup link — pushes signup over login.
+      onCreateAccount: () => context.pushName(AppRoutes.signUp),
     );
   }
 }

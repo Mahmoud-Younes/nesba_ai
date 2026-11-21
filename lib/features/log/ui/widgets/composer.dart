@@ -55,6 +55,7 @@ class Composer extends StatelessWidget {
           focusNode: focusNode,
           onChanged: onChanged,
           minLines: 3,
+          maxLines: null,
           textInputAction: TextInputAction.newline,
           decoration: InputDecoration(
             hintText: context.translate(LangKeys.logComposerPlaceholder),

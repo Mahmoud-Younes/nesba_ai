@@ -5,6 +5,7 @@ import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/features/sign_up/logic/sign_up_cubit.dart';
 import 'package:nesba_ai/features/sign_up/ui/widgets/sign_up_actions.dart';
@@ -46,7 +47,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             body: SafeArea(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(16.w),
-                // TODO(onboarding): first-run routing lands with the app shell.
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -74,7 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _onStateChanged(BuildContext context, SignUpState state) {
     if (state.status == SignUpStatus.success) {
-      // TODO(route): navigate home when routing ships — no temp snackbar.
+      context.pushReplacementNamed(AppRoutes.home);
       return;
     }
     if (state.status == SignUpStatus.error) {
@@ -138,8 +138,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           LangKeys.validationPasswordMatch,
         ),
       ),
-      // TODO(login): wire the login route when it ships.
-      onLogin: () {},
+      // Login link — the flow is linear, so login replaces signup.
+      onLogin: () => context.pushReplacementNamed(AppRoutes.login),
     );
   }
 }
