@@ -14,8 +14,9 @@ class MockReviewRepo implements ReviewRepo {
   }
 
   @override
-    await Future.delayed(_latency);
- = MockTodayDataSource.instance;
+  Future<Map<String, dynamic>> todaySummary() async {
+    await Future.delayed(_latency);
+    final MockTodayDataSource source = MockTodayDataSource.instance;
     return <String, dynamic>{
       'consumed': source.consumedKcal,
       'goal': source.goalKcal,
