@@ -28,17 +28,15 @@ class CustomButton extends StatelessWidget {
       width: width,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? context.color.greenDark,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.r),
-          ),
+          backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
+          shape: const StadiumBorder(),
         ),
         onPressed: onPressed,
         child: TextApp(
           theme: context.textStyle.copyWith(
-            color: textColor ?? context.color.mainColor,
+            color: textColor ?? Theme.of(context).colorScheme.onPrimary,
             fontWeight: FontWeightHelper.medium,
-            fontSize: 15.sp,
+            fontSize: 14.sp,
           ),
           text: text,
         ),

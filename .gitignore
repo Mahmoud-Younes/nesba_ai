@@ -12,8 +12,14 @@
 .swiftpm/
 migrate_working_dir/
 /e2e/
+/e2e.config.ts
 .agents/skills/e2e/
 .claude/skills/e2e/
+
+# npm artifacts of the local e2e runner — never committed
+package.json
+package-lock.json
+node_modules/
 
 # Skill-generated local artifacts (impeccable / EGM) — local only, never pushed
 /PRODUCT.md
