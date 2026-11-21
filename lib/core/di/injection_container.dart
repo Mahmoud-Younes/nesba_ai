@@ -10,6 +10,7 @@ import 'package:nesba_ai/features/page_two/logic/page_two_cubit.dart';
 import 'package:nesba_ai/features/review/data/repos/mock_review_repo.dart';
 import 'package:nesba_ai/features/review/data/repos/review_repo.dart';
 import 'package:nesba_ai/features/review/logic/review_cubit.dart';
+import 'package:nesba_ai/features/sign_up/logic/sign_up_cubit.dart';
 import 'package:nesba_ai/features/swaps/data/repos/mock_swap_repo.dart';
 import 'package:nesba_ai/features/swaps/data/repos/swap_repo.dart';
 import 'package:nesba_ai/features/swaps/logic/swap_cubit.dart';
@@ -24,6 +25,7 @@ Future<void> setupInjector() async {
   await _initReview();
   await _initSwaps();
   await _initLogin();
+  await _initSignUp();
 }
 
 Future<void> _initCore() async {
@@ -61,4 +63,8 @@ Future<void> _initSwaps() async {
 
 Future<void> _initLogin() async {
   sl.registerFactory<LoginCubit>(LoginCubit.new);
+}
+
+Future<void> _initSignUp() async {
+  sl.registerFactory<SignUpCubit>(SignUpCubit.new);
 }
