@@ -7,8 +7,11 @@ import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 
 /// Surface app bar with the localized wordmark and a 48dp settings action.
 class NesAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const NesAppBar({this.onSettingsTap, super.key});
+  const NesAppBar({this.title, this.onSettingsTap, super.key});
 
+  // Dynamic screen title (review follows the day/week switch); falls back
+  // to the wordmark.
+  final String? title;
   final VoidCallback? onSettingsTap;
 
   @override
@@ -23,9 +26,9 @@ class NesAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       title: TextApp(
-        text: context.translate(LangKeys.appName),
+        text: title ?? context.translate(LangKeys.appName),
         theme: context.textStyle.copyWith(
-          fontSize: 22.sp,
+          fontSize: title == null ? 22.sp : 24.sp,
           fontWeight: FontWeightHelper.semiBold,
           color: scheme.onSurface,
         ),
