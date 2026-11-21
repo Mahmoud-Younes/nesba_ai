@@ -8,12 +8,14 @@ class MockReviewRepo implements ReviewRepo {
   static const Duration _latency = Duration(milliseconds: 600);
 
   @override
-  Future<List<Map<String, dynamic>>> todayMeals() async =>
-      MockTodayDataSource.instance.todayMeals();
+  Future<List<Map<String, dynamic>>> todayMeals() async {
+    await Future.delayed(_latency);
+    return MockTodayDataSource.instance.todayMeals();
+  }
 
   @override
-  Future<Map<String, dynamic>> todaySummary() async {
-    final MockTodayDataSource source = MockTodayDataSource.instance;
+    await Future.delayed(_latency);
+ = MockTodayDataSource.instance;
     return <String, dynamic>{
       'consumed': source.consumedKcal,
       'goal': source.goalKcal,
