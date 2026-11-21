@@ -27,7 +27,7 @@ class SplashWordmark extends StatelessWidget {
         TextApp(
           text: context.translate(LangKeys.appName),
           theme: context.textStyle.copyWith(
-            fontSize: 40.sp,
+            fontSize: 36.sp,
             fontWeight: FontWeightHelper.semiBold,
             color: scheme.primary,
           ),

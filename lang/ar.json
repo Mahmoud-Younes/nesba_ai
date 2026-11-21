@@ -152,6 +152,8 @@
     "onboard_body_3": "حلقة سعراتك وقائمة وجباتك ونمطك الأسبوعي في مكان واحد",
     "onboard_cta": "ابدأ",
     "onboard_skip": "تخطي",
+    "onboard_page_semantics": "صفحة {index} من {count}",
+    "settings_language_label": "اللغة",
     "login_title": "تسجيل الدخول",
     "email_label": "البريد الإلكتروني",
     "password_label": "كلمة المرور",

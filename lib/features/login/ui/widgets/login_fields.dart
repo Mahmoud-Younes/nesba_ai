@@ -78,7 +78,7 @@ class _PasswordFieldState extends State<_PasswordField> {
         errorText: widget.errorText,
         suffixIcon: IconButton(
           onPressed: () => setState(() => _obscure = !_obscure),
-          constraints: BoxConstraints(minWidth: 48.w, minHeight: 48.h),
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           icon: Icon(
             _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
           ),

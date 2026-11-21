@@ -31,9 +31,9 @@ class SignUpActions extends StatelessWidget {
   }
 
   Widget _signupButton(BuildContext context, ColorScheme scheme) {
+    // Full width; intrinsic height with the theme's 48dp floor (states 5.2).
     return SizedBox(
       width: double.infinity,
-      height: 48.h,
       child: FilledButton(
         onPressed: isLoading ? null : onSignUp,
         // Loading keeps the primary look with an in-button indicator.
@@ -53,8 +53,6 @@ class SignUpActions extends StatelessWidget {
   Widget _ctaChild(BuildContext context, ColorScheme scheme) {
     return TextApp(
       text: context.translate(LangKeys.signupCta),
-      maxLines: 1,
-      textOverflow: TextOverflow.ellipsis,
       theme: context.textStyle.copyWith(
         fontSize: 14.sp,
         fontWeight: FontWeightHelper.medium,
@@ -78,8 +76,6 @@ class SignUpActions extends StatelessWidget {
         SizedBox(width: 12.w),
         TextApp(
           text: context.translate(LangKeys.authLoading),
-          maxLines: 1,
-          textOverflow: TextOverflow.ellipsis,
           theme: context.textStyle.copyWith(
             fontSize: 14.sp,
             fontWeight: FontWeightHelper.medium,
@@ -103,11 +99,9 @@ class SignUpActions extends StatelessWidget {
         ),
         TextButton(
           onPressed: onLogin,
-          style: TextButton.styleFrom(minimumSize: Size(64, 48.h)),
+          style: TextButton.styleFrom(minimumSize: const Size(64, 48)),
           child: TextApp(
             text: context.translate(LangKeys.signupLoginLink),
-            maxLines: 1,
-            textOverflow: TextOverflow.ellipsis,
             theme: context.textStyle.copyWith(
               fontSize: 14.sp,
               fontWeight: FontWeightHelper.medium,

@@ -33,22 +33,26 @@ class NesAppBar extends StatelessWidget implements PreferredSizeWidget {
           color: scheme.onSurface,
         ),
       ),
-      actions: [
-        Semantics(
-          label: context.translate(LangKeys.settings),
-          button: true,
-          child: IconButton(
-            onPressed: onSettingsTap,
-            padding: EdgeInsets.zero,
-            constraints: BoxConstraints(minWidth: 48.w, minHeight: 48.h),
-            icon: Icon(
-              Icons.settings_outlined,
-              size: 24.r,
-              color: scheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-      ],
+      // No silent dead control: the gear renders only when it does something
+      // (the settings screen itself passes no handler).
+      actions: onSettingsTap == null
+          ? null
+          : <Widget>[
+              Semantics(
+                label: context.translate(LangKeys.settings),
+                button: true,
+                child: IconButton(
+                  onPressed: onSettingsTap,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(minWidth: 48.w, minHeight: 48.h),
+                  icon: Icon(
+                    Icons.settings_outlined,
+                    size: 24.r,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
     );
   }
 }

@@ -31,9 +31,10 @@ class LoginActions extends StatelessWidget {
   }
 
   Widget _loginButton(BuildContext context, ColorScheme scheme) {
+    // Full width; height is intrinsic with the theme's 48dp floor — no
+    // tight box that clips at 200% text scale (states §5.2).
     return SizedBox(
       width: double.infinity,
-      height: 48.h,
       child: FilledButton(
         onPressed: isLoading ? null : onLogin,
         // Loading keeps the primary look with an in-button indicator.
@@ -53,8 +54,6 @@ class LoginActions extends StatelessWidget {
   Widget _ctaChild(BuildContext context, ColorScheme scheme) {
     return TextApp(
       text: context.translate(LangKeys.loginCta),
-      maxLines: 1,
-      textOverflow: TextOverflow.ellipsis,
       theme: context.textStyle.copyWith(
         fontSize: 14.sp,
         fontWeight: FontWeightHelper.medium,
@@ -78,8 +77,6 @@ class LoginActions extends StatelessWidget {
         SizedBox(width: 12.w),
         TextApp(
           text: context.translate(LangKeys.authLoading),
-          maxLines: 1,
-          textOverflow: TextOverflow.ellipsis,
           theme: context.textStyle.copyWith(
             fontSize: 14.sp,
             fontWeight: FontWeightHelper.medium,
@@ -103,11 +100,9 @@ class LoginActions extends StatelessWidget {
         ),
         TextButton(
           onPressed: onCreateAccount,
-          style: TextButton.styleFrom(minimumSize: Size(64, 48.h)),
+          style: TextButton.styleFrom(minimumSize: const Size(64, 48)),
           child: TextApp(
             text: context.translate(LangKeys.loginCreateAccount),
-            maxLines: 1,
-            textOverflow: TextOverflow.ellipsis,
             theme: context.textStyle.copyWith(
               fontSize: 14.sp,
               fontWeight: FontWeightHelper.medium,

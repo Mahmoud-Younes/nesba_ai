@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nesba_ai/core/app/app_cubit/app_cubit.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
-import 'package:nesba_ai/core/language/app_localizations.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/service/shared_pref/pref_keys.dart';
 import 'package:nesba_ai/core/service/shared_pref/shared_pref.dart';
@@ -90,9 +89,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  // TODO(language-label): deck §2.9 wants a «اللغة» row label — no such key
-  // in lang/*.json yet; the `language` key itself carries the other
-  // language's native name, so the row text doubles as the switch-to value.
   Widget _languageRow(
     BuildContext context,
     AppCubit cubit,
@@ -107,7 +103,7 @@ class SettingsScreen extends StatelessWidget {
               : cubit.toEnglish(),
           borderRadius: BorderRadius.circular(8.r),
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: 48.h),
+            constraints: BoxConstraints(minHeight: 48),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 12.h),
               child: Row(
@@ -267,11 +263,9 @@ class _GoalCardState extends State<_GoalCard> {
         SizedBox(
           width: double.infinity,
           child: FilledButton(
-            // TODO(copy): plain «تم/Save» key missing from the deck —
-            // locale literal per the LogScreen «تم/Done» precedent.
             onPressed: _isValidGoal ? _save : null,
             child: TextApp(
-              text: AppLocalizations.of(context)!.isEnLocale ? 'Done' : 'تم',
+              text: context.translate(LangKeys.done),
               theme: context.textStyle.copyWith(
                 fontSize: 14.sp,
                 fontWeight: FontWeightHelper.medium,
