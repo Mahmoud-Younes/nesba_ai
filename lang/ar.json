@@ -69,7 +69,7 @@
     "macro_value": "78 / 120 جم",
     "chart_title": "آخر 7 أيام",
     "chart_x_axis": "أسماء أيام مختصرة عبر Intl (أحد، اثنين…)",
-    "chart_a11y_summary": "السعرات اليومية في آخر 7 أيام: الاثنين 1,240…",
+    "chart_a11y_summary": "السعرات اليومية في آخر 7 أيام: {days}",
     "meals_header": "وجبات اليوم",
     "group_yesterday": "أمس",
     "group_today": "اليوم",

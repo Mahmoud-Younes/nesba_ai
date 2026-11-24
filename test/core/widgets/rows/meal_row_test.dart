@@ -13,11 +13,12 @@ void main() {
       (WidgetTester tester) async {
     await pumpNesbaWidget(
       tester,
-      const MealRow(
+      MealRow(
         name: 'بيضتين',
         mealType: MealType.breakfast,
         timeText: '8:15 ص',
         kcalText: '140',
+        onTap: () {},
       ),
     );
 
@@ -35,11 +36,12 @@ void main() {
       (WidgetTester tester) async {
     await pumpNesbaWidget(
       tester,
-      const MealRow(
+      MealRow(
         name: 'Two eggs',
         mealType: MealType.breakfast,
         timeText: '8:15',
         kcalText: '140',
+        onTap: () {},
       ),
       locale: const Locale('en'),
     );

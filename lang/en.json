@@ -69,7 +69,7 @@
     "macro_value": "78 / 120 g",
     "chart_title": "Last 7 days",
     "chart_x_axis": "Short weekday (Mon, Tue…)",
-    "chart_a11y_summary": "Calories per day, last 7 days: Monday 1,240…",
+    "chart_a11y_summary": "Calories per day, last 7 days: {days}",
     "meals_header": "Today's meals",
     "group_yesterday": "Yesterday",
     "group_today": "Today",

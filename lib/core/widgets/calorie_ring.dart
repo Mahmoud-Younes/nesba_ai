@@ -11,9 +11,9 @@ import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 // existing import sites keep working.
 export 'package:nesba_ai/core/helpers/format_helpers.dart' show formatCalories;
 
-/// Ring size — hero 140dp stroke 12 (review) or mini 40dp stroke 5
-/// (summary strip), spec §1.5.
-enum CalorieRingVariant { hero, mini }
+/// Ring size — hero 140dp stroke 12 (review), average 96dp stroke 9
+/// (week review), or mini 40dp stroke 5 (summary strip), spec §1.5.
+enum CalorieRingVariant { hero, average, mini }
 
 /// Calorie progress ring — hero 140dp stroke 12 / mini 40dp stroke 5
 /// (spec §1.5). Always clockwise in both locales (no TextDirection involved);
@@ -58,9 +58,17 @@ class CalorieRing extends StatelessWidget {
     return value;
   }
 
-  double get _dimension => variant == CalorieRingVariant.hero ? 140.r : 40.r;
+  double get _dimension => switch (variant) {
+        CalorieRingVariant.hero => 140.r,
+        CalorieRingVariant.average => 96.r,
+        CalorieRingVariant.mini => 40.r,
+      };
 
-  double get _strokeWidth => variant == CalorieRingVariant.hero ? 12.r : 5.r;
+  double get _strokeWidth => switch (variant) {
+        CalorieRingVariant.hero => 12.r,
+        CalorieRingVariant.average => 9.r,
+        CalorieRingVariant.mini => 5.r,
+      };
 
   // Hero center: 36sp semiBold tabular number + optional caption (spec §2.6).
   Widget _heroCenter(BuildContext context) {
@@ -90,6 +98,20 @@ class CalorieRing extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+
+  // Average center: 24sp tabular number (week review §2.7).
+  Widget _averageCenter(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return TextApp(
+      text: formatCalories(consumed),
+      theme: context.textStyle.copyWith(
+        fontSize: 24.sp,
+        fontWeight: FontWeightHelper.semiBold,
+        fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+        color: scheme.onSurface,
+      ),
     );
   }
 
@@ -127,9 +149,11 @@ class CalorieRing extends StatelessWidget {
             sweepFraction: _isOver ? 1 : _fraction,
           ),
           child: Center(
-            child: variant == CalorieRingVariant.hero
-                ? _heroCenter(context)
-                : _miniCenter(context),
+            child: switch (variant) {
+              CalorieRingVariant.hero => _heroCenter(context),
+              CalorieRingVariant.average => _averageCenter(context),
+              CalorieRingVariant.mini => _miniCenter(context),
+            },
           ),
         ),
       ),
