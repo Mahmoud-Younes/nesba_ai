@@ -6,8 +6,8 @@ import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/widgets/calorie_ring.dart';
 
-/// Daily summary strip — 48dp with 16 horizontal margins (spec §2.0-A):
-/// mini CalorieRing + tabular count line; optional tap opens review/day.
+/// Daily summary strip — 48dp, mini CalorieRing + tabular count line
+/// (spec §2.0-A). The hosting screen supplies the 16dp page margin.
 /// Goal present → «1,240 / 2,000 · status»; otherwise the deck noGoal copy.
 class SummaryStrip extends StatelessWidget {
   const SummaryStrip({
@@ -80,15 +80,12 @@ class SummaryStrip extends StatelessWidget {
       label: semanticsLabel,
       button: onTap != null,
       excludeSemantics: true,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: onTap == null
-            ? row
-            : Material(
-                color: Colors.transparent,
-                child: InkWell(onTap: onTap, child: row),
-              ),
-      ),
+      child: onTap == null
+          ? row
+          : Material(
+              color: Colors.transparent,
+              child: InkWell(onTap: onTap, child: row),
+            ),
     );
   }
 }
