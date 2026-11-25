@@ -28,6 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
     if (index == 1) sl<ReviewCubit>().load();
   }
 
+  // G-12 «سجّلها تاني» — seed a clean log draft and jump to the gate.
+  void _relogMeal(Map<String, dynamic> meal) {
+    sl<LogCubit>().prefillMeal(meal['name'] as String? ?? '');
+    _goTo(0);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _currentIndex,
         children: <Widget>[
           LogScreen(onGoToReview: () => _goTo(1)),
-          ReviewScreen(onGoToLog: () => _goTo(0)),
+          ReviewScreen(
+            onGoToLog: () => _goTo(0),
+            onRelogMeal: _relogMeal,
+          ),
           SwapsScreen(onGoToLog: () => _goTo(0)),
         ],
       ),
