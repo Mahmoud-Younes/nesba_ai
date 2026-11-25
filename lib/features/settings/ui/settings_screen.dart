@@ -190,10 +190,8 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-/// Daily goal card — numeric kcal goal persisted to SharedPref.
-/// TODO(settings-goal): LogCubit reads this key later (its goal is a mock
-/// 2000 for now) via int.tryParse(SharedPref().getString(
-/// PrefKeys.dailyGoalKcal) ?? '').
+/// Daily goal card — numeric kcal goal persisted to SharedPref; the log and
+/// review gates re-read it when this screen pops.
 class _GoalCard extends StatefulWidget {
   const _GoalCard();
 

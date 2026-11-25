@@ -28,7 +28,8 @@ class LogCubit extends Cubit<LogState> {
   // Snapshot for the item-delete undo window (§2.4 — G-09 snackbar).
   MealItem? _removedItem;
   int? _removedIndex;
-  AnalysisResult? _removedFromResult;
+  int _resultVersion = 0;
+  int? _removedAtVersion;
 
   // Deck §2.8: the inline disclaimer rides the first result only.
   bool _disclaimerShown = false;
@@ -76,6 +77,29 @@ class LogCubit extends Cubit<LogState> {
     ));
   }
 
+  /// G-12 «سجّلها تاني» — a clean draft seeded with the meal name; any
+  /// in-flight or previous analysis is dropped without a Gemini call.
+  void prefillMeal(String text) {
+    _requestId++;
+    _stopTicker();
+    _stopwatch?.stop();
+    _inFlight = false;
+    _analyzedText = '';
+    emit(state.copyWith(
+      status: LogStatus.draft,
+      description: text,
+      result: null,
+      progressStep: 1,
+      elapsedSeconds: 0,
+      isStale: false,
+      isTimeout: false,
+      isSaving: false,
+      isDetailsExpanded: false,
+      showDisclaimer: false,
+      savedMealId: null,
+    ));
+  }
+
   Future<void> reAnalyze() => startAnalysis();
 
   void resultArrived(AnalysisResult result) {
@@ -85,6 +109,7 @@ class LogCubit extends Cubit<LogState> {
     _inFlight = false;
     final firstResult = !_disclaimerShown;
     _disclaimerShown = true;
+    _resultVersion++;
     emit(state.copyWith(
       status: LogStatus.result,
       result: result,
@@ -155,6 +180,7 @@ class LogCubit extends Cubit<LogState> {
         draft.trim().isNotEmpty && draft.trim() != result.descriptionEcho;
     final String restored = keepDraft ? draft : result.descriptionEcho;
     _analyzedText = result.descriptionEcho;
+    _resultVersion++;
     emit(state.copyWith(
       status: LogStatus.result,
       savedMealId: null,
@@ -192,7 +218,7 @@ class LogCubit extends Cubit<LogState> {
     if (index < 0 || index >= items.length) return;
     _removedItem = items[index];
     _removedIndex = index;
-    _removedFromResult = result;
+    _removedAtVersion = _resultVersion;
     items.removeAt(index);
     emit(state.copyWith(result: _recalculated(result, items)));
   }
@@ -208,11 +234,11 @@ class LogCubit extends Cubit<LogState> {
     final AnalysisResult? result = state.result;
     if (result == null ||
         state.savedMealId != null ||
-        !identical(result, _removedFromResult)) {
-      _removedFromResult = null;
+        _resultVersion != _removedAtVersion) {
+      _removedAtVersion = null;
       return;
     }
-    _removedFromResult = null;
+    _removedAtVersion = null;
     final List<MealItem> items = [...result.items];
     items.insert(index.clamp(0, items.length), item);
     emit(state.copyWith(result: _recalculated(result, items)));

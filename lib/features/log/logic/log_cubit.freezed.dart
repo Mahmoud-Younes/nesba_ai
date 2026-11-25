@@ -225,7 +225,7 @@ return $default(_that.status,_that.description,_that.result,_that.progressStep,_
 
 
 class _LogState implements LogState {
-  const _LogState({this.status = LogStatus.draft, this.description = '', this.result, this.progressStep = 1, this.elapsedSeconds = 0, this.isStale = false, this.isTimeout = false, this.isSaving = false, this.isDetailsExpanded = false, this.showDisclaimer = false, this.savedMealId,  List<Map<String, dynamic>> todayMeals = const <Map<String, dynamic>>[], this.goalKcal = 2000, this.consumedKcal = 0}): _todayMeals = todayMeals;
+  const _LogState({this.status = LogStatus.draft, this.description = '', this.result, this.progressStep = 1, this.elapsedSeconds = 0, this.isStale = false, this.isTimeout = false, this.isSaving = false, this.isDetailsExpanded = false, this.showDisclaimer = false, this.savedMealId,  List<Map<String, dynamic>> todayMeals = const <Map<String, dynamic>>[], this.goalKcal = 0, this.consumedKcal = 0}): _todayMeals = todayMeals;
   
 
 @override@JsonKey() final  LogStatus status;
