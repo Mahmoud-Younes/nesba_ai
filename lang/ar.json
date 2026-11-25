@@ -86,7 +86,7 @@
     "swaps_section_header": "من وجباتك الأخيرة",
     "pair_original": "وجبتك",
     "pair_alternative": "البديل",
-    "savings_line": "يوفّر ~320 سعرة",
+    "savings_line": "يوفّر ~{value} سعرة",
     "fit_chip": "يناسب قيودك الغذائية",
     "try_line": "جرّبه بدلًا من الأصلية",
     "swap_cta": "تبديل",

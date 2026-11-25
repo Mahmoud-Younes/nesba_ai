@@ -58,16 +58,17 @@ class SwapPairCard extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
                     TextApp(
-                      // Per-pair delta through the {value} key — no shared
-                      // static claim that contradicts the card's own numbers.
+                      // Per-pair delta through the deck's {value} key — the
+                      // "~" drops out because the mock ships an exact number.
                       text: context
-                          .translate(LangKeys.swapsSavings)
+                          .translate(LangKeys.savingsLine)
                           .replaceAll(
                             '{value}',
                             formatCalories(
                               (pair['savings'] as num? ?? 0).toInt(),
                             ),
-                          ),
+                          )
+                          .replaceAll('~', ''),
                       theme: context.textStyle.copyWith(
                         fontSize: 14.sp,
                         fontWeight: FontWeightHelper.semiBold,

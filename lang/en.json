@@ -86,7 +86,7 @@
     "swaps_section_header": "From your recent meals",
     "pair_original": "Your meal",
     "pair_alternative": "The swap",
-    "savings_line": "Saves ~320 kcal",
+    "savings_line": "Saves ~{value} kcal",
     "fit_chip": "Fits your restrictions",
     "try_line": "Try it instead of the original",
     "swap_cta": "Swap",

@@ -172,7 +172,6 @@ class LangKeys {
   // G-10 meal-context banner (S09) — placeholder: {meal} / {وصف}
   static const String swapsMealContextTitle = 'swaps_meal_context_title';
   static const String swapsMealContextBack = 'swaps_meal_context_back';
-  static const String swapsSavings = 'swaps_savings';
   // G-11 "view all" chip on mini ledger — placeholder: {count}
   static const String ledgerAllChip = 'ledger_all_chip';
   // G-12 quick re-log action (no Gemini call)
