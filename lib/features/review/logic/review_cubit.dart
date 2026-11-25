@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nesba_ai/core/helpers/app_logger.dart';
 import 'package:nesba_ai/features/review/data/models/week_summary.dart';
 import 'package:nesba_ai/features/review/data/repos/review_repo.dart';
 
@@ -30,6 +31,7 @@ class ReviewCubit extends Cubit<ReviewState> {
       final List<Map<String, dynamic>> meals = await mealsFuture;
       final WeekSummary week = await weekFuture;
       _hasLoaded = true;
+      appLog('review loaded: ${meals.length} meals, ${week.days.length} days');
       emit(state.copyWith(
         isLoading: false,
         errorMessage: null,
@@ -42,8 +44,9 @@ class ReviewCubit extends Cubit<ReviewState> {
         ),
         meals: meals,
       ));
-    } on Exception {
+    } on Exception catch (error) {
       // states §1.5 review-day: error card + retry, previous cache stays.
+      AppLogger.error('review load failed', error);
       emit(state.copyWith(isLoading: false, errorMessage: 'server'));
     }
   }
@@ -51,6 +54,7 @@ class ReviewCubit extends Cubit<ReviewState> {
   /// Day/week switch — both readings come from the same load.
   void toggleMode(ReviewMode mode) {
     if (mode == state.mode) return;
+    appLog('review mode -> ${mode.name}');
     emit(state.copyWith(mode: mode));
   }
 

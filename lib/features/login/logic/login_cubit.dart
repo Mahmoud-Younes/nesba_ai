@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nesba_ai/core/helpers/app_logger.dart';
 
 part 'login_cubit.freezed.dart';
 part 'login_state.dart';
@@ -27,12 +28,14 @@ class LoginCubit extends Cubit<LoginState> {
     final bool emailOk = _emailRegExp.hasMatch(email);
     final bool passwordOk = state.password.length >= 6;
     if (!emailOk || !passwordOk) {
+      appLog('login blocked: invalid fields', level: AppLogLevel.warning);
       emit(state.copyWith(
         emailError: emailOk ? null : invalidEmailText,
         passwordError: passwordOk ? null : shortPasswordText,
       ));
       return;
     }
+    appLog('login started: $email');
     emit(state.copyWith(
       status: LoginStatus.loading,
       emailError: null,
@@ -41,6 +44,7 @@ class LoginCubit extends Cubit<LoginState> {
     // TODO(firebase): FirebaseAuth signInWithEmailAndPassword (social
     // pattern) — failures emit LoginStatus.error with login_error_invalid.
     await Future.delayed(const Duration(milliseconds: 800));
+    appLog('login success: $email');
     emit(state.copyWith(status: LoginStatus.success));
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nesba_ai/core/helpers/app_logger.dart';
 
 part 'sign_up_cubit.freezed.dart';
 part 'sign_up_state.dart';
@@ -38,6 +39,7 @@ class SignUpCubit extends Cubit<SignUpState> {
     final bool passwordOk = state.password.length >= 6;
     final bool matchOk = state.confirmPassword == state.password;
     if (!nameOk || !emailOk || !passwordOk || !matchOk) {
+      appLog('signup blocked: invalid fields', level: AppLogLevel.warning);
       emit(
         state.copyWith(
           nameError: nameOk ? null : nameEmptyText,
@@ -48,6 +50,7 @@ class SignUpCubit extends Cubit<SignUpState> {
       );
       return;
     }
+    appLog('signup started: $email');
     emit(
       state.copyWith(
         status: SignUpStatus.loading,
@@ -59,6 +62,7 @@ class SignUpCubit extends Cubit<SignUpState> {
     );
     // TODO(firebase): FirebaseAuth createUserWithEmailAndPassword — failures emit SignUpStatus.error.
     await Future.delayed(const Duration(milliseconds: 800));
+    appLog('signup success: $email');
     emit(state.copyWith(status: SignUpStatus.success));
   }
 }

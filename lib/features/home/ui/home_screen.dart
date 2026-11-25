@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
+import 'package:nesba_ai/core/helpers/app_logger.dart';
 import 'package:nesba_ai/core/widgets/nes_navigation_bar.dart';
 import 'package:nesba_ai/features/log/logic/log_cubit.dart';
 import 'package:nesba_ai/features/log/ui/log_screen.dart';
@@ -21,6 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   void _goTo(int index) {
+    if (index != _currentIndex) {
+      appLog('tab changed: ${_tabName(index)}');
+    }
     setState(() => _currentIndex = index);
     // Spec §3.1: today's data is one truth — the gate that just surfaced
     // re-reads it (a save on سجّل reaches راجع, a delete reaches back).
@@ -30,9 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // G-12 «سجّلها تاني» — seed a clean log draft and jump to the gate.
   void _relogMeal(Map<String, dynamic> meal) {
+    appLog('relog meal: ${meal['name']}');
     sl<LogCubit>().prefillMeal(meal['name'] as String? ?? '');
     _goTo(0);
   }
+
+  String _tabName(int index) => switch (index) {
+        0 => 'log',
+        1 => 'review',
+        2 => 'swaps',
+        _ => 'unknown',
+      };
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nesba_ai/core/helpers/app_logger.dart';
 import 'package:nesba_ai/features/swaps/data/repos/swap_repo.dart';
 
 part 'swap_cubit.freezed.dart';
@@ -23,9 +24,11 @@ class SwapCubit extends Cubit<SwapState> {
     try {
       final List<Map<String, dynamic>> swaps = await _repo.swaps();
       _hasLoaded = true;
+      appLog('swaps loaded: ${swaps.length} pairs');
       emit(state.copyWith(isLoading: false, swaps: swaps, errorMsg: null));
-    } on Exception {
+    } on Exception catch (error) {
       // Every failure renders as the server card; previous swaps stay.
+      AppLogger.error('swaps load failed', error);
       emit(state.copyWith(isLoading: false, errorMsg: 'server'));
     }
   }

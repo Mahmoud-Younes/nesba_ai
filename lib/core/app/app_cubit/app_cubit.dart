@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nesba_ai/core/helpers/app_logger.dart';
 import 'package:nesba_ai/core/service/shared_pref/pref_keys.dart';
 import 'package:nesba_ai/core/service/shared_pref/shared_pref.dart';
 
@@ -21,10 +22,12 @@ class AppCubit extends Cubit<AppState> {
     if (sharedMode != null) {
       // Restore the saved mode on app start.
       isDark = sharedMode;
+      appLog('theme restored: ${isDark ? 'dark' : 'light'}');
       emit(AppState.themeChangeMode(isDark: isDark));
     } else {
       // Toggle the mode when the user taps the switch.
       isDark = !isDark;
+      appLog('theme changed: ${isDark ? 'dark' : 'light'}');
       await SharedPref().setBoolean(PrefKeys.themeMode, isDark).then((value) {
         emit(AppState.themeChangeMode(isDark: isDark));
       });
@@ -39,12 +42,14 @@ class AppCubit extends Cubit<AppState> {
 
     currentLangCode = result!;
 
+    appLog('language restored: $currentLangCode');
     emit(AppState.languageChange(locale: Locale(currentLangCode)));
   }
 
   Future<void> _changeLang(String langCode) async {
     await SharedPref().setString(PrefKeys.language, langCode);
     currentLangCode = langCode;
+    appLog('language changed: $langCode');
     emit(AppState.languageChange(locale: Locale(currentLangCode)));
   }
 

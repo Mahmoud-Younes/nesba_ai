@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nesba_ai/core/helpers/app_logger.dart';
 import 'package:nesba_ai/features/log/data/models/analysis_result.dart';
 import 'package:nesba_ai/features/log/data/models/meal_item.dart';
 import 'package:nesba_ai/features/log/data/repos/log_repo.dart';
@@ -49,6 +50,7 @@ class LogCubit extends Cubit<LogState> {
     _analyzedText = text;
     final requestId = ++_requestId;
     _stopwatch = Stopwatch()..start();
+    appLog('analysis started (${text.length} chars)');
     emit(state.copyWith(
       status: LogStatus.analyzing,
       progressStep: 1,
@@ -107,6 +109,8 @@ class LogCubit extends Cubit<LogState> {
     _stopTicker();
     _stopwatch?.stop();
     _inFlight = false;
+    appLog('analysis result: ${result.kcal} kcal in ${elapsed}s',
+        level: AppLogLevel.info);
     final firstResult = !_disclaimerShown;
     _disclaimerShown = true;
     _resultVersion++;
@@ -140,6 +144,7 @@ class LogCubit extends Cubit<LogState> {
     if (result == null || state.isSaving) return;
     emit(state.copyWith(isSaving: true));
     final mealId = await _repo.saveMeal(result);
+    appLog('meal saved: $mealId (${result.kcal} kcal)');
     if (state.status != LogStatus.result || state.savedMealId != null) {
       emit(state.copyWith(isSaving: false));
       return;
@@ -260,6 +265,8 @@ class LogCubit extends Cubit<LogState> {
   }
 
   void _emitTimeout() {
+    appLog('analysis timed out after ${_timeoutAfter.inSeconds}s',
+        level: AppLogLevel.warning);
     _stopTicker();
     _stopwatch?.stop();
     _inFlight = false;
