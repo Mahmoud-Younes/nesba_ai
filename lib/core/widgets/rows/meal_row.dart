@@ -91,7 +91,9 @@ class MealRow extends StatelessWidget {
           ),
           if (badge != null) ...<Widget>[
             SizedBox(width: 8.w),
-            badge!,
+            // Long sync copy must shrink with the row, never push it past
+            // its boundary (RTL overflow stripes in states §1.5).
+            Flexible(child: badge!),
           ],
           // Navigation affordance only on tappable rows.
           if (onTap != null) ...<Widget>[

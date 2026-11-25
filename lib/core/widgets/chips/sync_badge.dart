@@ -60,13 +60,17 @@ class SyncBadge extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: onBackground),
           SizedBox(width: 4.w),
-          TextApp(
-            text: _label(context),
-            textAlign: TextAlign.start,
-            theme: context.textStyle.copyWith(
-              fontSize: 11.sp,
-              fontWeight: FontWeightHelper.semiBold,
-              color: onBackground,
+          Flexible(
+            child: TextApp(
+              text: _label(context),
+              textAlign: TextAlign.start,
+              maxLines: 1,
+              textOverflow: TextOverflow.ellipsis,
+              theme: context.textStyle.copyWith(
+                fontSize: 11.sp,
+                fontWeight: FontWeightHelper.semiBold,
+                color: onBackground,
+              ),
             ),
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nesba_ai/core/widgets/chips/sync_badge.dart';
 import 'package:nesba_ai/core/widgets/rows/ledger_row.dart' show MealType;
 import 'package:nesba_ai/core/widgets/rows/meal_row.dart';
 
@@ -52,5 +53,27 @@ void main() {
 
     expect(find.byIcon(Icons.chevron_right), findsOneWidget);
     expect(find.byIcon(Icons.chevron_left), findsNothing);
+  });
+
+  // The failed-sync badge carries the longest deck copy; on a narrow row it
+  // must shrink instead of pushing the flex past its boundary (RTL stripes).
+  testWidgets('RTL: wide failed-sync badge fits a narrow row',
+      (WidgetTester tester) async {
+    await pumpNesbaWidget(
+      tester,
+      SizedBox(
+        width: 320,
+        child: MealRow(
+          name: 'صدر دجاج مشوي مع أرز',
+          mealType: MealType.lunch,
+          timeText: '13:30 م',
+          kcalText: '620',
+          badge: SyncBadge(status: SyncStatus.failed, onRetry: () {}),
+          onTap: () {},
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
   });
 }
