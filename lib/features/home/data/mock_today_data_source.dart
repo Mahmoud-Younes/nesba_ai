@@ -73,6 +73,10 @@ class MockTodayDataSource {
 
   void addMeal(Map<String, dynamic> row) => _meals.insert(0, row);
 
+  /// Restores a delete-undo snapshot slot exactly where it was.
+  void insertMeal(int index, Map<String, dynamic> row) =>
+      _meals.insert(index.clamp(0, _meals.length), row);
+
   void removeMeal(String mealId) => _meals.removeWhere(
         (Map<String, dynamic> row) => row['id'] == mealId,
       );

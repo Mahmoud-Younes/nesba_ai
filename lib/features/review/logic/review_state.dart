@@ -14,6 +14,9 @@ abstract class ReviewState with _$ReviewState {
     @Default(<Map<String, dynamic>>[]) List<Map<String, dynamic>> meals,
     Map<String, dynamic>? summary,
 
+    /// Last seven days + weekly macro grams for S07.
+    WeekSummary? week,
+
     /// Grams per macro for the day grid — null until the summary lands.
     ({int protein, int carbs, int fat})? macros,
 

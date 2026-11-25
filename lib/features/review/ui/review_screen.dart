@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:nesba_ai/core/common/animations/animate_do.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
@@ -15,18 +16,24 @@ import 'package:nesba_ai/core/widgets/feedback/skeleton_card.dart';
 import 'package:nesba_ai/core/widgets/feedback/undo_snackbar.dart';
 import 'package:nesba_ai/core/widgets/nes_app_bar.dart';
 import 'package:nesba_ai/core/widgets/rows/macro_grid.dart';
+import 'package:nesba_ai/core/widgets/rows/macro_row.dart';
+import 'package:nesba_ai/features/review/data/models/week_summary.dart';
 import 'package:nesba_ai/features/review/logic/review_cubit.dart';
 import 'package:nesba_ai/features/review/ui/widgets/meals_list.dart';
 import 'package:nesba_ai/features/review/ui/widgets/segmented_day_week.dart';
+import 'package:nesba_ai/features/review/ui/widgets/week_chart.dart';
 
 /// S06 «راجع» frame (screen-specs §2.6): hero ring anchor + under/over
 /// status row + macros + the full day meals list under the pinned
 /// day/week switch.
 class ReviewScreen extends StatelessWidget {
-  const ReviewScreen({this.onGoToLog, super.key});
+  const ReviewScreen({this.onGoToLog, this.onRelogMeal, super.key});
 
   /// Shell-injected jump to the log gate (both empty-state CTAs).
   final VoidCallback? onGoToLog;
+
+  /// G-12 «سجّلها تاني» — shell seeds the log draft with this meal.
+  final ValueChanged<Map<String, dynamic>>? onRelogMeal;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +44,12 @@ class ReviewScreen extends StatelessWidget {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.surface,
             appBar: NesAppBar(
-              onSettingsTap: () => context.pushName(AppRoutes.settings),
+              onSettingsTap: () async {
+                await context.pushName(AppRoutes.settings);
+                if (context.mounted) {
+                  context.read<ReviewCubit>().load();
+                }
+              },
               // The title follows the switch: «يومك» ↔ «أسبوعك» (§2.6).
               title: switch (state.mode) {
                 ReviewMode.week => context.translate(LangKeys.reviewTitleWeek),
@@ -72,7 +84,7 @@ class ReviewScreen extends StatelessWidget {
       return _skeleton(context);
     }
     if (state.mode == ReviewMode.week) {
-      return _weekPlaceholder(context);
+      return _weekContent(context, state);
     }
     if (state.errorMessage != null) {
       return _errorState(context, state);
@@ -140,10 +152,64 @@ class ReviewScreen extends StatelessWidget {
     );
   }
 
-  // TODO(week-view): ticket #28 — the weekly chart/summary land there; the
-  // declared week empty state keeps the switch honest meanwhile (§2.7,
-  // two actions: switch to day + log a meal).
-  Widget _weekPlaceholder(BuildContext context) {
+  // S07 zones: chart → average ring → top/bottom rows → weekly macros.
+  Widget _weekContent(BuildContext context, ReviewState state) {
+    final WeekSummary? week = state.week;
+    if (state.errorMessage != null && (week == null || week.isEmpty)) {
+      return _weekError(context);
+    }
+    if (week == null || week.isEmpty) {
+      return _weekEmpty(context);
+    }
+    final List<WeekDay> dataDays =
+        week.days.where((WeekDay day) => day.hasData).toList();
+    final int average = (dataDays.fold<int>(
+              0,
+              (int sum, WeekDay day) => sum + day.kcal!,
+            ) /
+            dataDays.length)
+        .round();
+    final WeekDay top = dataDays.reduce(
+      (WeekDay a, WeekDay b) => a.kcal! >= b.kcal! ? a : b,
+    );
+    final WeekDay bottom = dataDays.reduce(
+      (WeekDay a, WeekDay b) => a.kcal! <= b.kcal! ? a : b,
+    );
+    final int goal = (state.summary?['goal'] as num? ?? 0).toInt();
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 12.h),
+          if (state.errorMessage != null) ...<Widget>[
+            ErrorCard(
+              icon: Icons.error_outline,
+              title: context.translate(LangKeys.errServerTitle),
+              body: context.translate(LangKeys.errServerBody),
+              actions: <(String, VoidCallback)>[
+                (
+                  context.translate(LangKeys.errOfflineAction),
+                  () => context.read<ReviewCubit>().load(),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+          ],
+          _fadeIn(context, 400, WeekChart(days: week.days, goal: goal)),
+          SizedBox(height: 16.h),
+          _fadeIn(context, 500, _weekAverage(context, average, goal)),
+          SizedBox(height: 16.h),
+          _fadeIn(context, 600, _weekExtremes(context, top, bottom, goal)),
+          SizedBox(height: 16.h),
+          _fadeIn(context, 700, _weekMacros(context, week)),
+          SizedBox(height: 24.h),
+        ],
+      ),
+    );
+  }
+
+  Widget _weekEmpty(BuildContext context) {
     return _fadeIn(
       context,
       500,
@@ -160,6 +226,184 @@ class ReviewScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _weekError(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(16.w),
+      child: ErrorCard(
+        icon: Icons.error_outline,
+        title: context.translate(LangKeys.errServerTitle),
+        body: context.translate(LangKeys.errServerBody),
+        actions: <(String, VoidCallback)>[
+          (
+            context.translate(LangKeys.errOfflineAction),
+            () => context.read<ReviewCubit>().load(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _weekAverage(BuildContext context, int average, int goal) {
+    final bool hasGoal = goal > 0;
+    final String line = hasGoal
+        ? '${context.translate(LangKeys.weekAvgLabel)}: \u2066${formatCalories(average)}\u2069 ${context.translate(LangKeys.ringGoalSuffix).replaceAll('{value}', formatCalories(goal))}'
+        : '${context.translate(LangKeys.weekAvgLabel)}: \u2066${formatCalories(average)}\u2069 · ${context.translate(LangKeys.noGoal)}';
+    return Semantics(
+      label: line,
+      excludeSemantics: true,
+      child: _weekCard(
+        context,
+        child: Row(
+          children: <Widget>[
+            CalorieRing(
+              consumed: average,
+              goal: hasGoal ? goal : null,
+              variant: CalorieRingVariant.average,
+              semanticsLabel: line,
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: TextApp(
+                text: line,
+                theme: context.textStyle.copyWith(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeightHelper.medium,
+                  fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // «أعلى يوم: الجمعة 2,140» / «أقل يوم: الثلاثاء 980» — two 48dp rows.
+  Widget _weekExtremes(
+    BuildContext context,
+    WeekDay top,
+    WeekDay bottom,
+    int goal,
+  ) {
+    return _weekCard(
+      context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          _weekExtremeRow(
+            context,
+            icon: Icons.trending_up,
+            labelKey: LangKeys.weekTopDay,
+            day: top,
+            goal: goal,
+          ),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+          _weekExtremeRow(
+            context,
+            icon: Icons.trending_down,
+            labelKey: LangKeys.weekBottomDay,
+            day: bottom,
+            goal: goal,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _weekExtremeRow(
+    BuildContext context, {
+    required IconData icon,
+    required String labelKey,
+    required WeekDay day,
+    required int goal,
+  }) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final bool over = goal > 0 && day.kcal! > goal;
+    final String line =
+        '${context.translate(labelKey)}: ${_dayName(context, day.date)} \u2066${formatCalories(day.kcal!)}\u2069';
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
+      child: Row(
+        children: <Widget>[
+          Icon(
+            icon,
+            size: 20.r,
+            color: over
+                ? context.color.chartOverTarget!
+                : context.color.chartUnderTarget!,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: TextApp(
+              text: line,
+              theme: context.textStyle.copyWith(
+                fontSize: 14.sp,
+                fontWeight: FontWeightHelper.regular,
+                fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+                color: scheme.onSurface,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Weekly percentages, not daily grams — protein/carbs at 4 kcal/g, fat 9.
+  Widget _weekMacros(BuildContext context, WeekSummary week) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final int proteinCal = week.proteinGrams * 4;
+    final int carbsCal = week.carbsGrams * 4;
+    final int fatCal = week.fatGrams * 9;
+    final int totalCal = proteinCal + carbsCal + fatCal;
+    String pct(int value) =>
+        totalCal == 0 ? '0%' : '${(value / totalCal * 100).round()}%';
+    return _weekCard(
+      context,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          TextApp(
+            text: context.translate(LangKeys.weekMacrosTitle),
+            theme: context.textStyle.copyWith(
+              fontSize: 16.sp,
+              fontWeight: FontWeightHelper.semiBold,
+              color: scheme.onSurface,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          MacroRow(
+            proteinText: '\u2066${pct(proteinCal)}\u2069',
+            carbsText: '\u2066${pct(carbsCal)}\u2069',
+            fatText: '\u2066${pct(fatCal)}\u2069',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _weekCard(BuildContext context, {required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: child,
+    );
+  }
+
+  String _dayName(BuildContext context, DateTime date) =>
+      DateFormat.E(Localizations.localeOf(context).toLanguageTag())
+          .format(date);
 
   // Two distinct empties (states §1.5): first run vs a day with no meals —
   // no blame copy in either; both replace the day zones entirely.
@@ -319,6 +563,7 @@ class ReviewScreen extends StatelessWidget {
       onMealTap: (_) {
         // TODO(meal-detail): view/edit route — needs its own ticket.
       },
+      onRelogMeal: onRelogMeal,
       onRetrySync: (Map<String, dynamic> row) =>
           context.read<ReviewCubit>().retrySync(row),
       onDeleteMeal: (Map<String, dynamic> row) {
