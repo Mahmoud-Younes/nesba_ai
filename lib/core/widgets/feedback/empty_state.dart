@@ -14,6 +14,7 @@ class EmptyState extends StatelessWidget {
     this.onCta,
     this.secondaryCtaLabel,
     this.onSecondaryCta,
+    this.icon = Icons.restaurant_rounded,
     super.key,
   });
 
@@ -21,6 +22,9 @@ class EmptyState extends StatelessWidget {
   final String body;
   final String ctaLabel;
   final VoidCallback? onCta;
+
+  /// Illustration mark — tinted plate/bowl by default.
+  final IconData icon;
 
   /// Optional second action («سجّل وجبة» on the week empty).
   final String? secondaryCtaLabel;
@@ -34,14 +38,14 @@ class EmptyState extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // TODO(assets): replace placeholder with the real illustration asset.
         Container(
           width: 120.w,
           height: 120.h,
           decoration: BoxDecoration(
-            color: scheme.surfaceContainerHigh,
+            color: scheme.primaryContainer,
             borderRadius: BorderRadius.circular(12.r),
           ),
+          child: Icon(icon, size: 48.r, color: scheme.onPrimaryContainer),
         ),
         SizedBox(height: 16.h),
         TextApp(
