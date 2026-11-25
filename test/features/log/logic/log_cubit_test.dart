@@ -18,7 +18,10 @@ class _NeverResolvingLogRepo implements LogRepo {
   @override
   Future<String> saveMeal(AnalysisResult result) async => 'unused_id';
 
-  @override
+  @override
+  Future<void> undoSave(String mealId) async {}
+
+  @override
   Future<int> todayGoal() async => 0;
 
 
@@ -44,7 +47,10 @@ class _HangsOnSecondLogRepo implements LogRepo {
   @override
   Future<String> saveMeal(AnalysisResult result) async => 'unused_id';
 
-  @override
+  @override
+  Future<void> undoSave(String mealId) async {}
+
+  @override
   Future<int> todayGoal() async => 0;
 
 
@@ -65,7 +71,10 @@ class _GatedLogRepo implements LogRepo {
   @override
   Future<String> saveMeal(AnalysisResult result) async => 'unused_id';
 
-  @override
+  @override
+  Future<void> undoSave(String mealId) async {}
+
+  @override
   Future<int> todayGoal() async => 0;
 
 
@@ -224,7 +233,7 @@ void main() {
       cubit.descriptionChanged('نص مختلف تمامًا');
       expect(cubit.state.status, LogStatus.analyzing); // request still live
       expect(cubit.state.isStale, false);
-      async.elapse(const Duration(milliseconds: 2000));
+      async.elapse(const Duration(milliseconds: 4500));
       expect(cubit.state.status, LogStatus.result);
       expect(cubit.state.result, isNotNull);
       expect(cubit.state.isStale, true); // arrival compares vs analyzed text
@@ -286,7 +295,7 @@ void main() {
       expect(cubit.state.todayMeals.first['name'], 'بيض وتوست وعصير برتقال');
       expect(cubit.state.todayMeals.first['kcal'], 430);
       expect(cubit.state.todayMeals.first['time'], matches(RegExp(r'^\d{2}:\d{2}$')));
-      expect(cubit.state.consumedKcal, 900);
+      expect(cubit.state.consumedKcal, 1670);
       expect(cubit.state.description, '');
       expect(cubit.state.isSaving, false);
       expect(cubit.state.isStale, false);
@@ -316,6 +325,7 @@ void main() {
 
   test('undoSave removes the same mealId and restores the result card', () {
     fakeAsync((async) {
+      MockTodayDataSource.instance.reset();
       final cubit = LogCubit(MockLogRepo());
       unawaited(cubit.loadTodayMeals());
       async.flushMicrotasks();
@@ -329,12 +339,12 @@ void main() {
       async.flushMicrotasks();
       expect(cubit.state.status, LogStatus.result);
       expect(cubit.state.savedMealId, isNull);
-      expect(cubit.state.todayMeals.length, 2);
+      expect(cubit.state.todayMeals.length, 4);
       expect(
         cubit.state.todayMeals.any((row) => row['id'] == 'mock_meal_001'),
         false,
       );
-      expect(cubit.state.consumedKcal, 470);
+      expect(cubit.state.consumedKcal, 1240);
       expect(cubit.state.description, 'بيض وتوست وعصير برتقال');
       expect(cubit.state.isStale, false);
       unawaited(cubit.close());
@@ -356,7 +366,7 @@ void main() {
     unawaited(cubit.close());
   });
 
-  test('applyItemCorrection with an unknown name is a no-op', () {
+  test('applyItemCorrection with an out-of-range index is a no-op', () {
     final cubit = LogCubit(MockLogRepo());
     cubit.resultArrived(_result);
     const stranger = MealItem(
@@ -365,7 +375,7 @@ void main() {
       unit: MealUnit.cup,
       kcal: 999,
     );
-    cubit.applyItemCorrection(stranger);
+    cubit.applyItemCorrection(99, stranger);
     expect(cubit.state.result?.kcal, 430);
     expect(cubit.state.result?.items.length, 3);
     unawaited(cubit.close());

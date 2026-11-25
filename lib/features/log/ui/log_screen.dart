@@ -6,6 +6,7 @@ import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/style/theme/app_radius.dart';
 import 'package:nesba_ai/core/widgets/calorie_ring.dart';
@@ -70,8 +71,12 @@ class _LogScreenState extends State<LogScreen> {
             child: Scaffold(
               backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: NesAppBar(
-                // TODO(settings): wire the settings route when it ships.
-                onSettingsTap: () {},
+                onSettingsTap: () async {
+                  await context.pushName(AppRoutes.settings);
+                  if (context.mounted) {
+                    context.read<LogCubit>().loadTodayMeals();
+                  }
+                },
               ),
               body: SafeArea(child: _body(context, state)),
             ),
@@ -107,6 +112,13 @@ class _LogScreenState extends State<LogScreen> {
         ..selection = TextSelection.collapsed(offset: text.length);
     }
     _prevSavedMealId = state.savedMealId;
+    // External drafts (G-12 «سجّلها تاني») seed the local text field.
+    if (state.status == LogStatus.draft &&
+        state.description != _controller.text) {
+      _controller
+        ..text = state.description
+        ..selection = TextSelection.collapsed(offset: state.description.length);
+    }
   }
 
   // Quad contract (§2.0): strip (A) → composer (B) → result (C) → ledger (D).
@@ -145,8 +157,8 @@ class _LogScreenState extends State<LogScreen> {
           // the deck — gap logged with the summary-strip report (§2.1 CD-06).
           statusText: null,
           semanticsLabel: _stripSemantics(context, state),
-          // TODO(review): strip tap opens review/day (S06) — not wired yet.
-          onTap: () {},
+          // Strip tap opens the review/day gate (S06).
+          onTap: widget.onGoToReview,
         );
     if (MediaQuery.disableAnimationsOf(context)) {
       return _fadeIn(
@@ -501,9 +513,9 @@ class _LogScreenState extends State<LogScreen> {
                   ),
                 ),
               ),
-              // TODO(review): «الكل» opens the full day ledger (S06) — not wired.
+              // «الكل» opens the full day ledger (S06).
               ActionChip(
-                onPressed: () {},
+                onPressed: widget.onGoToReview,
                 side: BorderSide(color: scheme.outline),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.small.r),
