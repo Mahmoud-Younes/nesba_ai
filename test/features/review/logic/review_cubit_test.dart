@@ -18,6 +18,9 @@ void main() {
     expect(cubit.state.summary?['consumed'], 1240);
     expect(cubit.state.summary?['goal'], 0); // CD-06 — no fabricated goal
     expect(cubit.state.macros, (protein: 78, carbs: 120, fat: 64));
+    expect(cubit.state.week?.days.length, 7);
+    expect(cubit.state.week?.days.last.kcal, 1240);
+    expect(cubit.state.week?.days.first.hasData, false);
     await cubit.close();
   });
 
@@ -32,11 +35,15 @@ void main() {
     await cubit.close();
   });
 
-  test('toggleMode switches day/week and clears weekly data', () async {
+  test('toggleMode switches day/week without dropping the week data',
+      () async {
     final cubit = ReviewCubit(MockReviewRepo());
+    await cubit.load();
     expect(cubit.state.mode, ReviewMode.day);
     cubit.toggleMode(ReviewMode.week);
-    expect(cubit.state.mode, ReviewMode.week);    cubit.toggleMode(ReviewMode.day);
+    expect(cubit.state.mode, ReviewMode.week);
+    expect(cubit.state.week?.days.length, 7);
+    cubit.toggleMode(ReviewMode.day);
     expect(cubit.state.mode, ReviewMode.day);
     await cubit.close();
   });
