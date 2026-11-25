@@ -29,16 +29,16 @@ void main() {
     await cubit.close();
   });
 
-  test('toggleBookmark flips indexes in and out of the set', () async {
+  test('toggleBookmark flips pair ids in and out of the set', () async {
     final cubit = SwapCubit(MockSwapRepo());
     expect(cubit.state.bookmarked, isEmpty);
-    cubit.toggleBookmark('mock_swap_100');
+    cubit.toggleBookmark('mock_swap_101');
     expect(cubit.state.bookmarked, <String>{'mock_swap_101'});
-    cubit.toggleBookmark('mock_swap_100');
+    cubit.toggleBookmark('mock_swap_101');
     expect(cubit.state.bookmarked, isEmpty);
     cubit.toggleBookmark('mock_swap_101');
     cubit.toggleBookmark('mock_swap_102');
-    expect(cubit.state.bookmarked, <String>{'mock_swap_102', 'mock_swap_103'});
+    expect(cubit.state.bookmarked, <String>{'mock_swap_101', 'mock_swap_102'});
     await cubit.close();
   });
 
