@@ -25,8 +25,9 @@ class NesbaApp extends StatelessWidget {
         BlocProvider(
           create: (context) => sl<AppCubit>()
             ..changeAppThemeMode(
-              // First run: null => default to dark mode.
-              sharedMode: SharedPref().getBoolean(PrefKeys.themeMode) ?? true,
+              // First run: null => default to light mode (the Bustan
+              // screens are drawn light; dark stays a Settings toggle).
+              sharedMode: SharedPref().getBoolean(PrefKeys.themeMode) ?? false,
             )
             ..getSavedLanguage(),
         ),
