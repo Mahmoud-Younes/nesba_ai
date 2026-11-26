@@ -1,5 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nesba_ai/core/app/app_cubit/app_cubit.dart';
+import 'package:nesba_ai/core/firebase/auth_repo.dart';
+import 'package:nesba_ai/core/firebase/auth_session.dart';
+import 'package:nesba_ai/core/firebase/goal_repo.dart';
+import 'package:nesba_ai/core/firebase/meals_repo.dart';
+import 'package:nesba_ai/core/firebase/pending_repos.dart';
 import 'package:nesba_ai/features/log/data/repos/log_repo.dart';
 import 'package:nesba_ai/features/log/data/repos/mock_log_repo.dart';
 import 'package:nesba_ai/features/log/logic/log_cubit.dart';
@@ -29,7 +35,13 @@ Future<void> _initCore() async {
 
   sl
     ..registerFactory(AppCubit.new)
-    ..registerSingleton<GlobalKey<NavigatorState>>(navigatorKey);
+    ..registerSingleton<GlobalKey<NavigatorState>>(navigatorKey)
+    ..registerLazySingleton<AuthSession>(
+      () => AuthSession(FirebaseAuth.instance),
+    )
+    ..registerLazySingleton<AuthRepo>(PendingAuthRepo.new)
+    ..registerLazySingleton<MealsRepo>(PendingMealsRepo.new)
+    ..registerLazySingleton<GoalRepo>(PendingGoalRepo.new);
 }
 
 Future<void> _initLog() async {
