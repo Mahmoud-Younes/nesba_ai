@@ -5,6 +5,7 @@
     "tab_log": "Log",
     "tab_review": "Review",
     "tab_swaps": "Swaps",
+    "log_composer_label": "Meal description",
     "log_composer_placeholder": "Describe your meal… e.g. «2 eggs, toast with butter, black coffee»",
     "log_composer_hint": "Write it the way you'd say it — rough amounts are fine",
     "log_first_run_hint": "You describe it, we estimate it — correct anything before saving",

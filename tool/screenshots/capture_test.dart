@@ -9,6 +9,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
+import 'package:nesba_ai/features/log/logic/log_cubit.dart';
+import 'package:nesba_ai/features/log/ui/log_screen.dart';
 import 'package:nesba_ai/features/login/ui/login_screen.dart';
 import 'package:nesba_ai/features/onboarding/onboarding_screen.dart';
 import 'package:nesba_ai/features/sign_up/ui/sign_up_screen.dart';
@@ -132,6 +134,57 @@ Future<void> main() async {
         textScaler: const TextScaler.linear(2),
       );
       await _save(tester, '11-onboarding-en-200pc');
+    });
+  });
+
+  group('log gate', () {
+    testWidgets('idle, english', (WidgetTester tester) async {
+      await _pump(tester, const LogScreen(), locale: const Locale('en'));
+      await _save(tester, '12-log-idle-en');
+    });
+
+    testWidgets('idle, arabic', (WidgetTester tester) async {
+      await _pump(tester, const LogScreen(), locale: const Locale('ar'));
+      await _save(tester, '13-log-idle-ar');
+    });
+
+    testWidgets('draft with the cta live', (WidgetTester tester) async {
+      await _pump(tester, const LogScreen(), locale: const Locale('en'));
+      await tester.enterText(
+        find.byType(TextField).first,
+        'Two eggs, brown toast and orange juice',
+      );
+      await tester.pumpAndSettle();
+      await _save(tester, '14-log-draft-en');
+    });
+
+    testWidgets('analyzing', (WidgetTester tester) async {
+      await _pump(tester, const LogScreen(), locale: const Locale('en'));
+      await tester.enterText(find.byType(TextField).first, 'Eggs and toast');
+      await tester.pump();
+      sl<LogCubit>().startAnalysis();
+      // Far enough in for the progress line to advance, well short of the
+      // mock repo's 5s answer.
+      await tester.pump(const Duration(seconds: 4));
+      await _save(tester, '15-log-analyzing-en');
+      // Two timers are still armed: the cubit's 1s progress ticker and the
+      // mock repo's 5s delayed answer. Both must be drained or the test
+      // ends on a pending-timer assertion.
+      sl<LogCubit>().cancelAnalysis();
+      await tester.pump(const Duration(seconds: 6));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('result card', (WidgetTester tester) async {
+      await _pump(tester, const LogScreen(), locale: const Locale('en'));
+      await tester.enterText(find.byType(TextField).first, 'Eggs and toast');
+      await tester.pump();
+      sl<LogCubit>().startAnalysis();
+      // The mock repo answers on a 5s delayed future, which is a fake timer
+      // here — advance past it rather than waiting it out for real.
+      await tester.pump(const Duration(seconds: 6));
+      await tester.pumpAndSettle();
+      await _save(tester, '16-log-result-en');
     });
   });
 }

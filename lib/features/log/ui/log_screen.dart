@@ -5,10 +5,14 @@ import 'package:nesba_ai/core/common/animations/animate_do.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/helpers/spacing.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/routes/app_routes.dart';
+import 'package:nesba_ai/core/style/fonts/app_type_scale.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/style/theme/app_radius.dart';
+import 'package:nesba_ai/core/widgets/nes_screen_body.dart';
+import 'package:nesba_ai/core/widgets/nes_section_card.dart';
 import 'package:nesba_ai/core/widgets/calorie_ring.dart';
 import 'package:nesba_ai/core/widgets/chips/example_chips.dart';
 import 'package:nesba_ai/core/widgets/feedback/error_card.dart';
@@ -122,18 +126,27 @@ class _LogScreenState extends State<LogScreen> {
   }
 
   // Quad contract (§2.0): strip (A) → composer (B) → result (C) → ledger (D).
+  // Each block is a card on the shared 480dp measure, so the gate reads as
+  // four grouped surfaces rather than controls loose on the background.
   Widget _body(BuildContext context, LogState state) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+    return NesScreenBody(
+      // The keyboard inset rides the scroll tail, so the CTA inside the
+      // composer card can always be scrolled clear of the keyboard.
+      padding: EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.screenEdge.w,
+        AppSpacing.screenEdge.h,
+        AppSpacing.screenEdge.w,
+        AppSpacing.sectionDivider.h + MediaQuery.viewInsetsOf(context).bottom,
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
           _summaryStrip(context, state),
-          SizedBox(height: 16.h),
+          verticalSpace(AppSpacing.s16),
           _composerSection(context, state),
-          SizedBox(height: 16.h),
+          verticalSpace(AppSpacing.s16),
           _resultArea(context, state),
-          SizedBox(height: 16.h),
+          verticalSpace(AppSpacing.s16),
           // First-run: no empty ledger block — dead space is banned (§2.1).
           if (state.todayMeals.isNotEmpty) _miniLedger(context, state),
         ],
@@ -144,34 +157,50 @@ class _LogScreenState extends State<LogScreen> {
   // Skips the entrance animation when the OS asks for reduced motion.
   Widget _fadeIn(BuildContext context, int duration, Widget child) =>
       MediaQuery.disableAnimationsOf(context)
-          ? child
-          : CustomFadeInUp(duration: duration, child: child);
+      ? child
+      : CustomFadeInUp(duration: duration, child: child);
 
   // (A) Daily strip — count-up rides consumedKcal changes (§2.5 step 5);
   // instant swap on reduced-motion. No goal set → the deck noGoal copy.
   Widget _summaryStrip(BuildContext context, LogState state) {
     Widget strip(double consumed) => SummaryStrip(
-          consumed: consumed.round(),
-          goal: state.goalKcal,
-          // TODO(copy-gap): strip status copy («فاضل 760») has no format key in
-          // the deck — gap logged with the summary-strip report (§2.1 CD-06).
-          statusText: null,
-          semanticsLabel: _stripSemantics(context, state),
-          // Strip tap opens the review/day gate (S06).
-          onTap: widget.onGoToReview,
-        );
+      consumed: consumed.round(),
+      goal: state.goalKcal,
+      // TODO(copy-gap): strip status copy («فاضل 760») has no format key in
+      // the deck — gap logged with the summary-strip report (§2.1 CD-06).
+      statusText: null,
+      semanticsLabel: _stripSemantics(context, state),
+      // Strip tap opens the review/day gate (S06).
+      onTap: widget.onGoToReview,
+    );
+    // The glance sits in its own card: floating on the background it read
+    // as an orphan above the composer.
+    Widget carded(Widget child) => NesSectionCard(
+      padding: EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.cardInner.w,
+        AppSpacing.s8.h,
+        AppSpacing.cardInner.w,
+        AppSpacing.s8.h,
+      ),
+      child: child,
+    );
     if (MediaQuery.disableAnimationsOf(context)) {
       return _fadeIn(
-          context, 400, strip(state.consumedKcal.toDouble()));
+        context,
+        400,
+        carded(strip(state.consumedKcal.toDouble())),
+      );
     }
     return _fadeIn(
       context,
       400,
-      TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0, end: state.consumedKcal.toDouble()),
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeOutCubic,
-        builder: (_, double value, _) => strip(value),
+      carded(
+        TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0, end: state.consumedKcal.toDouble()),
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeOutCubic,
+          builder: (_, double value, _) => strip(value),
+        ),
       ),
     );
   }
@@ -191,57 +220,59 @@ class _LogScreenState extends State<LogScreen> {
     final LogCubit cubit = context.read<LogCubit>();
     final bool isExpanded =
         state.status == LogStatus.analyzing ||
-            state.status == LogStatus.saved ||
-            (state.status == LogStatus.draft && state.result == null) ||
-            // First-run timeout has no result to collapse onto — the field
-            // stays live for «إعادة المحاولة» (§2.7 timeout path).
-            (state.isTimeout && state.result == null) ||
-            _chevronOpen(state.result);
-    final bool showChips =
-        state.result == null || state.savedMealId != null;
+        state.status == LogStatus.saved ||
+        (state.status == LogStatus.draft && state.result == null) ||
+        // First-run timeout has no result to collapse onto — the field
+        // stays live for «إعادة المحاولة» (§2.7 timeout path).
+        (state.isTimeout && state.result == null) ||
+        _chevronOpen(state.result);
+    final bool showChips = state.result == null || state.savedMealId != null;
     return _fadeIn(
       context,
       500,
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Composer(
-            controller: _controller,
-            focusNode: _focusNode,
-            isExpanded: isExpanded,
-            onChanged: cubit.descriptionChanged,
-            onExpand: state.result == null
-                ? null
-                : () => setState(() => _expandedForResult = state.result),
-            onClear: () {
-              _controller.clear();
-              cubit.descriptionChanged('');
-            },
-            showFirstRunHint: state.result == null && state.todayMeals.isEmpty,
-          ),
-          if (showChips) ...[
-            SizedBox(height: 12.h),
-            ExampleChips(
-              examples: <String>[
-                context.translate(LangKeys.exampleMeal1),
-                context.translate(LangKeys.exampleMeal2),
-                context.translate(LangKeys.exampleMeal3),
-              ],
-              // Chip fills the field, enables the CTA and refocuses (§2.1).
-              onExampleTap: (String example) {
-                _controller
-                  ..text = example
-                  ..selection = TextSelection.collapsed(offset: example.length);
-                cubit.descriptionChanged(example);
-                _focusNode.requestFocus();
+      NesSectionCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            NesFieldLabel(text: context.translate(LangKeys.logComposerLabel)),
+            verticalSpace(AppSpacing.s8),
+            Composer(
+              controller: _controller,
+              focusNode: _focusNode,
+              isExpanded: isExpanded,
+              onChanged: cubit.descriptionChanged,
+              onExpand: state.result == null
+                  ? null
+                  : () => setState(() => _expandedForResult = state.result),
+              onClear: () {
+                _controller.clear();
+                cubit.descriptionChanged('');
               },
+              showFirstRunHint:
+                  state.result == null && state.todayMeals.isEmpty,
             ),
-          ],
-          SizedBox(height: 12.h),
-          Padding(
-            padding:
-                EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-            child: AnalyzeCTA(
+            if (showChips) ...[
+              SizedBox(height: 12.h),
+              ExampleChips(
+                examples: <String>[
+                  context.translate(LangKeys.exampleMeal1),
+                  context.translate(LangKeys.exampleMeal2),
+                  context.translate(LangKeys.exampleMeal3),
+                ],
+                // Chip fills the field, enables the CTA and refocuses (§2.1).
+                onExampleTap: (String example) {
+                  _controller
+                    ..text = example
+                    ..selection = TextSelection.collapsed(
+                      offset: example.length,
+                    );
+                  cubit.descriptionChanged(example);
+                  _focusNode.requestFocus();
+                },
+              ),
+            ],
+            verticalSpace(AppSpacing.s16),
+            AnalyzeCTA(
               status: _ctaStatus(state),
               progressText: _progressText(context, state.progressStep),
               // TODO(copy): spec §2.3 renames the CTA to `re_analyze` in
@@ -255,8 +286,8 @@ class _LogScreenState extends State<LogScreen> {
               },
               onCancel: cubit.cancelAnalysis,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -274,10 +305,10 @@ class _LogScreenState extends State<LogScreen> {
 
   // Rotating line per ticker step (deck analysis_progress_1..3, ≈2.5s each).
   String _progressText(BuildContext context, int step) => switch (step) {
-        2 => context.translate(LangKeys.analysisProgress2),
-        3 => context.translate(LangKeys.analysisProgress3),
-        _ => context.translate(LangKeys.analysisProgress1),
-      };
+    2 => context.translate(LangKeys.analysisProgress2),
+    3 => context.translate(LangKeys.analysisProgress3),
+    _ => context.translate(LangKeys.analysisProgress1),
+  };
 
   // (C) Result slot (§2.2/§2.3/§2.5): skeleton on the first analysis, the
   // old card dimmed in place on a re-analysis (states §1.3 — no flash, no
@@ -307,8 +338,9 @@ class _LogScreenState extends State<LogScreen> {
     final AnalysisResult? result = state.result;
     if (result == null) return const SizedBox.shrink();
     final bool reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final Duration morphDuration =
-        reduceMotion ? Duration.zero : const Duration(milliseconds: 300);
+    final Duration morphDuration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 300);
     return _fadeIn(
       context,
       600,
@@ -369,12 +401,10 @@ class _LogScreenState extends State<LogScreen> {
     return FadeTransition(
       opacity: animation,
       child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 0.35),
-          end: Offset.zero,
-        ).animate(
-          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-        ),
+        position: Tween<Offset>(begin: const Offset(0, 0.35), end: Offset.zero)
+            .animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            ),
         child: child,
       ),
     );
@@ -415,8 +445,9 @@ class _LogScreenState extends State<LogScreen> {
   // focus, cursor at the end; the CTA flips to re_analyze from here.
   void _editDescription(AnalysisResult result) {
     setState(() => _expandedForResult = result);
-    _controller.selection =
-        TextSelection.collapsed(offset: _controller.text.length);
+    _controller.selection = TextSelection.collapsed(
+      offset: _controller.text.length,
+    );
     _focusNode.requestFocus();
   }
 
@@ -479,61 +510,60 @@ class _LogScreenState extends State<LogScreen> {
   Widget _miniLedger(BuildContext context, LogState state) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final List<Map<String, dynamic>> rows = state.todayMeals;
-    final List<Map<String, dynamic>> topRows =
-        rows.length <= 2 ? rows : rows.sublist(0, 2);
+    final List<Map<String, dynamic>> topRows = rows.length <= 2
+        ? rows
+        : rows.sublist(0, 2);
     return _fadeIn(
       context,
       700,
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextApp(
-            text: context.translate(LangKeys.logLedgerTitle),
-            theme: context.textStyle.copyWith(
-              fontSize: 16.sp,
-              fontWeight: FontWeightHelper.semiBold,
-              color: scheme.onSurface,
+      NesSectionCard(
+        // Heading rides above the card, the "Nutrition snapshot" pattern.
+        title: context.translate(LangKeys.logLedgerTitle),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final Map<String, dynamic> row in topRows)
+              _ledgerRow(context, state, row),
+            Row(
+              children: [
+                Expanded(
+                  child: TextApp(
+                    text: context
+                        .translate(LangKeys.logLedgerTotal)
+                        .replaceAll(
+                          '{count}',
+                          formatCalories(state.consumedKcal),
+                        ),
+                    theme: context.textStyle.copyWith(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeightHelper.medium,
+                      fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                ),
+                // «الكل» opens the full day ledger (S06).
+                ActionChip(
+                  onPressed: widget.onGoToReview,
+                  side: BorderSide(color: scheme.outline),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.small.r),
+                  ),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  label: TextApp(
+                    text: context
+                        .translate(LangKeys.ledgerAllChip)
+                        .replaceAll('{count}', '${rows.length}'),
+                    theme: context.textStyle.copyWith(
+                      fontSize: AppTypeScale.labelMedium.sp,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          SizedBox(height: 8.h),
-          for (final Map<String, dynamic> row in topRows)
-            _ledgerRow(context, state, row),
-          Row(
-            children: [
-              Expanded(
-                child: TextApp(
-                  text: context
-                      .translate(LangKeys.logLedgerTotal)
-                      .replaceAll('{count}', formatCalories(state.consumedKcal)),
-                  theme: context.textStyle.copyWith(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeightHelper.medium,
-                    fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
-                    color: scheme.onSurface,
-                  ),
-                ),
-              ),
-              // «الكل» opens the full day ledger (S06).
-              ActionChip(
-                onPressed: widget.onGoToReview,
-                side: BorderSide(color: scheme.outline),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.small.r),
-                ),
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-                label: TextApp(
-                  text: context
-                      .translate(LangKeys.ledgerAllChip)
-                      .replaceAll('{count}', '${rows.length}'),
-                  theme: context.textStyle.copyWith(
-                    fontSize: 12.sp,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -561,19 +591,16 @@ class _LogScreenState extends State<LogScreen> {
           : const Duration(milliseconds: 300),
       transitionBuilder: (Widget child, Animation<double> animation) =>
           _morphTransition(context, child, animation),
-      child: KeyedSubtree(
-        key: ValueKey<String>(savedMealId),
-        child: rowWidget,
-      ),
+      child: KeyedSubtree(key: ValueKey<String>(savedMealId), child: rowWidget),
     );
   }
 
   // Mock rows carry no meal type yet — contract field `type` falls back to
   // breakfast until the repo ships it.
   MealType _mealTypeFor(Map<String, dynamic> row) => switch (row['type']) {
-        'lunch' => MealType.lunch,
-        'dinner' => MealType.dinner,
-        'snack' => MealType.snack,
-        _ => MealType.breakfast,
-      };
+    'lunch' => MealType.lunch,
+    'dinner' => MealType.dinner,
+    'snack' => MealType.snack,
+    _ => MealType.breakfast,
+  };
 }

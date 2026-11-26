@@ -20,6 +20,7 @@ class LangKeys {
   static const String staleKeepAction = 'stale_keep_action';
 
   // --- Log (copy-deck §2.1) ---
+  static const String logComposerLabel = 'log_composer_label';
   static const String logComposerPlaceholder = 'log_composer_placeholder';
   static const String logComposerHint = 'log_composer_hint';
   static const String logFirstRunHint = 'log_first_run_hint';
