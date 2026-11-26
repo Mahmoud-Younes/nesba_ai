@@ -16,6 +16,7 @@ import 'package:nesba_ai/features/onboarding/onboarding_screen.dart';
 import 'package:nesba_ai/features/review/logic/review_cubit.dart';
 import 'package:nesba_ai/features/review/ui/review_screen.dart';
 import 'package:nesba_ai/features/sign_up/ui/sign_up_screen.dart';
+import 'package:nesba_ai/features/swaps/ui/swaps_screen.dart';
 import 'package:nesba_ai/features/splash/ui/widgets/splash_wordmark.dart';
 
 import '../../test/helpers/pump_app.dart';
@@ -209,6 +210,20 @@ Future<void> main() async {
       sl<ReviewCubit>().toggleMode(ReviewMode.week);
       await _settleRepo(tester);
       await _save(tester, '19-review-week-en');
+    });
+  });
+
+  group('swaps gate', () {
+    testWidgets('pairs, english', (WidgetTester tester) async {
+      await _pump(tester, const SwapsScreen(), locale: const Locale('en'));
+      await _settleRepo(tester);
+      await _save(tester, '20-swaps-en');
+    });
+
+    testWidgets('pairs, arabic', (WidgetTester tester) async {
+      await _pump(tester, const SwapsScreen(), locale: const Locale('ar'));
+      await _settleRepo(tester);
+      await _save(tester, '21-swaps-ar');
     });
   });
 }

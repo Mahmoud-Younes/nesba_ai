@@ -53,17 +53,30 @@ class NesSectionCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        TextApp(
-          text: title!,
-          theme: context.textStyle.copyWith(
-            fontSize: AppTypeScale.titleLarge.sp,
-            fontWeight: FontWeightHelper.semiBold,
-            color: scheme.onSurface,
-          ),
-        ),
+        NesSectionHeading(text: title!),
         verticalSpace(AppSpacing.s8),
         card,
       ],
+    );
+  }
+}
+
+/// The heading that sits above a card — or above a run of cards, where
+/// one [NesSectionCard] cannot carry it.
+class NesSectionHeading extends StatelessWidget {
+  const NesSectionHeading({required this.text, super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextApp(
+      text: text,
+      theme: context.textStyle.copyWith(
+        fontSize: AppTypeScale.titleLarge.sp,
+        fontWeight: FontWeightHelper.semiBold,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
     );
   }
 }
