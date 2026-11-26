@@ -162,6 +162,7 @@
     "validation_password_match": "كلمتا المرور غير متطابقتين",
     "validation_name_empty": "اكتبي اسمك",
     "auth_loading": "لحظة واحدة…",
+    "sign_out": "تسجيل الخروج",
     "settings_daily_goal": "هدفك اليومي من السعرات",
     "settings_goal_saved": "تم حفظ الهدف",
     "settings_about": "عن نِسْبَة",

@@ -208,6 +208,7 @@ class LangKeys {
   static const String validationPasswordMatch = 'validation_password_match';
   static const String validationNameEmpty = 'validation_name_empty';
   static const String authLoading = 'auth_loading';
+  static const String signOut = 'sign_out';
 
   // --- Settings ---
   static const String settingsDailyGoal = 'settings_daily_goal';
