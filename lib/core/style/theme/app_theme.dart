@@ -98,6 +98,13 @@ ThemeData _bustanTheme(
     colorScheme: scheme,
     scaffoldBackgroundColor: scheme.surface,
     extensions: extensions,
+    // Family on the theme itself, not just on `bodyMedium`: anything the
+    // app does not style by hand — what the user types into a field, a
+    // dialog's default copy — otherwise renders in the Material fallback
+    // face next to Plex. The fallback carries mixed-script runs (English
+    // food names inside Arabic advice).
+    fontFamily: FontFamilyHelper.geLocalozedFontFamily(),
+    fontFamilyFallback: FontFamilyHelper.localizedFallback,
     textTheme: TextTheme(
       // Base style on bodyMedium — context.textStyle reads it, and widgets
       // use context.textStyle.copyWith(...) (asroo_store way).
@@ -135,6 +142,11 @@ ButtonStyle _bustanButtonStyle() {
 // Text inputs: outlined, corner 8, focus border primary at width 2.
 InputDecorationThemeData _bustanInputTheme(ColorScheme scheme) {
   final BorderRadius radius = BorderRadius.circular(AppRadius.small);
+  // Every label/hint/error style carries the family explicitly. Without it
+  // the decoration falls back to the Material default face while the rest
+  // of the card is Plex — invisible in Latin, obvious in Arabic, where the
+  // fallback has no glyphs of its own.
+  final String family = FontFamilyHelper.geLocalozedFontFamily();
   return InputDecorationThemeData(
     border: OutlineInputBorder(
       borderRadius: radius,
@@ -148,11 +160,43 @@ InputDecorationThemeData _bustanInputTheme(ColorScheme scheme) {
       borderRadius: radius,
       borderSide: BorderSide(color: scheme.primary, width: 2),
     ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: BorderSide(color: scheme.error),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: radius,
+      borderSide: BorderSide(color: scheme.error, width: 2),
+    ),
+    // A field inside a surfaceContainer card has to read as a well, not as
+    // more card — the lowest surface is what separates them.
+    filled: true,
     fillColor: scheme.surfaceContainerLowest,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    labelStyle: TextStyle(
+      color: scheme.onSurfaceVariant,
+      fontFamily: family,
+      fontFamilyFallback: FontFamilyHelper.localizedFallback,
+      letterSpacing: 0,
+    ),
+    floatingLabelStyle: TextStyle(
+      color: scheme.primary,
+      fontFamily: family,
+      fontFamilyFallback: FontFamilyHelper.localizedFallback,
+      letterSpacing: 0,
+    ),
+    errorStyle: TextStyle(
+      fontSize: 12,
+      color: scheme.error,
+      fontFamily: family,
+      fontFamilyFallback: FontFamilyHelper.localizedFallback,
+      letterSpacing: 0,
+    ),
     hintStyle: TextStyle(
       fontSize: 12,
       color: scheme.onSurfaceVariant,
-      fontFamily: FontFamilyHelper.geLocalozedFontFamily(),
+      fontFamily: family,
+      fontFamilyFallback: FontFamilyHelper.localizedFallback,
       letterSpacing: 0,
     ),
   );
@@ -175,7 +219,9 @@ BottomSheetThemeData _bustanBottomSheetTheme(ColorScheme scheme) {
     backgroundColor: scheme.surfaceContainerLow,
     elevation: 2,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.large)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(AppRadius.large),
+      ),
     ),
   );
 }
@@ -191,9 +237,7 @@ DialogThemeData _bustanDialogTheme() {
 
 // Nav bar: active indicator rides primaryContainer (not M3's secondary).
 NavigationBarThemeData _bustanNavigationBarTheme(ColorScheme scheme) {
-  return NavigationBarThemeData(
-    indicatorColor: scheme.primaryContainer,
-  );
+  return NavigationBarThemeData(indicatorColor: scheme.primaryContainer);
 }
 
 // Snackbars invert the surface.
