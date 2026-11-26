@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nesba_ai/core/common/animations/animate_do.dart';
-import 'package:nesba_ai/core/common/widgets/text_app.dart';
-import 'package:nesba_ai/core/extensions/context_extension.dart';
-import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
+import 'package:nesba_ai/core/helpers/spacing.dart';
+import 'package:nesba_ai/core/widgets/nes_page_header.dart';
+import 'package:nesba_ai/core/widgets/nes_screen_body.dart';
 import 'package:nesba_ai/features/onboarding/widgets/onboard_illustration.dart';
 
-/// One onboarding page — illustration, title and body, all centered.
+/// One onboarding page — illustration over the centred title and body.
+///
+/// The text block is [NesPageHeader], so the first screen a user ever sees
+/// is set in the same type as the sign-in screen that follows it.
 class OnboardPage extends StatelessWidget {
   const OnboardPage({
     required this.title,
@@ -22,70 +25,50 @@ class OnboardPage extends StatelessWidget {
   // Skips the entrance when the OS asks for reduced motion.
   Widget _fadeIn(BuildContext context, int duration, Widget child) =>
       MediaQuery.disableAnimationsOf(context)
-          ? child
-          : CustomFadeInUp(duration: duration, child: child);
+      ? child
+      : CustomFadeInUp(duration: duration, child: child);
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme scheme = Theme.of(context).colorScheme;
     // 200% accommodation (states §5.2): the page scrolls and the
     // illustration steps aside once text scale crosses 1.6.
     final bool largeText =
         MediaQuery.textScalerOf(context).scale(14) >= 1.6 * 14;
-    final Widget page = _pageColumn(context, scheme, showIllustration: !largeText);
+
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.screenEdge.w),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Center(child: page),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: NesScreenBody.maxContentWidth.w,
+                ),
+                child: _pageColumn(context, showIllustration: !largeText),
+              ),
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _pageColumn(
-    BuildContext context,
-    ColorScheme scheme, {
-    required bool showIllustration,
-  }) {
+  Widget _pageColumn(BuildContext context, {required bool showIllustration}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: <Widget>[
         if (showIllustration) ...<Widget>[
           _fadeIn(context, 400, OnboardIllustration(icon: icon)),
-          SizedBox(height: 32.h),
+          verticalSpace(AppSpacing.s32),
         ],
         _fadeIn(
           context,
           500,
-          TextApp(
-            text: title,
-            textAlign: TextAlign.center,
-            theme: context.textStyle.copyWith(
-              fontSize: 24.sp,
-              fontWeight: FontWeightHelper.semiBold,
-              color: scheme.onSurface,
-            ),
-          ),
+          NesPageHeader(title: title, subtitle: body, centered: true),
         ),
-        SizedBox(height: 12.h),
-        _fadeIn(
-          context,
-          600,
-            TextApp(
-              text: body,
-              textAlign: TextAlign.center,
-              theme: context.textStyle.copyWith(
-                fontSize: 16.sp,
-                fontWeight: FontWeightHelper.regular,
-                color: scheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ],
-      );
+      ],
+    );
   }
 }

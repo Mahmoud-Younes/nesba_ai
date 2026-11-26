@@ -3,11 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nesba_ai/core/common/animations/animate_do.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/helpers/spacing.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/routes/app_routes.dart';
 import 'package:nesba_ai/core/service/shared_pref/pref_keys.dart';
 import 'package:nesba_ai/core/service/shared_pref/shared_pref.dart';
+import 'package:nesba_ai/core/style/fonts/app_type_scale.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
+import 'package:nesba_ai/core/widgets/nes_screen_body.dart';
 import 'package:nesba_ai/features/onboarding/widgets/onboard_page.dart';
 
 /// Onboarding — three swiped pages, dots + skip/start pinned at the bottom.
@@ -96,17 +99,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
   };
 
-  // Dots + actions under the pages.
+  // Dots + actions under the pages, on the same measure as the pages so
+  // the CTA does not stretch the full width of a tablet.
   Widget _bottom(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 16.h),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _dots(context),
-          SizedBox(height: 16.h),
-          _actions(context),
-        ],
+      padding: EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.screenEdge.w,
+        AppSpacing.s8.h,
+        AppSpacing.screenEdge.w,
+        AppSpacing.screenEdge.h,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: NesScreenBody.maxContentWidth.w,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _dots(context),
+              verticalSpace(AppSpacing.s16),
+              _actions(context),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -123,20 +139,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           .replaceAll('{index}', '${_current + 1}')
           .replaceAll('{count}', '$_pageCount'),
       child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        for (int i = 0; i < _pageCount; i++)
-          AnimatedContainer(
-            duration: duration,
-            width: 8.w,
-            height: 8.w,
-            margin: EdgeInsets.symmetric(horizontal: 4.w),
-            decoration: BoxDecoration(
-              color: i == _current ? scheme.primary : scheme.outlineVariant,
-              shape: BoxShape.circle,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          for (int i = 0; i < _pageCount; i++)
+            AnimatedContainer(
+              duration: duration,
+              width: 8.w,
+              height: 8.w,
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
+              decoration: BoxDecoration(
+                color: i == _current ? scheme.primary : scheme.outlineVariant,
+                shape: BoxShape.circle,
+              ),
             ),
-          ),
-      ],
+        ],
       ),
     );
   }
@@ -160,14 +176,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: TextApp(
                     text: context.translate(LangKeys.onboardSkip),
                     theme: context.textStyle.copyWith(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeightHelper.medium,
+                      fontSize: AppTypeScale.labelLarge.sp,
+                      fontWeight: FontWeightHelper.semiBold,
                       color: scheme.onSurfaceVariant,
                     ),
                   ),
                 ),
         ),
-        SizedBox(width: 12.w),
+        horizontalSpace(AppSpacing.s12),
         Expanded(
           // Intrinsic height with the theme's 48dp floor — no tight box
           // clipping at 200% text scale (states §5.2).
@@ -177,8 +193,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: TextApp(
               text: context.translate(LangKeys.onboardCta),
               theme: context.textStyle.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeightHelper.medium,
+                fontSize: AppTypeScale.labelLarge.sp,
+                fontWeight: FontWeightHelper.semiBold,
                 color: scheme.onPrimary,
               ),
             ),

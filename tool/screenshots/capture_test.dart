@@ -10,7 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/features/login/ui/login_screen.dart';
+import 'package:nesba_ai/features/onboarding/onboarding_screen.dart';
 import 'package:nesba_ai/features/sign_up/ui/sign_up_screen.dart';
+import 'package:nesba_ai/features/splash/ui/widgets/splash_wordmark.dart';
 
 import '../../test/helpers/pump_app.dart';
 
@@ -92,6 +94,46 @@ Future<void> main() async {
       await _save(tester, '06-create-account-ar');
     });
   });
+
+  group('first run', () {
+    testWidgets('splash, english', (WidgetTester tester) async {
+      await _pump(
+        tester,
+        const Center(child: SplashWordmark()),
+        locale: const Locale('en'),
+      );
+      await _save(tester, '07-splash-en');
+    });
+
+    testWidgets('splash, arabic', (WidgetTester tester) async {
+      await _pump(
+        tester,
+        const Center(child: SplashWordmark()),
+        locale: const Locale('ar'),
+      );
+      await _save(tester, '08-splash-ar');
+    });
+
+    testWidgets('onboarding page one, english', (WidgetTester tester) async {
+      await _pump(tester, const OnboardingScreen(), locale: const Locale('en'));
+      await _save(tester, '09-onboarding-en');
+    });
+
+    testWidgets('onboarding page one, arabic', (WidgetTester tester) async {
+      await _pump(tester, const OnboardingScreen(), locale: const Locale('ar'));
+      await _save(tester, '10-onboarding-ar');
+    });
+
+    testWidgets('onboarding at 200% text scale', (WidgetTester tester) async {
+      await _pump(
+        tester,
+        const OnboardingScreen(),
+        locale: const Locale('en'),
+        textScaler: const TextScaler.linear(2),
+      );
+      await _save(tester, '11-onboarding-en-200pc');
+    });
+  });
 }
 
 Future<void> _pump(
@@ -105,6 +147,13 @@ Future<void> _pump(
     RepaintBoundary(key: _shotKey, child: screen),
     locale: locale,
     textScaler: textScaler,
+    // Entrance animations are the settled state's enemy here: animate_do
+    // starts behind a 300ms delay timer, and `pumpAndSettle` returns as
+    // soon as no frame is scheduled — which is before that timer fires,
+    // capturing the screen at opacity 0. Reduced motion makes every
+    // `CustomFadeInUp` hand back its child directly, so what is captured
+    // is the final frame rather than the first.
+    disableAnimations: true,
   );
 }
 
