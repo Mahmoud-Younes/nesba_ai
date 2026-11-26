@@ -13,6 +13,8 @@ import 'package:nesba_ai/features/log/logic/log_cubit.dart';
 import 'package:nesba_ai/features/log/ui/log_screen.dart';
 import 'package:nesba_ai/features/login/ui/login_screen.dart';
 import 'package:nesba_ai/features/onboarding/onboarding_screen.dart';
+import 'package:nesba_ai/features/review/logic/review_cubit.dart';
+import 'package:nesba_ai/features/review/ui/review_screen.dart';
 import 'package:nesba_ai/features/sign_up/ui/sign_up_screen.dart';
 import 'package:nesba_ai/features/splash/ui/widgets/splash_wordmark.dart';
 
@@ -187,6 +189,28 @@ Future<void> main() async {
       await _save(tester, '16-log-result-en');
     });
   });
+
+  group('review gate', () {
+    testWidgets('day, english', (WidgetTester tester) async {
+      await _pump(tester, const ReviewScreen(), locale: const Locale('en'));
+      await _settleRepo(tester);
+      await _save(tester, '17-review-day-en');
+    });
+
+    testWidgets('day, arabic', (WidgetTester tester) async {
+      await _pump(tester, const ReviewScreen(), locale: const Locale('ar'));
+      await _settleRepo(tester);
+      await _save(tester, '18-review-day-ar');
+    });
+
+    testWidgets('week, english', (WidgetTester tester) async {
+      await _pump(tester, const ReviewScreen(), locale: const Locale('en'));
+      await _settleRepo(tester);
+      sl<ReviewCubit>().toggleMode(ReviewMode.week);
+      await _settleRepo(tester);
+      await _save(tester, '19-review-week-en');
+    });
+  });
 }
 
 Future<void> _pump(
@@ -208,6 +232,17 @@ Future<void> _pump(
     // is the final frame rather than the first.
     disableAnimations: true,
   );
+}
+
+/// Drains a mock repo's delayed answer.
+///
+/// `pumpAndSettle` alone is not enough: it stops once no frame is
+/// scheduled, and a pending `Future.delayed` schedules none. Advancing the
+/// clock explicitly resolves it, and leaving it pending would also trip
+/// the end-of-test pending-timer check.
+Future<void> _settleRepo(WidgetTester tester) async {
+  await tester.pump(const Duration(seconds: 1));
+  await tester.pumpAndSettle();
 }
 
 Future<void> _save(WidgetTester tester, String name) async {

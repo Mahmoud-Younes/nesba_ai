@@ -42,17 +42,10 @@ class MealsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
-    final List<Widget> children = <Widget>[
-      TextApp(
-        text: context.translate(LangKeys.mealsHeader),
-        theme: context.textStyle.copyWith(
-          fontSize: 16.sp,
-          fontWeight: FontWeightHelper.semiBold,
-          color: scheme.onSurface,
-        ),
-      ),
-      SizedBox(height: 8.h),
-    ];
+    // The «وجبات اليوم» heading belongs to the enclosing section card, not
+    // to this list — drawing it here put it at the same weight as the
+    // group labels below it.
+    final List<Widget> children = <Widget>[];
     int index = 0;
     bool firstGroup = true;
     for (final MapEntry<String, List<Map<String, dynamic>>> group
@@ -91,7 +84,10 @@ class MealsList extends StatelessWidget {
         <String, List<Map<String, dynamic>>>{};
     for (final Map<String, dynamic> row in meals) {
       groups
-          .putIfAbsent(_groupLabel(context, row), () => <Map<String, dynamic>>[])
+          .putIfAbsent(
+            _groupLabel(context, row),
+            () => <Map<String, dynamic>>[],
+          )
           .add(row);
     }
     return groups;
@@ -124,7 +120,12 @@ class MealsList extends StatelessWidget {
     final Widget? relog = _relogAction(context, row);
     final Widget content = relog == null
         ? rowWidget
-        : Row(children: <Widget>[Expanded(child: rowWidget), relog]);
+        : Row(
+            children: <Widget>[
+              Expanded(child: rowWidget),
+              relog,
+            ],
+          );
     return Dismissible(
       key: ValueKey<String>(row['id'] as String? ?? 'meal-$index'),
       direction: DismissDirection.startToEnd,
@@ -177,11 +178,7 @@ class MealsList extends StatelessWidget {
       alignment: AlignmentDirectional.centerStart,
       color: scheme.errorContainer,
       padding: EdgeInsetsDirectional.only(start: 16.w),
-      child: Icon(
-        Icons.delete,
-        size: 24.r,
-        color: scheme.onErrorContainer,
-      ),
+      child: Icon(Icons.delete, size: 24.r, color: scheme.onErrorContainer),
     );
   }
 
@@ -200,16 +197,16 @@ class MealsList extends StatelessWidget {
 
   // Contract field `type` falls back to breakfast (log screen precedent).
   MealType _mealTypeFor(Map<String, dynamic> row) => switch (row['type']) {
-        'lunch' => MealType.lunch,
-        'dinner' => MealType.dinner,
-        'snack' => MealType.snack,
-        _ => MealType.breakfast,
-      };
+    'lunch' => MealType.lunch,
+    'dinner' => MealType.dinner,
+    'snack' => MealType.snack,
+    _ => MealType.breakfast,
+  };
 
   // Missing sync rides ok (spec §1.5 sync{ok, pending, failed}).
   SyncStatus _syncFor(Map<String, dynamic> row) => switch (row['sync']) {
-        'pending' => SyncStatus.pending,
-        'failed' => SyncStatus.failed,
-        _ => SyncStatus.ok,
-      };
+    'pending' => SyncStatus.pending,
+    'failed' => SyncStatus.failed,
+    _ => SyncStatus.ok,
+  };
 }
