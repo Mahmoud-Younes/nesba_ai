@@ -20,6 +20,7 @@ class LangKeys {
   static const String staleKeepAction = 'stale_keep_action';
 
   // --- Log (copy-deck §2.1) ---
+  static const String logComposerLabel = 'log_composer_label';
   static const String logComposerPlaceholder = 'log_composer_placeholder';
   static const String logComposerHint = 'log_composer_hint';
   static const String logFirstRunHint = 'log_first_run_hint';
@@ -191,6 +192,8 @@ class LangKeys {
 
   // --- Auth ---
   static const String loginTitle = 'login_title';
+  static const String loginEyebrow = 'login_eyebrow';
+  static const String loginSubtitle = 'login_subtitle';
   static const String emailLabel = 'email_label';
   static const String passwordLabel = 'password_label';
   static const String loginCta = 'login_cta';
@@ -200,6 +203,8 @@ class LangKeys {
   static const String nameLabel = 'name_label';
   static const String confirmPasswordLabel = 'confirm_password_label';
   static const String signupTitle = 'signup_title';
+  static const String signupEyebrow = 'signup_eyebrow';
+  static const String signupSubtitle = 'signup_subtitle';
   static const String signupCta = 'signup_cta';
   static const String signupHaveAccount = 'signup_have_account';
   static const String signupLoginLink = 'signup_login_link';
@@ -208,6 +213,9 @@ class LangKeys {
   static const String validationPasswordMatch = 'validation_password_match';
   static const String validationNameEmpty = 'validation_name_empty';
   static const String authLoading = 'auth_loading';
+  static const String authOr = 'auth_or';
+  static const String authGoogleCta = 'auth_google_cta';
+  static const String authGooglePending = 'auth_google_pending';
   static const String signOut = 'sign_out';
 
   // --- Settings ---

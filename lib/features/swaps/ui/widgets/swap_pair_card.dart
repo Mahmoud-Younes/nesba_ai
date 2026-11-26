@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/helpers/spacing.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/style/fonts/app_type_scale.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
+import 'package:nesba_ai/core/style/theme/app_radius.dart';
 import 'package:nesba_ai/core/widgets/calorie_ring.dart';
 import 'package:nesba_ai/core/widgets/chips/estimate_chip.dart';
 import 'package:nesba_ai/core/widgets/chips/fit_chip.dart';
@@ -35,7 +38,7 @@ class SwapPairCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: scheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(AppRadius.medium.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,24 +158,28 @@ class SwapPairCard extends StatelessWidget {
     );
   }
 
-  // «تبديل» filled tertiary (food accent) + 48dp bookmark icon toggle.
+  // «تبديل» + 48dp bookmark icon toggle.
+  //
+  // The CTA is the theme's filled button, like every other primary action
+  // in the app. It used to paint itself solid tertiary: the food accent
+  // belongs to the alternative half above, which carries the meaning,
+  // and spending it again on the button made this the one brown primary
+  // action in a green system.
   Widget _actions(BuildContext context, ColorScheme scheme) {
     return Row(
       children: <Widget>[
         FilledButton(
           onPressed: onSwap,
           style: FilledButton.styleFrom(
-            backgroundColor: scheme.tertiary,
-            foregroundColor: scheme.onTertiary,
             minimumSize: Size(0, 48.h),
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.s24.w),
           ),
           child: TextApp(
             text: context.translate(LangKeys.swapCta),
             theme: context.textStyle.copyWith(
-              fontSize: 14.sp,
-              fontWeight: FontWeightHelper.medium,
-              color: scheme.onTertiary,
+              fontSize: AppTypeScale.labelLarge.sp,
+              fontWeight: FontWeightHelper.semiBold,
+              color: scheme.onPrimary,
             ),
           ),
         ),

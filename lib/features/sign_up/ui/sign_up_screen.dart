@@ -6,9 +6,9 @@ import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/routes/app_routes.dart';
-import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
+import 'package:nesba_ai/core/style/fonts/app_type_scale.dart';
+import 'package:nesba_ai/core/widgets/nes_auth_panel.dart';
 import 'package:nesba_ai/features/sign_up/logic/sign_up_cubit.dart';
-import 'package:nesba_ai/features/sign_up/ui/widgets/sign_up_actions.dart';
 import 'package:nesba_ai/features/sign_up/ui/widgets/sign_up_fields.dart';
 
 /// Signup screen — mock flow only, no real auth yet.
@@ -42,29 +42,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: BlocConsumer<SignUpCubit, SignUpState>(
         listener: (context, state) => _onStateChanged(context, state),
         builder: (context, state) {
-          return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            body: SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextApp(
-                      text: context.translate(LangKeys.signupTitle),
-                      theme: context.textStyle.copyWith(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeightHelper.semiBold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                    _fields(context, state),
-                    SizedBox(height: 24.h),
-                    _actions(context, state),
-                  ],
-                ),
-              ),
+          return NesAuthScaffold(
+            eyebrow: context.translate(LangKeys.signupEyebrow),
+            title: context.translate(LangKeys.signupTitle),
+            subtitle: context.translate(LangKeys.signupSubtitle),
+            panel: _panel(context, state),
+            footer: NesAuthFooterLink(
+              prompt: context.translate(LangKeys.signupHaveAccount),
+              actionLabel: context.translate(LangKeys.signupLoginLink),
+              // Back to the login already on the stack — no duplicate route.
+              onPressed: () => Navigator.of(context).pop(),
             ),
           );
         },
@@ -79,29 +66,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  Widget _fields(BuildContext context, SignUpState state) {
-    final SignUpCubit cubit = context.read<SignUpCubit>();
-    return SignUpFields(
-      nameController: _nameController,
-      emailController: _emailController,
-      passwordController: _passwordController,
-      confirmPasswordController: _confirmPasswordController,
-      nameError: state.nameError,
-      emailError: state.emailError,
-      passwordError: state.passwordError,
-      confirmPasswordError: state.confirmPasswordError,
-      onNameChanged: cubit.nameChanged,
-      onEmailChanged: cubit.emailChanged,
-      onPasswordChanged: cubit.passwordChanged,
-      onConfirmPasswordChanged: cubit.confirmPasswordChanged,
-    );
+  // The Google button is drawn but its provider lands with the auth track;
+  // saying so beats a control that silently does nothing when tapped.
+  void _showGooglePendingSnackBar(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: TextApp(
+            text: context.translate(LangKeys.authGooglePending),
+            theme: context.textStyle.copyWith(
+              fontSize: AppTypeScale.bodyMedium.sp,
+              color: scheme.onInverseSurface,
+            ),
+          ),
+        ),
+      );
   }
 
-  Widget _actions(BuildContext context, SignUpState state) {
+  Widget _panel(BuildContext context, SignUpState state) {
     final SignUpCubit cubit = context.read<SignUpCubit>();
-    return SignUpActions(
+    return NesAuthPanel(
+      submitLabel: context.translate(LangKeys.signupCta),
       isLoading: state.status == SignUpStatus.loading,
-      onSignUp: () => cubit.signup(
+      onSubmit: () => cubit.signup(
         nameEmptyText: context.translate(LangKeys.validationNameEmpty),
         invalidEmailText: context.translate(LangKeys.validationEmail),
         shortPasswordText: context.translate(LangKeys.validationPasswordShort),
@@ -109,9 +99,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
           LangKeys.validationPasswordMatch,
         ),
       ),
-      // Login link — the flow is linear, so login replaces signup.
-      // Back to the login already on the stack — no duplicate route.
-      onLogin: () => Navigator.of(context).pop(),
+      onGoogleSignIn: () => _showGooglePendingSnackBar(context),
+      fields: SignUpFields(
+        nameController: _nameController,
+        emailController: _emailController,
+        passwordController: _passwordController,
+        confirmPasswordController: _confirmPasswordController,
+        nameError: state.nameError,
+        emailError: state.emailError,
+        passwordError: state.passwordError,
+        confirmPasswordError: state.confirmPasswordError,
+        onNameChanged: cubit.nameChanged,
+        onEmailChanged: cubit.emailChanged,
+        onPasswordChanged: cubit.passwordChanged,
+        onConfirmPasswordChanged: cubit.confirmPasswordChanged,
+      ),
     );
   }
 }

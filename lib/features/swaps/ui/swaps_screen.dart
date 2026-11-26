@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nesba_ai/core/common/animations/animate_do.dart';
-import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/helpers/spacing.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
 import 'package:nesba_ai/core/routes/app_routes.dart';
-import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/widgets/feedback/error_card.dart';
+import 'package:nesba_ai/core/widgets/nes_screen_body.dart';
+import 'package:nesba_ai/core/widgets/nes_section_card.dart';
 import 'package:nesba_ai/core/widgets/feedback/skeleton_card.dart';
 import 'package:nesba_ai/core/widgets/nes_app_bar.dart';
 import 'package:nesba_ai/features/swaps/logic/swap_cubit.dart';
@@ -55,40 +55,47 @@ class SwapsScreen extends StatelessWidget {
     if (state.isLoading) {
       return _skeleton(context);
     }
-    return SingleChildScrollView(
+    return NesScreenBody(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (mealContextDescription != null)
+          if (mealContextDescription != null) ...<Widget>[
             // S09: context banner above the list; the general section
             // header hides while the meal-specific pairs show (§2.9).
             _fadeIn(
               context,
               400,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: MealContextBanner(
-                  mealDescription: mealContextDescription!,
-                  // Back to the log gate — the meal stays live in the
-                  // IndexedStack (G-10).
-                  onBackToMeal: () => onGoToLog?.call(),
-                ),
+              MealContextBanner(
+                mealDescription: mealContextDescription!,
+                // Back to the log gate — the meal stays live in the
+                // IndexedStack (G-10).
+                onBackToMeal: () => onGoToLog?.call(),
               ),
             ),
+            verticalSpace(AppSpacing.s16),
+          ],
           if (state.errorMsg != null) ...<Widget>[
-            SizedBox(height: 12.h),
             _fadeIn(context, 400, _errorCard(context)),
+            verticalSpace(AppSpacing.s16),
           ],
           if (state.swaps.isEmpty)
             SwapsEmpties(
               // The empties CTA jumps to the log gate.
               onCta: onGoToLog,
             )
-          else if (mealContextDescription == null)
-            ..._cardsSection(context, state)
-          else
-            ..._mealContextPairs(context, state),
-          SizedBox(height: 24.h),
+          else ...<Widget>[
+            if (mealContextDescription == null) ...<Widget>[
+              _fadeIn(
+                context,
+                400,
+                NesSectionHeading(
+                  text: context.translate(LangKeys.swapsSectionHeader),
+                ),
+              ),
+              verticalSpace(AppSpacing.s8),
+            ],
+            ..._pairCards(context, state),
+          ],
         ],
       ),
     );
@@ -102,12 +109,11 @@ class SwapsScreen extends StatelessWidget {
 
   // First read only (states §1.5 loading): two pair-card footprints.
   Widget _skeleton(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(16.w),
+    return NesScreenBody(
       child: Column(
         children: <Widget>[
           const SkeletonCard(),
-          SizedBox(height: 12.h),
+          verticalSpace(AppSpacing.s12),
           const SkeletonCard(),
         ],
       ),
@@ -117,22 +123,19 @@ class SwapsScreen extends StatelessWidget {
   // Every failure renders the server card; the previous swaps stay
   // visible below it (§2.8: المخبأ السابق يبقى ظاهرًا).
   Widget _errorCard(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: ErrorCard(
-        icon: Icons.error_outline,
-        title: context.translate(LangKeys.errServerTitle),
-        body: context.translate(LangKeys.errServerBody),
-        actions: <(String, VoidCallback)>[
-          (
-            // err_server_actions is the combined «retry / cancel» label —
-            // the split retry text borrows err_offline_action until the
-            // deck splits the key (log_screen precedent).
-            context.translate(LangKeys.errOfflineAction),
-            () => context.read<SwapCubit>().load(),
-          ),
-        ],
-      ),
+    return ErrorCard(
+      icon: Icons.error_outline,
+      title: context.translate(LangKeys.errServerTitle),
+      body: context.translate(LangKeys.errServerBody),
+      actions: <(String, VoidCallback)>[
+        (
+          // err_server_actions is the combined «retry / cancel» label —
+          // the split retry text borrows err_offline_action until the
+          // deck splits the key (log_screen precedent).
+          context.translate(LangKeys.errOfflineAction),
+          () => context.read<SwapCubit>().load(),
+        ),
+      ],
     );
   }
 
@@ -141,60 +144,27 @@ class SwapsScreen extends StatelessWidget {
   // in the deck yet and solid copy is not allowed, so the chip row lands
   // when those keys exist.
 
-  // «من وجباتك الأخيرة» (declares the suggestions source) + one pair card
-  // per row, staggered in.
-  List<Widget> _cardsSection(BuildContext context, SwapState state) {
-    return <Widget>[
-      SizedBox(height: 12.h),
-      _fadeIn(
-        context,
-        400,
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: TextApp(
-            text: context.translate(LangKeys.swapsSectionHeader),
-            theme: context.textStyle.copyWith(
-              fontSize: 16.sp,
-              fontWeight: FontWeightHelper.semiBold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ),
-      ),
-      SizedBox(height: 16.h),
-      ..._pairCards(context, state),
-    ];
-  }
-
   // The pair cards themselves — shared by the general section (S08) and
-  // the meal-context variant (S09, no section header).
+  // the meal-context variant (S09, which hides the section header).
   List<Widget> _pairCards(BuildContext context, SwapState state) {
     return <Widget>[
-      for (int i = 0; i < state.swaps.length; i++)
+      for (int i = 0; i < state.swaps.length; i++) ...<Widget>[
+        if (i > 0) verticalSpace(AppSpacing.s12),
         _fadeIn(
           context,
           400 + 100 * i,
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
-              child: SwapPairCard(
-                pair: state.swaps[i],
-                isBookmarked: state.bookmarked
-                    .contains(state.swaps[i]['id'] as String? ?? 'pair-$i'),
-                onSwap: () => context.read<SwapCubit>().applySwap(i),
-                onBookmark: () => context.read<SwapCubit>().toggleBookmark(
-                      state.swaps[i]['id'] as String? ?? 'pair-$i',
-                    ),
-              ),
+          SwapPairCard(
+            pair: state.swaps[i],
+            isBookmarked: state.bookmarked.contains(
+              state.swaps[i]['id'] as String? ?? 'pair-$i',
+            ),
+            onSwap: () => context.read<SwapCubit>().applySwap(i),
+            onBookmark: () => context.read<SwapCubit>().toggleBookmark(
+              state.swaps[i]['id'] as String? ?? 'pair-$i',
             ),
           ),
         ),
+      ],
     ];
-  }
-
-  // S09 pairs — no «من وجباتك الأخيرة» header while the banner shows.
-  List<Widget> _mealContextPairs(BuildContext context, SwapState state) {
-    return <Widget>[SizedBox(height: 16.h), ..._pairCards(context, state)];
   }
 }
