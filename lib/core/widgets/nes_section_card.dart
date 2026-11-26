@@ -37,14 +37,18 @@ class NesSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
 
-    final Widget card = Container(
-      width: double.infinity,
-      padding: padding ?? EdgeInsets.all(AppSpacing.cardInner.w),
-      decoration: BoxDecoration(
-        color: color ?? scheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppRadius.medium.r),
+    // Material, not a decorated Container: ListTile, InkWell and Switch
+    // paint their ink on the nearest Material ancestor, so a coloured box
+    // between them and it hides every ripple inside the card — Flutter
+    // asserts on exactly that. It is also how the reference builds cards.
+    final Widget card = Material(
+      color: color ?? scheme.surfaceContainer,
+      borderRadius: BorderRadius.circular(AppRadius.medium.r),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: padding ?? EdgeInsets.all(AppSpacing.cardInner.w),
+        child: SizedBox(width: double.infinity, child: child),
       ),
-      child: child,
     );
 
     if (title == null) return card;

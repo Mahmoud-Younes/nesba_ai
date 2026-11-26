@@ -7,7 +7,9 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nesba_ai/core/app/app_cubit/app_cubit.dart';
 import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/features/log/logic/log_cubit.dart';
 import 'package:nesba_ai/features/log/ui/log_screen.dart';
@@ -15,6 +17,7 @@ import 'package:nesba_ai/features/login/ui/login_screen.dart';
 import 'package:nesba_ai/features/onboarding/onboarding_screen.dart';
 import 'package:nesba_ai/features/review/logic/review_cubit.dart';
 import 'package:nesba_ai/features/review/ui/review_screen.dart';
+import 'package:nesba_ai/features/settings/ui/settings_screen.dart';
 import 'package:nesba_ai/features/sign_up/ui/sign_up_screen.dart';
 import 'package:nesba_ai/features/swaps/ui/swaps_screen.dart';
 import 'package:nesba_ai/features/splash/ui/widgets/splash_wordmark.dart';
@@ -224,6 +227,32 @@ Future<void> main() async {
       await _pump(tester, const SwapsScreen(), locale: const Locale('ar'));
       await _settleRepo(tester);
       await _save(tester, '21-swaps-ar');
+    });
+  });
+
+  group('settings', () {
+    testWidgets('english', (WidgetTester tester) async {
+      await _pump(
+        tester,
+        BlocProvider<AppCubit>(
+          create: (_) => AppCubit(),
+          child: const SettingsScreen(),
+        ),
+        locale: const Locale('en'),
+      );
+      await _save(tester, '22-settings-en');
+    });
+
+    testWidgets('arabic', (WidgetTester tester) async {
+      await _pump(
+        tester,
+        BlocProvider<AppCubit>(
+          create: (_) => AppCubit(),
+          child: const SettingsScreen(),
+        ),
+        locale: const Locale('ar'),
+      );
+      await _save(tester, '23-settings-ar');
     });
   });
 }

@@ -4,9 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nesba_ai/core/app/app_cubit/app_cubit.dart';
 import 'package:nesba_ai/core/common/widgets/text_app.dart';
 import 'package:nesba_ai/core/extensions/context_extension.dart';
+import 'package:nesba_ai/core/helpers/spacing.dart';
 import 'package:nesba_ai/core/language/lang_keys.dart';
+import 'package:nesba_ai/core/style/fonts/app_type_scale.dart';
 import 'package:nesba_ai/core/style/fonts/font_weight_helper.dart';
 import 'package:nesba_ai/core/widgets/nes_app_bar.dart';
+import 'package:nesba_ai/core/widgets/nes_page_header.dart';
+import 'package:nesba_ai/core/widgets/nes_screen_body.dart';
+import 'package:nesba_ai/core/widgets/nes_section_card.dart';
 import 'package:nesba_ai/features/settings/ui/widgets/goal_card.dart';
 
 /// «الإعدادات» — theme + language + daily goal + about (ticket 27);
@@ -22,39 +27,21 @@ class SettingsScreen extends StatelessWidget {
       // Pushed from any gate bar — the back button is implied.
       appBar: NesAppBar(showBack: true),
       body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.all(16.w),
-          children: <Widget>[
-            TextApp(
-              text: context.translate(LangKeys.settings),
-              theme: context.textStyle.copyWith(
-                fontSize: 24.sp,
-                fontWeight: FontWeightHelper.semiBold,
-                color: scheme.onSurface,
-              ),
-            ),
-            SizedBox(height: 16.h),
-            _card(context, _appearanceSection(context)),
-            SizedBox(height: 16.h),
-            _card(context, const GoalCard()),
-            SizedBox(height: 16.h),
-            _card(context, _aboutSection(context)),
-          ],
+        child: NesScreenBody(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              NesPageHeader(title: context.translate(LangKeys.settings)),
+              verticalSpace(AppSpacing.s16),
+              NesSectionCard(child: _appearanceSection(context)),
+              verticalSpace(AppSpacing.s16),
+              const NesSectionCard(child: GoalCard()),
+              verticalSpace(AppSpacing.s16),
+              NesSectionCard(child: _aboutSection(context)),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  // Section card: surfaceContainer tint, corner 12 (Bustan card token).
-  Widget _card(BuildContext context, Widget child) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: child,
     );
   }
 
@@ -115,8 +102,9 @@ class SettingsScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         TextApp(
-                          text: context
-                              .translate(LangKeys.settingsLanguageLabel),
+                          text: context.translate(
+                            LangKeys.settingsLanguageLabel,
+                          ),
                           theme: context.textStyle.copyWith(
                             fontSize: 12.sp,
                             fontWeight: FontWeightHelper.regular,
@@ -157,28 +145,23 @@ class SettingsScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        TextApp(
-          text: context.translate(LangKeys.settingsAbout),
-          theme: context.textStyle.copyWith(
-            fontSize: 16.sp,
-            fontWeight: FontWeightHelper.semiBold,
-            color: scheme.onSurface,
-          ),
-        ),
-        SizedBox(height: 8.h),
+        // Group heading inside the card — the shape main uses for a form
+        // group ("Eating Pattern"), not the heading-above-card shape.
+        NesFieldLabel(text: context.translate(LangKeys.settingsAbout)),
+        verticalSpace(AppSpacing.s8),
         TextApp(
           text: context.translate(LangKeys.settingsAboutBody),
           theme: context.textStyle.copyWith(
-            fontSize: 14.sp,
+            fontSize: AppTypeScale.bodyMedium.sp,
             fontWeight: FontWeightHelper.regular,
             color: scheme.onSurfaceVariant,
           ),
         ),
-        SizedBox(height: 8.h),
+        verticalSpace(AppSpacing.s8),
         TextApp(
           text: context.translate(LangKeys.disclaimerFull),
           theme: context.textStyle.copyWith(
-            fontSize: 12.sp,
+            fontSize: AppTypeScale.bodySmall.sp,
             fontWeight: FontWeightHelper.regular,
             color: scheme.onSurfaceVariant,
           ),
@@ -187,4 +170,3 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
-
