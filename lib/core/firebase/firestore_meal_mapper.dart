@@ -9,14 +9,14 @@ abstract final class FirestoreMealMapper {
       MealRow.fromDoc(doc);
 
   static Map<String, dynamic> toUiRow(MealRow row) => <String, dynamic>{
-        'id': row.id,
-        'name': row.name,
-        'type': row.type,
-        'kcal': row.kcal,
-        'time': row.timeText,
-        'sync': row.sync,
-        'groupKey': row.dayKey == MealRow.dayKeyFor(DateTime.now())
-            ? 'today'
-            : 'yesterday',
-      };
+    'id': row.id,
+    'name': row.name,
+    'type': row.type,
+    'kcal': row.kcal,
+    'time': row.timeText,
+    'sync': row.sync,
+    'groupKey': row.dayKey == MealRow.dayKeyFor(DateTime.now())
+        ? 'today'
+        : 'yesterday',
+  };
 }

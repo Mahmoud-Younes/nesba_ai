@@ -17,8 +17,8 @@ class AuthSession {
         ? AuthStatus.signedOut
         : AuthStatus.signedIn;
     yield* _auth.authStateChanges().map(
-          (user) => user == null ? AuthStatus.signedOut : AuthStatus.signedIn,
-        );
+      (user) => user == null ? AuthStatus.signedOut : AuthStatus.signedIn,
+    );
   }
 
   String? get uid => _auth.currentUser?.uid;
