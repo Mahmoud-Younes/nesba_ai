@@ -238,4 +238,47 @@ class LangKeys {
   static const String exampleMeal1 = 'example_meal_1';
   static const String exampleMeal2 = 'example_meal_2';
   static const String exampleMeal3 = 'example_meal_3';
+
+  // --- Profile and shared swaps (prep) ---
+  static const String profileWeight = 'profile_weight';
+  static const String profileHeight = 'profile_height';
+  static const String profileAge = 'profile_age';
+  static const String profileSex = 'profile_sex';
+  static const String profileFemale = 'profile_female';
+  static const String profileMale = 'profile_male';
+  static const String activitySedentary = 'activity_sedentary';
+  static const String activityLight = 'activity_light';
+  static const String activityModerate = 'activity_moderate';
+  static const String activityHigh = 'activity_high';
+  static const String goalFatLoss = 'goal_fat_loss';
+  static const String goalMuscleGain = 'goal_muscle_gain';
+  static const String goalMaintenance = 'goal_maintenance';
+  static const String profileCalculate = 'profile_calculate';
+  static const String profileSkip = 'profile_skip';
+  static const String profileEdit = 'profile_edit';
+  static const String profileSave = 'profile_save';
+  static const String goalEstimate = 'goal_estimate';
+  static const String goalSourceCalculated = 'goal_source_calculated';
+  static const String goalSourceManual = 'goal_source_manual';
+  static const String goalRecalculate = 'goal_recalculate';
+  static const String restrictionHealth = 'restriction_health';
+  static const String restrictionPreference = 'restriction_preference';
+  static const String restrictionUnchecked = 'restriction_unchecked';
+  static const String restrictionGluten = 'restriction_gluten';
+  static const String restrictionDairy = 'restriction_dairy';
+  static const String restrictionEggs = 'restriction_eggs';
+  static const String restrictionTreeNuts = 'restriction_tree_nuts';
+  static const String restrictionPeanuts = 'restriction_peanuts';
+  static const String restrictionSesame = 'restriction_sesame';
+  static const String restrictionFish = 'restriction_fish';
+  static const String restrictionShellfish = 'restriction_shellfish';
+  static const String restrictionSoy = 'restriction_soy';
+  static const String under18OrLowBmi = 'under18_or_low_bmi';
+  static const String swapFailure = 'swap_failure';
+  static const String swapRetry = 'swap_retry';
+  static const String swapNoMatch = 'swap_no_match';
+  static const String restrictionsEdit = 'restrictions_edit';
+  static const String inputWeightRange = 'input_weight_range';
+  static const String inputHeightRange = 'input_height_range';
+  static const String inputAgeRange = 'input_age_range';
 }
