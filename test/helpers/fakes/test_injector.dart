@@ -3,6 +3,7 @@ import 'package:nesba_ai/core/di/injection_container.dart';
 import 'package:nesba_ai/core/firebase/auth_repo.dart';
 import 'package:nesba_ai/core/firebase/goal_repo.dart';
 import 'package:nesba_ai/core/firebase/meals_repo.dart';
+import 'package:nesba_ai/core/firebase/profile_repo.dart';
 
 import 'fake_repos.dart';
 
@@ -18,5 +19,8 @@ void setupTestFakes() {
   }
   if (!sl.isRegistered<GoalRepo>()) {
     sl.registerLazySingleton<GoalRepo>(FakeGoalRepo.new);
+  }
+  if (!sl.isRegistered<ProfileRepository>()) {
+    sl.registerLazySingleton<ProfileRepository>(FakeProfileRepo.new);
   }
 }

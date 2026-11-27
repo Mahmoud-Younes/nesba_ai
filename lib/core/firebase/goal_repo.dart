@@ -1,5 +1,7 @@
+import 'package:nesba_ai/core/firebase/goal_value.dart';
+
 abstract interface class GoalRepo {
-  Stream<int> watchGoal();
-  Future<int> readGoal();
-  Future<void> writeGoal(int kcal);
+  Stream<GoalValue> watchGoal();
+  Future<GoalValue> readGoal();
+  Future<void> writeGoal(GoalValue goal);
 }

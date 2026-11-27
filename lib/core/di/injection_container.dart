@@ -6,6 +6,7 @@ import 'package:nesba_ai/core/firebase/auth_session.dart';
 import 'package:nesba_ai/core/firebase/goal_repo.dart';
 import 'package:nesba_ai/core/firebase/meals_repo.dart';
 import 'package:nesba_ai/core/firebase/pending_repos.dart';
+import 'package:nesba_ai/core/firebase/profile_repo.dart';
 import 'package:nesba_ai/features/log/data/repos/log_repo.dart';
 import 'package:nesba_ai/features/log/data/repos/mock_log_repo.dart';
 import 'package:nesba_ai/features/log/logic/log_cubit.dart';
@@ -41,7 +42,8 @@ Future<void> _initCore() async {
     )
     ..registerLazySingleton<AuthRepo>(PendingAuthRepo.new)
     ..registerLazySingleton<MealsRepo>(PendingMealsRepo.new)
-    ..registerLazySingleton<GoalRepo>(PendingGoalRepo.new);
+    ..registerLazySingleton<GoalRepo>(PendingGoalRepo.new)
+    ..registerLazySingleton<ProfileRepository>(PendingProfileRepo.new);
 }
 
 Future<void> _initLog() async {

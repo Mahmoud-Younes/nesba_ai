@@ -2,8 +2,12 @@ import 'dart:async';
 
 import 'package:nesba_ai/core/firebase/auth_repo.dart';
 import 'package:nesba_ai/core/firebase/goal_repo.dart';
+import 'package:nesba_ai/core/firebase/goal_value.dart';
+import 'package:nesba_ai/core/firebase/meal_alternatives.dart';
 import 'package:nesba_ai/core/firebase/meal_row.dart';
 import 'package:nesba_ai/core/firebase/meals_repo.dart';
+import 'package:nesba_ai/core/firebase/profile_repo.dart';
+import 'package:nesba_ai/core/firebase/user_profile.dart';
 
 /// Test doubles for the shared contracts. Firebase is never initialized in
 /// unit or widget tests.
@@ -23,8 +27,12 @@ class FakeAuthRepo implements AuthRepo {
 
 class FakeMealsRepo implements MealsRepo {
   final List<MealRow> rows = <MealRow>[];
+  final Map<String, List<RawAlternative>> _alternatives =
+      <String, List<RawAlternative>>{};
   final StreamController<List<MealRow>> _controller =
       StreamController<List<MealRow>>.broadcast();
+  final StreamController<List<RawAlternative>> _alternativesController =
+      StreamController<List<RawAlternative>>.broadcast();
 
   @override
   Stream<List<MealRow>> watchTodayMeals() => _controller.stream;
@@ -57,17 +65,42 @@ class FakeMealsRepo implements MealsRepo {
   Future<void> retryWrite(String mealId) async {
     _controller.add(List<MealRow>.from(rows));
   }
+
+  @override
+  Stream<List<RawAlternative>> watchAlternatives(String mealId) =>
+      _alternativesController.stream;
+
+  @override
+  Future<void> saveAlternatives(
+    String mealId,
+    List<RawAlternative> alternatives,
+  ) async {
+    _alternatives[mealId] = List<RawAlternative>.from(alternatives);
+    _alternativesController.add(List<RawAlternative>.from(alternatives));
+  }
 }
 
 class FakeGoalRepo implements GoalRepo {
-  int _goal = 0;
+  GoalValue _goal = const GoalValue();
 
   @override
-  Stream<int> watchGoal() => Stream<int>.value(_goal);
+  Stream<GoalValue> watchGoal() => Stream<GoalValue>.value(_goal);
 
   @override
-  Future<int> readGoal() async => _goal;
+  Future<GoalValue> readGoal() async => _goal;
 
   @override
-  Future<void> writeGoal(int kcal) async => _goal = kcal;
+  Future<void> writeGoal(GoalValue goal) async => _goal = goal;
+}
+
+class FakeProfileRepo implements ProfileRepository {
+  UserProfile _profile = const UserProfile();
+
+  @override
+  Future<UserProfile?> read() async => _profile;
+
+  @override
+  Stream<UserProfile> watch() => Stream<UserProfile>.value(_profile);
+
+  void setProfile(UserProfile profile) => _profile = profile;
 }
