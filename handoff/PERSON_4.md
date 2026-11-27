@@ -1,47 +1,94 @@
-# Person 4 — الاقتراحات وهدف اليوم
+# الشخص 4 — الاقتراحات وهدف اليوم
 
-* **الفرع**: `feature/firebase-swaps-goal` — يُنشأ يدويًا من رأس `dev` بعد التحضيري.
-* **الأساس**: `62c32ae` قبل التحضيري.
-* **الصور المرجعية**: `screenshots/16-swaps.png`، `screenshots/22-swaps-light.png`، `screenshots/17-settings-en.png`، `screenshots/18-settings-ar.png`.
+* **الفرع**: `feature/firebase-swaps-goal`.
+* **الأساس**: `cad0336` وهو رأس `dev` الآن. بعد نزول العمل التحضيري، حدّث السطر إلى توقيع التزام العمل التحضيري قبل إنشاء الفرع.
 
-## قبل البدء
+## بوابتان قبل التوزيع
 
-يجب أن تكون قد وصلت من التحضيري: `GoalRepo` و`MealsRepo` و`AppError` والمفاتيح اللغوية והـ fakes، واستُخرجت بطاقة الهدف إلى `lib/features/settings/ui/widgets/goal_card.dart`. الأزواج الثلاثة معتمدة كمحتوى ثابت من مالك المحتوى. لا تلمس الملفات المحجوزة في `../design/planning/HANDOFF.md`.
+1. **تم**: فحص كل `.set(` على `users/{uid}`. وُجد موضع واحد في `lib/core/firebase/user_document.dart:16` وسيُضاف له `SetOptions(merge: true)` في العمل التحضيري.
+2. **لم تتم بعد**: شخص واحد من الفريق خارج الأربعة يقرأ النصوص الجديدة العربية اليوم.
+
+## مالك العمل التحضيري والجدول
+
+* **المالك**: الشخص الأول — صاحب `الشخص 1`، وله صلاحية تعديل كامل المشروع. ينفّذ العمل التحضيري قبل الأفرع الأربعة.
+* **قاعدة Firebase**: إذا احتاج تعديلًا في حساب Firebase أو فتحه أو الكونسول، يرجع إلى مالك الحساب `Mahmoud-Younes`؛ لا يغيّره منفردًا.
+* **الموعد**: نهاية مساء السبت 28 نوفمبر 2026 لنزول العمل التحضيري على `dev`.
+* بعد النزول تُحدَّث أسطر الأساس `cad0336` في ملفات الأربعة، ثم تُنشأ الفروع.
+* **إن لم ينزل بحلول مساء السبت**: يُؤخذ القرار فورًا بالعودة إلى الخطة البديلة: حساب السعرات والهدف، واختيار الموانع، وتنبيه عند تسجيل وجبة فيها مانع. وتُؤجَّل الاقتراحات الموجّهة بالبروفايل. لا يُؤجَّل القرار إلى ما بعد الموعد.
+
+## العمل التحضيري — ينفّذه مالك تحضيري واحد خارج الأربعة
+
+ينزل قبل الأفرع الأربعة. سلّم بالاسم:
+
+* `UserProfile` وقارئ للقراءة فقط `ProfileRepository.read()` و`watch()` — تقرأ منه الهدف والموانع.
+* `goal_state.dart` — دالة واحدة تُرجع `unset` أو `calculated` أو `manual`؛ تستدعيها أنت والشخص 1.
+* `goal_cache_key.dart` — دالة واحدة تبني مفتاح كاش الهدف المرتبط بـ uid؛ تقرأ منه وأنت، ويزيله الشخص 1 عند الخروج. لا تستورد ثابتًا من فرعه.
+* `meal_alternatives.dart` — حقل `alternatives` في نموذج الوجبة، و`MealsRepo.watchAlternatives(mealId)` لقراءة البدائل الخام. `contains` مطلوب والمصفوفة الفارغة صالحة.
+* `swap_constraints_contract.dart` — التوقيع النهائي الذي تناديه أنت دون انتظار فرع الشخص 2.
+* `goal_writer.dart` — دالة تكتب `dailyGoalKcal` و`source` داخل `runTransaction`. تستخدمها أنت والشخص 1، ولا أحد يكتب الحقل مباشرة.
+* مفاتيح النص باللغتين، وتسجيل DI، والاختبارات المزدوجة، وقواعد Firestore.
+
+## ما تحتاج معرفته
+
+نِسْبَة تطبيق Flutter/Android لتقدير وجبات الطعام، عربي أولًا وRTL. «اقتراحات» يعرض بدائل للوجبات المسجّلة، وزر التبديل يضيف البديل كوجبة يمكن التراجع عنها. الأرقام تقديرية والمستخدم يصحّحها. لا ادعاءات طبية ولا نص يوحي بضمان خلوّ الطعام من مسببات الحساسية.
+
+قيود ثابتة: Firebase على Spark فقط بلا Blaze، ومفتاح Gemini ليس داخل التطبيق. التحقق من البريد برابط Firebase. لكل ملف صاحب واحد، ولا رفع ولا طلب دمج ولا دمج.
+
+### القرارات التي تخصّك
+
+* بدائل Gemini الثلاثة هي المصدر الوحيد. الأزواج الثابتة محذوفة بلا fallback.
+* البدائل تُخزَّن **خامًا** في حقل `alternatives` مع الوجبة. أنت تقرأها وتستدعي دالة الشخص 2 الخالصة **وقت العرض** بالفئات المختارة والهدف وسعرات الوجبة والمتبقي الحالي. لذلك تبقى البدائل بعد إعادة التشغيل، وتعود البدائل المُسقَطة إذا عدّل المستخدم موانعه، ويتغيّر الترتيب مع تغير مجموع اليوم.
+* الترتيب: أقل سعرات لخسارة الدهون، أعلى بروتين لزيادة العضل، الأقرب لسعرات الوجبة للثبات، وترتيب Gemini عند التعادل. `contains` الفارغ مقبول ويُبقى.
+* فشل الاستدعاء: «تعذّر اقتراح بديل الآن» مع «حاول مجددًا». كل البدائل مستبعدة: «لا يوجد بديل مناسب لقيودك لهذه الوجبة» مع «تعديل القيود» الذي يفتح شاشة الشخص 1. **لا زر يمسح الحساسية بضغطة واحدة**، لأنك لست كاتب البروفايل.
+* حقل هدف واحد nullable مع `source`. الغياب أو الصفر أو غياب `source` حالة `unset` قابلة للكتابة. اليدوي الصريح لا يُستبدل.
+* كل كتابة على الهدف تتم عبر `goal_writer.dart` في transaction. لا قراءة ثم كتابة عندك.
+* بطاقة الهدف تعرض التقدير والمصدر فقط، وتقول إن الرقم تقدير لا وصفة. **لا زر «أعد حساب هدفي» هنا**؛ الزر في شاشة الشخص 1 وحده.
+
+### النصوص التي تحتاجها
+
+| العربية | English |
+|---|---|
+| تعذّر اقتراح بديل الآن · حاول مجددًا | A swap could not be suggested right now · Try again |
+| لا يوجد بديل مناسب لقيودك لهذه الوجبة | No suitable swap for your restrictions for this meal |
+| تعديل القيود | Edit restrictions |
+| هدفك اليومي · تقدير يمكنك تعديله | Your daily goal · An estimate you can edit |
+| محسوب / يدوي | calculated / manual |
+
+لا تضف نصًا جديدًا؛ المفاتيح تُضاف في العمل التحضيري باللغتين.
+
+## الملفات المحجوزة على الأشخاص 2 و3 و4
+
+`pubspec.yaml` و`pubspec.lock` و`lib/main.dart` و`lib/core/di/injection_container.dart` و`lib/firebase_options.dart` وكل ما تحت `lib/core/firebase/**` و`lang/**` و`lib/core/language/**` و`test/helpers/fakes/**`، وكل ملفات الأشخاص 1 و2 و3، و`settings_screen.dart`، و`swap_constraints.dart` عند الشخص 2، و`test/features/swaps/logic/swap_constraints_test.dart` عنده أيضًا.
 
 ## ملفاتك حصرًا
 
-* `lib/features/swaps/data/repos/swap_repo.dart`.
-* `lib/features/swaps/data/repos/curated_swap_repo.dart` — جديد، الاسم المحايد بدل الاسم الوهمي.
-* `lib/features/swaps/logic/swap_cubit.dart` و`lib/features/swaps/ui/**`.
-* `lib/features/settings/ui/widgets/goal_card.dart` — تملكه بعد استخراجه في التحضيري.
-* `lib/features/settings/data/repos/firebase_goal_repo.dart` — جديد، ينفّذ `GoalRepo`.
-* `test/features/swaps/**` و`test/features/settings/goal_card_test.dart`.
+* `lib/features/swaps/data/repos/swap_repo.dart` — يقرأ البدائل الخام من `MealsRepo`.
+* `lib/features/swaps/logic/swap_cubit.dart` و`lib/features/swaps/logic/swap_state.dart`.
+* `lib/features/swaps/ui/**` — كلها، بما فيها `swaps_empties.dart` و`swap_pair_card.dart` و`meal_context_banner.dart`.
+* `lib/features/settings/data/repos/firebase_goal_repo.dart` — جديد، يكتب عبر الكاتب المشترك.
+* `lib/features/settings/ui/widgets/goal_card.dart`.
+* `test/features/swaps/**` عدا `logic/swap_constraints_test.dart`، و`test/features/settings/goal_card_test.dart`.
 
-**ممنوع**: `settings_screen.dart`، DI، `pubspec`، `main.dart`، اللغات، `lib/core/firebase/**`، `test/helpers/fakes/**`، ملفات Persons 1–3.
+## المهام — كل مهمة التزام واحد
 
-## المهام — كل مهمة commit واحد
-
-1. `replace the mock swap source with curated content`
-   - الأزواج الثلاثة المعتمدة من قائمة المحتوى، بلا تأخير وهمي.
-   - لا استدعاء Gemini إضافي ولا مجموعة Firestore جديدة.
-
-2. `implement swap apply through the meals interface`
-   - حقول الوجبة الناتجة من قرار التحضيري.
-   - كل الكتابة عبر `MealsRepo`؛ لا استدعاء Firestore مباشرة.
-
-3. `show swap write failures with approved copy`
-   - `AppError` إلى مفتاح معتمد، مسح التحميل، إبقاء البطاقة ظاهرة.
-
-4. `move the daily goal behind the goal repository`
-   - Firestore هو المصدر؛ التفضيل المحلي cache بمفتاح المستخدم ويُمسح عند تسجيل الخروج.
-   - البطاقة لا تستدعي Firebase مباشرة.
-
-5. `read the goal in log and review through one source`
-   - عبر واجهة `GoalRepo` المشتركة فقط؛ لا تعديل ملفات Person 2 أو 3.
-
-6. `update swaps and goal tests against the shared fakes`
-   - نجاح وفشل التبديل، قراءة الهدف قبل أول snapshot، وعدم تسريب هدف مستخدم سابق.
+1. `turn swap repo into a reader of stored alternatives`
+   - استبدل `swaps()` بقارئ يغلّف `MealsRepo.watchAlternatives(mealId)`. لا يحفظ بدائل مُرتبة ولا بدائل ثابتة.
+2. `filter and rank at display time`
+   - الـ cubit يقرأ البدائل الخام ويستدعي الدالة المشتركة بالموانع والهدف وسعرات الوجبة والمتبقي الحالي، في لحظة العرض لا وقت التحليل. لا Gemini عندك.
+3. `show the two distinct empty states`
+   - فشل الاستدعاء: «تعذّر اقتراح بديل الآن» مع «حاول مجددًا».
+   - كل البدائل مستبعدة: «لا يوجد بديل مناسب لقيودك لهذه الوجبة» مع «تعديل القيود» الذي يفتح شاشة الشخص 1 عبر مساره. لا تمس البروفايل.
+4. `keep swap apply through the meals interface`
+   - كل كتابة عبر `MealsRepo`، بلا Firestore مباشرة، بنصوص معتمدة عند الفشل.
+5. `implement the goal repository through the shared writer`
+   - اقرأ الحالة عبر `goal_state.dart`، واكتب اليدوي عبر `goal_writer.dart`. unset قابل للكتابة، واليدوي لا يُستبدل.
+6. `show the estimate and source only`
+   - البطاقة تصرّح أن الرقم تقدير لا وصفة، وتعرض `source`. بلا زر إعادة حساب.
+7. `keep the goal cache user scoped`
+   - اقرأ المفتاح من الدالة المشتركة في العمل التحضيري. الشخص 1 يزيله عند الخروج، بلا تسريب.
+8. `update swaps and goal tests`
+   - بدائل مخزّنة، فلترة وترتيب عند العرض، بقاء بعد إعادة تشغيل، عودة بديل بعد تعديل قيد، فشل الاستدعاء، استبعاد الكل، تطبيق التبديل، يدوي مقابل محسوب، وحساب آخر بلا تسريب.
 
 ## بوابة الإنهاء
 
-الأوامر الأربعة المشتركة نظيفة. فحص يدوي: قائمة الاقتراحات، تبديل ناجح، تبديل فائض بالحصة، تحديد هدف، إعادة تشغيل بنفس الهدف، ثم دخول بحساب آخر دون تسريب. لقطة محلية لكل حالة مرئية داخل `../design/screenshots/<feature>/` باسم الـ commit. لا push ولا PR ولا دمج.
+`flutter analyze` و`flutter test` و`dart format --output=none --set-exit-if-changed .` و`flutter build apk --debug` كلها نظيفة. فحص يدوي: قائمة الاقتراحات، بديل مُرتب، فشل الاستدعاء، استبعاد كل البدائل، «تعديل القيود» يفتح شاشة البروفايل، إعادة تشغيل وبقاء البدائل، تبديل ناجح، تحديد هدف، ودخول بحساب آخر دون تسريب. لقطة شاشة لكل حالة مرئية باسم رسالة الـ التزام. لا رفع ولا طلب دمج ولا دمج.
